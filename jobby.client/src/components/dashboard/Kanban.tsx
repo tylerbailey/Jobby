@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { KanbanColumn } from "@/components/dashboard/KanbanColumn";
-import { GetAllStages, UpdateAppStage } from "@/services/appService";
+import { GetAllStages, UpdateApp } from "@/services/appService";
 import { DragDropProvider, type DragEndEvent } from "@dnd-kit/react";
 import type { Application, Stage } from "@/types/";
 
@@ -60,7 +60,7 @@ export function KanbanBoard() {
 
         const card = findCard(stagesRef.current, cardId);
         if (card) {
-            UpdateAppStage({ ...card, stageId: newStageId })
+            UpdateApp({ ...card, stageId: newStageId })
                 .catch(() => handleRefresh());
         }
     }
@@ -75,12 +75,9 @@ export function KanbanBoard() {
                 <h1 className="text-3xl font-bold tracking-tight">
                     Job Application Pipeline
                 </h1>
-                <p className="text-muted-foreground">
-                    Track applications from wishlist to final outcome.
-                </p>
             </div>
             <DragDropProvider onDragEnd={handleDragEnd}>
-                <div className="flex gap-4 overflow-x-auto pb-4">
+                <div className="grid grid-cols-1 md:grid-cols-6 gap-4 pb-4">
                     {stages.map((stage) => (
                         <KanbanColumn
                             key={stage.id}

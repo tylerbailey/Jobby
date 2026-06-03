@@ -17,6 +17,10 @@ export async function GetAllAppLocations() {
     return await api.get<LocationType[]>("/app/locations");
 }
 
-export async function UpdateAppStage(application: Application) {
+export async function UpdateApp(application: Application) {
     return await api.post<Application>("/app/update", application)
+}
+
+export async function DeleteApp(appId: string) {
+    return await api.delete(`/app/${appId}`);
 }

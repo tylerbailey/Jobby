@@ -10,4 +10,5 @@ export type KanbanColumnProps = {
 
 export type KanbanCardProps = {
     item: Application;
+    onUpdate: () => void;
 }

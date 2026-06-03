@@ -20,6 +20,11 @@ export type AppCreateProps = {
     onUpdate: () => void;
 }
 
+export type AppEditProps = {
+    item: Application
+    onUpdate: () => void;
+}
+
 export type LocationType = {
     id: number;
     type: string;

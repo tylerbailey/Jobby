@@ -35,7 +35,8 @@ namespace Jobby.Server.Controllers
         }
 
         [HttpGet("stages")]
-        public async Task<IActionResult> GetApplicationStages() {
+        public async Task<IActionResult> GetApplicationStages()
+        {
             var stages = await _appService.GetAllAppStages() ?? [];
             return Ok(stages);
         }
@@ -43,7 +44,7 @@ namespace Jobby.Server.Controllers
         [HttpGet("pipeline")]
         public async Task<IActionResult> GetUserPipeline()
         {
-            var stages = await _appService.GetUserPipeline(User?.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty);           
+            var stages = await _appService.GetUserPipeline(User?.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty);
             return Ok(stages);
         }
 
@@ -52,6 +53,14 @@ namespace Jobby.Server.Controllers
         {
             var locations = await _appService.GetAppLocations();
             return Ok(locations);
+        }
+
+        [HttpDelete("{applicationId}")]
+        public async Task<IActionResult> DeleteApplication(int applicationId)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
+            await _appService.DeleteAppAsync(applicationId, userId);
+            return Ok();
         }
     }
 }

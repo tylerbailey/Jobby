@@ -1,20 +1,15 @@
+import { Button } from "@/components/ui/button";
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
-import { CreateNewApp, GetAllAppLocations } from "@/services/appService";
-import  axios  from "axios"; 
-import { useEffect, useState } from "react";
-import { useUser } from "@/context/AuthContext";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectGroup, SelectLabel, SelectItem } from "@/components/ui/select";
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover"
-import { Plus } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useUser } from "@/context/AuthContext";
+import { CreateNewApp, GetAllAppLocations } from "@/services/appService";
 import type { AppCreateProps, LocationType } from "@/types";
+import axios from "axios";
+import { Plus } from "lucide-react";
+import { useEffect, useState } from "react";
 
 
 export default function CreateApp({ stage, onUpdate }: AppCreateProps) {
@@ -44,15 +39,16 @@ export default function CreateApp({ stage, onUpdate }: AppCreateProps) {
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         setError("");
-       
+
         try {
             if (!user) return;
             await CreateNewApp({
-                userId: user.id,               
+                userId: user.id,
                 companyName: jobCompany,
                 title: jobTitle,
                 postingUrl: jobUrl,
                 locationTypeId: Number.parseInt(jobLocationTypeId) || 0,
+                locationType: locationTypes.find(loc => loc.id === Number.parseInt(jobLocationTypeId))?.type || "",
                 address: jobAddress,
                 salary: Number.parseFloat(jobSalary) || 0,
                 stageId: stage
@@ -77,7 +73,7 @@ export default function CreateApp({ stage, onUpdate }: AppCreateProps) {
             setError("Create failed. Please try again.");
         }
     }
-   
+
     return (
         <div className="w-full">
             <Popover open={open} onOpenChange={setOpen}>
@@ -176,15 +172,15 @@ export default function CreateApp({ stage, onUpdate }: AppCreateProps) {
                             />
 
                         </Field>
-                      
+
                         <div className="py-3">
                             <Button className="w-full" type="submit">Create Application</Button>
                         </div>
                     </form>
                 </PopoverContent>
             </Popover>
-            {error }
-            
+            {error}
+
         </div>
     );
 }

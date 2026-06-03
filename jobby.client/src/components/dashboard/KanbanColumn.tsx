@@ -1,5 +1,3 @@
-import { MoreHorizontal } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { KanbanCard } from "./KanbanCard";
 import { useDroppable } from '@dnd-kit/react';
@@ -18,16 +16,12 @@ export function KanbanColumn({ title, color, stage, items, onUpdate }: KanbanCol
                         <span className="rounded-full bg-background/80 px-2 py-0.5 text-xs font-medium">
                             {items.length}
                         </span>
-                    </div>
-
-                    <Button variant="ghost" size="icon" className="h-7 w-7">
-                        <MoreHorizontal className="h-4 w-4" />
-                    </Button>
+                    </div>                   
                 </div>
 
                 <div className="space-y-3">
                     {items.map((item) => (
-                        <KanbanCard key={item.id} item={item} />
+                        <KanbanCard key={item.id} item={item} onUpdate={onUpdate} />
                     ))}
                 </div>
                 <CreateApp stage={stage} onUpdate={onUpdate}></CreateApp>
