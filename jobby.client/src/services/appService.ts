@@ -9,10 +9,6 @@ export async function GetAllApps() {
     return await api.get<Application[]>("/app");
 }
 
-export async function GetAllStages() {
-    return await api.get<Stage[]>("/app/pipeline");
-}
-
 export async function GetAllAppLocations() {
     return await api.get<LocationType[]>("/app/locations");
 }

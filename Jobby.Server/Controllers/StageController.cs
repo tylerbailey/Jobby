@@ -1,0 +1,53 @@
+﻿using Jobby.Server.Domain;
+using Jobby.Server.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+
+namespace Jobby.Server.Controllers
+{
+    [Authorize]
+    [ApiController]
+    [Route("api/stage")]
+    public class StageController(IStageService stageService) : Controller
+    {
+        private readonly IStageService _stageService = stageService;
+
+        [HttpPost("new")]
+        public async Task<IActionResult> CreateStage(AppStageModel appStage)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
+            await _stageService.CreateStage(appStage, userId);
+            return Ok();
+        }
+        [HttpPost("update")]
+        public async Task<IActionResult> UpdateStage(AppStageModel appStage)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
+            await _stageService.UpdateStage(appStage, userId);
+            return Ok();
+        }
+
+        [HttpDelete("delete/{stageId}")]
+        public async Task<IActionResult> DeleteStage(int stageId)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
+            await _stageService.DeleteStage(stageId, userId);
+            return Ok();
+        }
+        [HttpGet("pipeline")]
+        public async Task<IActionResult> GetUserPipeline()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
+            var stages = await _stageService.GetUserPipeline(userId);
+            return Ok(stages);
+        }
+        [HttpGet("stages/{userId}")]
+        public async Task<IActionResult> GetApplicationStages()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
+            var stages = await _stageService.GetUserPipeline(userId);
+            return Ok(stages);
+        }
+    }
+}

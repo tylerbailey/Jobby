@@ -5,7 +5,7 @@ namespace Jobby.Server.Domain
     public class AppStageModel
     {
         [JsonPropertyName("id")]
-        public int Id { get; set; }
+        public int? Id { get; set; }
 
         [JsonPropertyName("name")]
         public string Name { get; set; }
@@ -14,9 +14,9 @@ namespace Jobby.Server.Domain
         public int Order { get; set; }
 
         [JsonPropertyName("color")]
-        public string Color { get; set; }       
+        public string Color { get; set; }
 
         [JsonPropertyName("items")]
-        public List<UserJobApplicationModel> Items { get; set; }
+        public List<UserJobApplicationModel> Items { get; set; } = [];
     }
 }

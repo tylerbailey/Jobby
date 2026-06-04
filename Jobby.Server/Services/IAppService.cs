@@ -9,8 +9,6 @@ namespace Jobby.Server.Services
         Task CreateNewAppAsync(UserJobApplicationModel application);
         Task DeleteAppAsync(int appId, string userId);
         Task UpdateAppAsync(UserJobApplicationModel application);
-        Task<List<AppStageModel>> GetAllAppStages();
-        Task<List<AppStageModel>> GetUserPipeline(string userId);
         Task<List<LocationTypesModel>> GetAppLocations();
     }
 }

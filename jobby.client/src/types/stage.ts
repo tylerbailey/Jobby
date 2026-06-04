@@ -1,8 +1,8 @@
 import type { Application } from "@/types";
 export type Stage = {
-    id: number;
+    id?: number;
     name: string;
     order: number;
     color: string;
-    items: Application[];
+    items?: Application[];
 }

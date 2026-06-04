@@ -88,47 +88,6 @@ namespace Jobby.Server.Services
             await db.SaveChangesAsync();
         }
 
-        public async Task<List<AppStageModel>> GetAllAppStages()
-        {
-            await using var db = await _dbContextFactory.CreateDbContextAsync();
-            var roles = await db.AppStages.Where(s => !s.Disabled).Select(s => new AppStageModel
-            {
-                Id = s.Id,
-                Name = s.Name,
-                Order = s.Order
-            }).OrderBy(s => s.Order).ToListAsync();
-            return roles;
-        }
-
-        public async Task<List<AppStageModel>> GetUserPipeline(string userId)
-        {
-            await using var db = await _dbContextFactory.CreateDbContextAsync();
-            var stages = await db.AppStages.Where(s => !s.Disabled).Select(s => new AppStageModel
-            {
-                Id = s.Id,
-                Name = s.Name,
-                Order = s.Order,
-                Color = s.Color,
-                Items = db.JobApps.Where(a => a.UserId == userId && a.StageId == s.Id).Select(a => new UserJobApplicationModel
-                {
-                    Id = a.Id,
-                    UserId = a.UserId,
-                    CompanyName = a.Company,
-                    JobTitle = a.Title,
-                    JobPostingUrl = a.JobPostingUrl ?? string.Empty,
-                    AppliedDate = a.Applied,
-                    StageId = a.StageId,
-                    LocationType = a.LocationType.Type,
-                    LocationTypeId = a.LocationTypeId,                   
-                    Address = a.Address,
-                    Salary = a.Salary,
-                    UpcomingDate = a.Upcoming,
-                    UpcomingType = a.UpcomingType,
-                    Notes = a.Notes,
-                }).ToList()
-            }).OrderBy(s => s.Order).ToListAsync();
-            return stages;
-        }
 
         public async Task<List<LocationTypesModel>> GetAppLocations()
         {

@@ -2,10 +2,11 @@ import { Card } from "@/components/ui/card";
 import { KanbanCard } from "./KanbanCard";
 import { useDroppable } from '@dnd-kit/react';
 import CreateApp from "@/components/app/CreateApp";
-import type {KanbanColumnProps } from "@/types"
-export function KanbanColumn({ title, color, stage, items, onUpdate }: KanbanColumnProps) {
+import type { KanbanColumnProps } from "@/types"
+import { StageMenu } from "./StageMenu";
+export function KanbanColumn({ id, title, order, color, stage, items, onUpdate }: KanbanColumnProps) {
     const { ref } = useDroppable({
-        id:stage.toString()
+        id: stage.toString()
     });
     return (
         <section className="w-80 shrink-0" ref={ref}>
@@ -16,7 +17,11 @@ export function KanbanColumn({ title, color, stage, items, onUpdate }: KanbanCol
                         <span className="rounded-full bg-background/80 px-2 py-0.5 text-xs font-medium">
                             {items.length}
                         </span>
-                    </div>                   
+
+                    </div>
+                    <span className="flex items-center gap-2 text-xs font-medium">
+                        Step {order} <StageMenu stageId={id} onUpdate={onUpdate}></StageMenu>
+                    </span>
                 </div>
 
                 <div className="space-y-3">
@@ -25,7 +30,7 @@ export function KanbanColumn({ title, color, stage, items, onUpdate }: KanbanCol
                     ))}
                 </div>
                 <CreateApp stage={stage} onUpdate={onUpdate}></CreateApp>
-                
+
             </Card>
         </section>
     );

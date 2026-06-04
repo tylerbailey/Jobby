@@ -32,21 +32,7 @@ namespace Jobby.Server.Controllers
         {
             await _appService.UpdateAppAsync(application);
             return Ok();
-        }
-
-        [HttpGet("stages")]
-        public async Task<IActionResult> GetApplicationStages()
-        {
-            var stages = await _appService.GetAllAppStages() ?? [];
-            return Ok(stages);
-        }
-
-        [HttpGet("pipeline")]
-        public async Task<IActionResult> GetUserPipeline()
-        {
-            var stages = await _appService.GetUserPipeline(User?.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty);
-            return Ok(stages);
-        }
+        }       
 
         [HttpGet("locations")]
         public async Task<IActionResult> GetAllApplicationLocations()

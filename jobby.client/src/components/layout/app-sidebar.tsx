@@ -1,5 +1,6 @@
 import * as React from "react"
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import {NavUser } from "./NavUser"
 import {
     Sidebar,
     SidebarContent,
@@ -13,7 +14,6 @@ import {
     SidebarMenuItem,
     SidebarRail,
 } from "@/components/ui/sidebar"
-import { useUser } from "@/context/AuthContext"
 
 const data = {
     navMain: [
@@ -25,26 +25,13 @@ const data = {
                     title: "Dashboard",
                     url: "/",
                     isActive: true
-                },  
-                {
-                    title: "Resume",
-                    url: "/resume",
-                    isActive: false
-                },
+                },                  
             ],
         }
     ]
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-    const navigate = useNavigate();
-    const { setUser } = useUser();
-    function logout() {
-        setUser(null);
-        localStorage.removeItem("user");
-        localStorage.removeItem("token");
-         navigate("/login");
-    }
     return (
         <Sidebar {...props}>
             <SidebarHeader>
@@ -83,9 +70,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 ))}
             </SidebarContent>
             <SidebarFooter>
-                <button type="button" onClick={logout}>
-                    Log out
-                </button>
+               <NavUser />
             </SidebarFooter>        
             <SidebarRail />
 
