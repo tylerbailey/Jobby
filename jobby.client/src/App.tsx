@@ -4,6 +4,7 @@ import { ProtectedRoute } from "@/ProtectedRoute";
 import { Dashboard } from "@/components/dashboard/Dashboard";
 import { RegisterPage } from "@/components/auth/register";
 import Layout from "@/components/layout/layout";
+import ResumeEditor from "@/components/resume/ResumeEditor";
 
 export default function App() {
     return (
@@ -13,7 +14,8 @@ export default function App() {
                 <Route path="/register" element={<RegisterPage />} />
                 <Route element={<ProtectedRoute />}>
                     <Route element={<Layout />}>
-                        <Route path="/" element={<Dashboard />} />                      
+                        <Route path="/" element={<Dashboard />} />      
+                        <Route path="/resume" element={<ResumeEditor />} />
                     </Route>
                 </Route>
             </Routes>
