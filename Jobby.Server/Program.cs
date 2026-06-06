@@ -1,10 +1,10 @@
+using Jobby.Server;
 using Jobby.Server.Data;
 using Jobby.Server.Entities;
 using Jobby.Server.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -31,6 +31,10 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.Password.RequireUppercase = true;
     options.Password.RequireNonAlphanumeric = false;
 });
+
+builder.Services.Configure<ApiKeys>(
+    builder.Configuration.GetSection("ApiKeys")
+);
 
 var jwt = builder.Configuration.GetSection("Jwt");
 var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt["Key"]!));

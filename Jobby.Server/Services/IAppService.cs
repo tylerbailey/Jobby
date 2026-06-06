@@ -10,5 +10,6 @@ namespace Jobby.Server.Services
         Task DeleteAppAsync(int appId, string userId);
         Task UpdateAppAsync(UserJobApplicationModel application);
         Task<List<LocationTypesModel>> GetAppLocations();
+        Task<MemoryStream> EditDocx(IFormFile file, string jobPostingUrl);
     }
 }

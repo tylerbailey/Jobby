@@ -1,6 +1,4 @@
-import * as React from "react"
-import { Link } from "react-router-dom";
-import {NavUser } from "./NavUser"
+import { NavUser } from "@/components/layout/NavUser";
 import {
     Sidebar,
     SidebarContent,
@@ -13,7 +11,9 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
     SidebarRail,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
+import * as React from "react";
+import { Link } from "react-router-dom";
 
 const data = {
     navMain: [

@@ -32,7 +32,7 @@ namespace Jobby.Server.Controllers
         {
             await _appService.UpdateAppAsync(application);
             return Ok();
-        }       
+        }
 
         [HttpGet("locations")]
         public async Task<IActionResult> GetAllApplicationLocations()
@@ -48,5 +48,17 @@ namespace Jobby.Server.Controllers
             await _appService.DeleteAppAsync(applicationId, userId);
             return Ok();
         }
-    }
+
+        [HttpPost("gen/{applicationId}")]
+        public async Task<IActionResult> GenerateResumeAsync([FromForm] IFormFile file, int applicationId)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
+            var app = await _appService.GetAppAsync(userId, applicationId);
+            var memoryStream = await _appService.EditDocx(file, app.JobPostingUrl);
+            return File(
+                memoryStream.ToArray(),
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                "TailoredResume.docx");
+        }
+       }
 }

@@ -52,7 +52,7 @@ namespace Jobby.Server.Services
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
             var stage = await db.AppStages.Where(s => s.Id == stageId && s.UserId == userId).FirstOrDefaultAsync();
-            if (stage != null && stage.JobApps.Count == 0)
+            if (stage != null && (stage.JobApps == null || stage.JobApps.Count == 0))
             {
                 stage.Disabled = true;
                 await db.SaveChangesAsync();
@@ -68,7 +68,7 @@ namespace Jobby.Server.Services
                 Name = s.Name,
                 Order = s.Order,
                 Color = s.Color,
-                Items = db.JobApps.Where(a => a.UserId == userId && a.StageId == s.Id).Select(a => new UserJobApplicationModel
+                Items = db.JobApps.Where(a => a.UserId == userId && a.StageId == s.Id && !a.Disabled).Select(a => new UserJobApplicationModel
                 {
                     Id = a.Id,
                     UserId = a.UserId,

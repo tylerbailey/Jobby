@@ -1,17 +1,25 @@
-﻿using Jobby.Server.Data;
+﻿using DocumentFormat.OpenXml.ExtendedProperties;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Wordprocessing;
+using Google.GenAI;
+using Jobby.Server.Data;
 using Jobby.Server.Domain;
 using Jobby.Server.Entities;
+using Jobby.Server.Helpers;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using System.Text.Json;
 
 namespace Jobby.Server.Services
 {
-    public class AppService(IDbContextFactory<AppDbContext> dbContextFactory) : ServiceBase(dbContextFactory), IAppService
+    public class AppService(IDbContextFactory<AppDbContext> dbContextFactory, IOptions<ApiKeys> settings) : ServiceBase(dbContextFactory), IAppService
     {
+        private readonly ApiKeys _options = settings.Value;
         public async Task<List<UserJobApplicationModel>> GetAppsAsync(string userId)
         {
             var applications = new List<UserJobApplicationModel>();
             await using var db = await _dbContextFactory.CreateDbContextAsync();
-            applications = await db.JobApps.Where(a => a.UserId == userId).Select(a => new UserJobApplicationModel
+            applications = await db.JobApps.Where(a => a.UserId == userId && !a.Disabled).Select(a => new UserJobApplicationModel
             {
                 Id = a.Id,
                 CompanyName = a.Company,
@@ -25,7 +33,7 @@ namespace Jobby.Server.Services
         public async Task<UserJobApplicationModel> GetAppAsync(string userId, int applicationId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
-            var application = await db.JobApps.Where(a => a.UserId == userId && a.Id == applicationId).Select(a => new UserJobApplicationModel
+            var application = await db.JobApps.Where(a => a.UserId == userId && a.Id == applicationId && !a.Disabled).Select(a => new UserJobApplicationModel
             {
                 Id = a.Id,
                 CompanyName = a.Company,
@@ -49,8 +57,9 @@ namespace Jobby.Server.Services
                 JobPostingUrl = application.JobPostingUrl,
                 StageId = application.StageId.HasValue ? application.StageId.Value : startingStage.Id,
                 Salary = application.Salary,
-                LocationTypeId = application.LocationTypeId
-                
+                LocationTypeId = application.LocationTypeId,
+                Notes = application.Notes
+
             });
             await db.SaveChangesAsync();
         }
@@ -61,7 +70,7 @@ namespace Jobby.Server.Services
             var application = await db.JobApps.FirstOrDefaultAsync(a => a.Id == appId && a.UserId == userId);
             if (application != null)
             {
-                db.JobApps.Remove(application);
+                application.Disabled = true;
                 await db.SaveChangesAsync();
             }
         }
@@ -83,6 +92,7 @@ namespace Jobby.Server.Services
                 jobApp.Upcoming = application.UpcomingDate;
                 jobApp.UpcomingType = application.UpcomingType;
                 jobApp.Modified = DateTime.UtcNow;
+                jobApp.Notes = application.Notes;
                 db.JobApps.Update(jobApp);
             }
             await db.SaveChangesAsync();
@@ -99,6 +109,50 @@ namespace Jobby.Server.Services
             }).ToListAsync();
             return locations;
         }
+        public async Task<MemoryStream> EditDocx(IFormFile file, string jobPostingUrl)
+        {
+            using var memoryStream = new MemoryStream();
+            await file.CopyToAsync(memoryStream);
+            memoryStream.Position = 0;
+
+            using (var wordDoc = WordprocessingDocument.Open(memoryStream, true))
+            {
+                var data = wordDoc.MainDocumentPart!.Document!.Body;
+                var paragraphs = data!.Descendants<Paragraph>().ToList();
+                var blocks = DocxHelper.GetResumeBlocks(wordDoc);
+                var geminiClient = new Client(apiKey: _options.Gemini);
+
+                using var htmlClient = new HttpClient();
+
+                var scrapedHtml = await htmlClient.GetStringAsync(jobPostingUrl);
+                var jobPostingPrompt = ResumePrompts.JobPosting(scrapedHtml);
+                var geminiResponse = await geminiClient.Models.GenerateContentAsync(model: "gemini-3.5-flash", contents: jobPostingPrompt);
+                var jobPostingData = geminiResponse.Text ?? string.Empty;
+
+                var resumeData = JsonSerializer.Serialize(blocks, new JsonSerializerOptions { WriteIndented = true });
+                var resumeEditingPrompt = ResumePrompts.ResumeEditing(jobPostingData, resumeData);
+                geminiResponse = await geminiClient.Models.GenerateContentAsync(model: "gemini-3.5-flash", contents: resumeEditingPrompt);
+                var resumeEdits = JsonSerializer.Deserialize<List<ResumeEdit>>(JsonHelpers.RemoveFence(geminiResponse.Text ?? string.Empty), new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? [];
+
+                var paragraphMap = new Dictionary<int, Paragraph>();
+
+                for (int i = 0; i < paragraphs?.Count; i++)
+                {
+                    paragraphMap[i] = paragraphs[i];
+                }
+                foreach (var edit in resumeEdits)
+                {
+                    if (!paragraphMap.TryGetValue(edit.Id, out var paragraph))
+                        continue;
+                    DocxHelper.ReplaceParagraphText(paragraph, edit.NewText);
+                }
+                wordDoc.MainDocumentPart!.Document.Save();
+            }
+            memoryStream.Position = 0;
+
+            return memoryStream;
+        }
+
     }
 }
 

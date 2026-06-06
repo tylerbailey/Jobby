@@ -1,14 +1,18 @@
+import { AppSidebar } from "@/components/layout/AppSidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { Toaster } from "@/components/ui/sonner";
 import { Outlet } from "react-router-dom";
-import { SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/layout/app-sidebar";
 
 export default function Layout() {
     return (
         <SidebarProvider>
             <AppSidebar />
+            <SidebarInset className="overflow-hidden">
             <main>
                 <Outlet />
-            </main>
+                <Toaster position={"top-right"} richColors={true} />
+                </main>
+            </SidebarInset>
         </SidebarProvider>
     );
 }

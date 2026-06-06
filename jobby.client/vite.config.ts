@@ -1,11 +1,11 @@
-import { fileURLToPath, URL } from 'node:url';
-import tailwindcss from '@tailwindcss/vite'
-import { defineConfig } from 'vite';
+import tailwindcss from '@tailwindcss/vite';
 import plugin from '@vitejs/plugin-react';
-import fs from 'fs';
-import path from 'path';
 import child_process from 'child_process';
+import fs from 'fs';
+import { fileURLToPath, URL } from 'node:url';
+import path from 'path';
 import { env } from 'process';
+import { defineConfig } from 'vite';
 
 const baseFolder =
     env.APPDATA !== undefined && env.APPDATA !== ''

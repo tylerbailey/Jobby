@@ -1,18 +1,17 @@
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { Label } from "@/components/ui/label";
-import { ChevronDownIcon, Pencil } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
-import { Select } from "@/components/ui/select";
-import { SelectTrigger, SelectValue, SelectContent, SelectGroup, SelectLabel, SelectItem } from "@/components/ui/select";
-import { useEffect, useState } from "react";
-import type { AppEditProps, LocationType } from "@/types";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
 import { GetAllAppLocations, UpdateApp } from "@/services/appService";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { Calendar } from "@/components/ui/calendar"
+import type { AppEditProps, LocationType } from "@/types";
 import { format } from "date-fns/format";
+import { ChevronDownIcon, Pencil } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export function EditAppSheet({ item, onUpdate } : AppEditProps) {
     const [jobCompany, setJobCompany] = useState(item.companyName)
@@ -23,7 +22,7 @@ export function EditAppSheet({ item, onUpdate } : AppEditProps) {
     const [jobAddress, setJobAddress] = useState(item.address)
     const [jobSalary, setJobSalary] = useState(item.salary.toString())
     const [jobNotes, setJobNotes] = useState(item.notes)
-    const [applyDate, setApplyDate] = useState<Date>()
+    const [applyDate, setApplyDate] = useState<Date>(item.appliedDate)
     const [open, setOpen] = useState(false);
 
     useEffect(() => {

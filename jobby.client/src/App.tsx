@@ -1,9 +1,9 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { LoginPage } from "@/components/auth/login";
-import { ProtectedRoute } from "@/ProtectedRoute";
+import { LoginPage } from "@/components/auth/Login";
+import { RegisterPage } from "@/components/auth/Register";
 import { Dashboard } from "@/components/dashboard/Dashboard";
-import { RegisterPage } from "@/components/auth/register";
 import Layout from "@/components/layout/layout";
+import { ProtectedRoute } from "@/ProtectedRoute";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 export default function App() {
     return (

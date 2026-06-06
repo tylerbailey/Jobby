@@ -1,4 +1,3 @@
-import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
     Card,
@@ -14,11 +13,12 @@ import {
     FieldLabel,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import { useUser } from "@/context/authContext"
+import { cn } from "@/lib/utils"
+import { login } from "@/services/authService"
 import axios from "axios"
 import { useState } from "react"
-import { login } from "@/services/authService"
 import { useNavigate } from "react-router-dom"
-import { useUser } from "@/context/AuthContext"
 
 export function LoginPage({
     className,

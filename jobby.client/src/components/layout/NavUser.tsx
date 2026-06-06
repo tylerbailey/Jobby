@@ -1,8 +1,8 @@
-import { useNavigate } from "react-router-dom";
-import { useUser } from "../../context/AuthContext";
+import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { useUser } from "@/context/authContext";
 import { MoreVertical } from "lucide-react";
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuGroup } from "../ui/dropdown-menu";
-import { Button } from "../ui/button";
+import { useNavigate } from "react-router-dom";
 
 export function NavUser() {
     const navigate = useNavigate();

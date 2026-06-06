@@ -1,16 +1,25 @@
 import { Card } from "@/components/ui/card";
-import { KanbanCard } from "./KanbanCard";
+import { KanbanCard } from "@/components/dashboard/KanbanCard";
 import { useDroppable } from '@dnd-kit/react';
 import CreateApp from "@/components/app/CreateApp";
 import type { KanbanColumnProps } from "@/types"
-import { StageMenu } from "./StageMenu";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+import { MoreVertical, Trash2 } from "lucide-react";
+import { DeleteStage } from "@/services/stageService";
+import { toast } from "sonner";
 export function KanbanColumn({ id, title, order, color, stage, items, onUpdate }: KanbanColumnProps) {
     const { ref } = useDroppable({
         id: stage.toString()
     });
+    function handleDelete() {
+        DeleteStage(id);
+        onUpdate();
+        toast.info("The pipeline stage has been deleted.")
+    }
     return (
         <section className="w-80 shrink-0" ref={ref}>
-            <Card className="min-h-[600px] border bg-muted/30 p-3">
+            <Card className="min-h-[600px] h-full border bg-muted/30 p-3">
                 <div className={`mb-3 flex items-center justify-between rounded-lg border px-3 py-2 ${getStageColors(color)}`}>
                     <div className="flex items-center gap-2">
                         <h2 className="font-semibold">{title}</h2>
@@ -20,7 +29,24 @@ export function KanbanColumn({ id, title, order, color, stage, items, onUpdate }
 
                     </div>
                     <span className="flex items-center gap-2 text-xs font-medium">
-                        Step {order} <StageMenu stageId={id} onUpdate={onUpdate}></StageMenu>
+                        Step {order}
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button variant="ghost" size="icon" className="h-7 w-7">
+                                    <MoreVertical className="h-4 w-4" />
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-48 p-1">
+                                <Button
+                                    onClick={handleDelete}
+                                    variant="ghost"
+                                    className="flex h-9 w-full items-center justify-between px-2">
+                                    <span>Delete</span>
+                                    <Trash2 className="h-4 w-4" />
+                                </Button>
+                            </PopoverContent>
+
+                        </Popover>
                     </span>
                 </div>
 

@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { AuthContext } from "@/context/AuthContext";
-import { jwtDecode } from "jwt-decode";
+import { AuthContext } from "@/context/authContext";
 import type { User } from "@/types";
+import { jwtDecode } from "jwt-decode";
+import { useState } from "react";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(() => {
