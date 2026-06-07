@@ -2,24 +2,26 @@ import { Card } from "@/components/ui/card";
 import { KanbanCard } from "@/components/dashboard/KanbanCard";
 import { useDroppable } from '@dnd-kit/react';
 import CreateApp from "@/components/app/CreateApp";
-import type { KanbanColumnProps } from "@/types"
+import type { Application, KanbanColumnProps } from "@/types"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { MoreVertical, Trash2 } from "lucide-react";
 import { DeleteStage } from "@/services/stageService";
 import { toast } from "sonner";
-export function KanbanColumn({ id, title, order, color, stage, items, onUpdate }: KanbanColumnProps) {
+export function KanbanColumn({ id, title, order, color, stage, items, onUpdate, searchValue }: KanbanColumnProps) {
     const { ref } = useDroppable({
         id: stage.toString()
     });
+    const cardStacks = chunkItems(items, 5);
+
     function handleDelete() {
         DeleteStage(id);
         onUpdate();
         toast.info("The pipeline stage has been deleted.")
     }
     return (
-        <section className="w-80 shrink-0" ref={ref}>
-            <Card className="min-h-[600px] h-full border bg-muted/30 p-3">
+        <section className="w-full shrink-0 sm:w-fit sm:min-w-80" ref={ref}>
+            <Card className="min-h-[600px] h-full w-full border bg-muted/30 p-3 sm:w-fit sm:min-w-80">
                 <div className={`mb-3 flex items-center justify-between rounded-lg border px-3 py-2 ${getStageColors(color)}`}>
                     <div className="flex items-center gap-2">
                         <h2 className="font-semibold">{title}</h2>
@@ -50,9 +52,13 @@ export function KanbanColumn({ id, title, order, color, stage, items, onUpdate }
                     </span>
                 </div>
 
-                <div className="space-y-3">
-                    {items.map((item) => (
-                        <KanbanCard key={item.id} item={item} onUpdate={onUpdate} />
+                <div className="flex gap-3 pb-1">
+                    {cardStacks.map((stack, index) => (
+                        <div key={`${stage}-stack-${index}`} className="flex w-full shrink-0 flex-col gap-3 sm:w-72">
+                            {stack.map((item) => (
+                                <KanbanCard key={item.id} item={item} onUpdate={onUpdate} isMatch={searchObject(item, searchValue)} />
+                            ))}
+                        </div>
                     ))}
                 </div>
                 <CreateApp stage={stage} onUpdate={onUpdate}></CreateApp>
@@ -60,6 +66,12 @@ export function KanbanColumn({ id, title, order, color, stage, items, onUpdate }
             </Card>
         </section>
     );
+
+    function searchObject<T extends object>(item: T, term: string): boolean {
+        return Object.values(item).some(val =>
+            typeof val === 'string' && val.toLowerCase().includes(term.toLowerCase())
+        );
+    }
 
     function getStageColors(color: string) {
         switch (color) {
@@ -73,4 +85,14 @@ export function KanbanColumn({ id, title, order, color, stage, items, onUpdate }
             default: return "bg-gray-50 border-gray-200 text-gray-700";
         }
     }
+}
+
+function chunkItems<T>(items: T[], chunkSize: number) {
+    const chunks: T[][] = [];
+
+    for (let index = 0; index < items.length; index += chunkSize) {
+        chunks.push(items.slice(index, index + chunkSize));
+    }
+
+    return chunks;
 }

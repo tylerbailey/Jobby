@@ -19,12 +19,8 @@ export function KanbanBoard() {
     const [name, setName] = useState("");
     const [order, setOrder] = useState("");
     const [color, setColor] = useState("");
+    const [searchValue, setSearchValue] = useState("")
 
-    async function handleCreate() {
-        await CreateStage({ name, order: parseInt(order), color });
-        handleRefresh();
-        toast.info("The pipeline stage was successfully created.");
-    }
     useEffect(() => {
         stagesRef.current = stages;
     }, [stages]);
@@ -36,6 +32,19 @@ export function KanbanBoard() {
         }
         GetMyStages();
     }, [refresh]);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            console.log(searchValue)
+        }, 500);
+        return () => clearTimeout(timer);
+    }, [searchValue]);
+
+    async function handleCreate() {
+        await CreateStage({ name, order: parseInt(order), color });
+        handleRefresh();
+        toast.info("The stage was successfully created.");
+    }
 
     function findCard(stages: Stage[], cardId: string): Application | undefined {
         for (const stage of stages) {
@@ -132,8 +141,11 @@ export function KanbanBoard() {
                     </PopoverContent>
                 </Popover>
             </div>
+            <div className="w-90">
+                <Input type="search" placeholder="Search..." value={searchValue} onChange={(e) => setSearchValue(e.target.value)} />
+            </div>
             <DragDropProvider onDragEnd={handleDragEnd}>
-                <div className="flex flex-row gap-4 pb-4 items-stretch overflow-x-auto">
+                <div className="flex flex-row flex-wrap content-start items-stretch gap-4 pb-4">
                     {stages.map((stage) => (
                         <KanbanColumn
                             key={stage.id}
@@ -143,6 +155,7 @@ export function KanbanBoard() {
                             order={stage.order}
                             items={stage.items}
                             stage={stage.id}
+                            searchValue={searchValue}
                             onUpdate={handleRefresh}
                         />
                     ))}

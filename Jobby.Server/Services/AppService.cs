@@ -98,7 +98,6 @@ namespace Jobby.Server.Services
             await db.SaveChangesAsync();
         }
 
-
         public async Task<List<LocationTypesModel>> GetAppLocations()
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
@@ -109,6 +108,7 @@ namespace Jobby.Server.Services
             }).ToListAsync();
             return locations;
         }
+
         public async Task<MemoryStream> EditDocx(IFormFile file, string jobPostingUrl)
         {
             using var memoryStream = new MemoryStream();
@@ -152,7 +152,6 @@ namespace Jobby.Server.Services
 
             return memoryStream;
         }
-
     }
 }
 

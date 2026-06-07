@@ -7,10 +7,12 @@ export type KanbanColumnProps = {
     order: number;
     stage: number;
     items: Application[];
+    searchValue: string;
     onUpdate: () => void;
 };
 
 export type KanbanCardProps = {
     item: Application;
+    isMatch: boolean;
     onUpdate: () => void;
 }

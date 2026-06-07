@@ -35,6 +35,7 @@ namespace Jobby.Server.Controllers
             await _stageService.DeleteStage(stageId, userId);
             return Ok();
         }
+
         [HttpGet("pipeline")]
         public async Task<IActionResult> GetUserPipeline()
         {
@@ -42,6 +43,7 @@ namespace Jobby.Server.Controllers
             var stages = await _stageService.GetUserPipeline(userId);
             return Ok(stages);
         }
+
         [HttpGet("stages/{userId}")]
         public async Task<IActionResult> GetApplicationStages()
         {

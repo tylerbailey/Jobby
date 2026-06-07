@@ -14,7 +14,6 @@ import { format } from "date-fns/format";
 import { ChevronDownIcon, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 
-
 export default function CreateApp({ stage, onUpdate }: AppCreateProps) {
     const [jobCompany, setJobCompany] = useState("")
     const [jobTitle, setJobTitle] = useState("")
