@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { GetAllAppLocations, UpdateApp } from "@/services/appService";
 import type { AppEditProps, LocationType } from "@/types";
 import { format } from "date-fns/format";
-import { ChevronDownIcon, Pencil } from "lucide-react";
+import { Calendar1, ChevronDownIcon, Pencil } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export function EditAppSheet({ item, onUpdate } : AppEditProps) {
@@ -23,6 +23,9 @@ export function EditAppSheet({ item, onUpdate } : AppEditProps) {
     const [jobSalary, setJobSalary] = useState(item.salary.toString())
     const [jobNotes, setJobNotes] = useState(item.notes)
     const [applyDate, setApplyDate] = useState<Date>(item.appliedDate)
+    const [jobContact, setJobContact] = useState(item.contactName)
+    const [lastContact, setLastContact] = useState<Date>(item.lastContactDate)
+    const [nextContact, setNextContact] = useState<Date>(item.nextContactDate)
     const [open, setOpen] = useState(false);
 
     useEffect(() => {
@@ -50,6 +53,9 @@ export function EditAppSheet({ item, onUpdate } : AppEditProps) {
             salary: Number.parseFloat(jobSalary) || 0,
             stageId: item.stageId,
             appliedDate: applyDate,
+            contactName: jobContact,
+            lastContactDate: lastContact,
+            nextContactDate: nextContact,
             notes: jobNotes
         })
        onUpdate();
@@ -73,7 +79,7 @@ export function EditAppSheet({ item, onUpdate } : AppEditProps) {
                       Make changes to the application here. Click save when you're done.
                   </SheetDescription>
               </SheetHeader>
-              <div className="px-4">
+              <div className="px-4 overflow-y-auto">
               <Field className="py-3">
                   <FieldLabel htmlFor="input-field-companyname">Company Name</FieldLabel>
                   <FieldDescription>
@@ -180,6 +186,64 @@ export function EditAppSheet({ item, onUpdate } : AppEditProps) {
                               selected={applyDate}
                               onSelect={setApplyDate}
                               defaultMonth={applyDate}
+                          />
+                      </PopoverContent>
+                  </Popover>
+                  <Field className="py-3">
+                      <FieldLabel htmlFor="input-field-jobsalary">Contact</FieldLabel>
+                      <FieldDescription>
+                          Enter the contact for the job.
+                      </FieldDescription>
+                      <Input
+                          id="input-field-jobcontact"
+                          type="text"
+                          placeholder="Enter the contact name"
+                          value={jobContact}
+                          onChange={(e) => setJobContact(e.target.value)}
+                      />
+                  </Field>
+                  <Label className="py-3">
+                      Last Contact Date
+                  </Label>
+                  <Popover>
+                      <PopoverTrigger asChild>
+                          <Button
+                              variant="outline"
+                              data-empty={!lastContact}
+                              className="w-[212px] justify-between text-left font-normal data-[empty=true]:text-muted-foreground"
+                          >
+                              {lastContact ? format(lastContact, "PPP") : <span>Last Contact Date</span>}
+                              <Calendar1 />
+                          </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                              mode="single"
+                              selected={lastContact}
+                              onSelect={setLastContact}
+                              defaultMonth={lastContact}
+                          />
+                      </PopoverContent>
+                  </Popover>
+                  <Label className="py-3">
+                      Next Contact Date
+                  </Label>
+                  <Popover>
+                      <PopoverTrigger asChild>
+                          <Button
+                              variant="outline"
+                              data-empty={!nextContact}
+                              className="w-[212px] justify-between text-left font-normal data-[empty=true]:text-muted-foreground">
+                              {nextContact ? format(nextContact, "PPP") : <span>Next Contact Date</span>}
+                              <Calendar1 />
+                          </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                              mode="single"
+                              selected={nextContact}
+                              onSelect={setNextContact}
+                              defaultMonth={nextContact}
                           />
                       </PopoverContent>
                   </Popover>

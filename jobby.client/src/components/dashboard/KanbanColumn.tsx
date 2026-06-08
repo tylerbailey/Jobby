@@ -2,7 +2,7 @@ import { Card } from "@/components/ui/card";
 import { KanbanCard } from "@/components/dashboard/KanbanCard";
 import { useDroppable } from '@dnd-kit/react';
 import CreateApp from "@/components/app/CreateApp";
-import type { Application, KanbanColumnProps } from "@/types"
+import type { KanbanColumnProps } from "@/types"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { MoreVertical, Trash2 } from "lucide-react";

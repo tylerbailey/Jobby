@@ -51,15 +51,21 @@ namespace Jobby.Server.Services
             await db.JobApps.AddAsync(new JobApp()
             {
                 UserId = application.UserId,
-                Company = application.CompanyName,
                 Title = application.JobTitle,
-                Address = application.Address,
+                Company = application.CompanyName,
                 JobPostingUrl = application.JobPostingUrl,
                 StageId = application.StageId.HasValue ? application.StageId.Value : startingStage.Id,
                 Salary = application.Salary,
                 LocationTypeId = application.LocationTypeId,
-                Notes = application.Notes
-
+                Address = application.Address,
+                Applied = application.AppliedDate,
+                Upcoming = application.UpcomingDate,
+                UpcomingType = application.UpcomingType,
+                ContactName = application.ContactName,
+                LastContactDate = application.LastContactDate,
+                NextContactDate = application.NextContactDate,
+                Notes = application.Notes,
+                Created = DateTime.UtcNow
             });
             await db.SaveChangesAsync();
         }
@@ -91,8 +97,11 @@ namespace Jobby.Server.Services
                 jobApp.Applied = application.AppliedDate;
                 jobApp.Upcoming = application.UpcomingDate;
                 jobApp.UpcomingType = application.UpcomingType;
-                jobApp.Modified = DateTime.UtcNow;
+                jobApp.ContactName = application.ContactName;
+                jobApp.LastContactDate = application.LastContactDate;
+                jobApp.NextContactDate = application.NextContactDate;
                 jobApp.Notes = application.Notes;
+                jobApp.Modified = DateTime.UtcNow;
                 db.JobApps.Update(jobApp);
             }
             await db.SaveChangesAsync();

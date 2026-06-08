@@ -12,6 +12,9 @@ export type Application = {
     appliedDate?: Date;
     upcomingDate?: Date;
     upcomingType?: string;
+    contactName?: string;
+    lastContactDate?: Date;
+    nextContactDate?: Date;
     notes?: string;
 }
 

@@ -83,6 +83,9 @@ namespace Jobby.Server.Services
                     Salary = a.Salary,
                     UpcomingDate = a.Upcoming,
                     UpcomingType = a.UpcomingType,
+                    ContactName = a.ContactName,
+                    LastContactDate = a.LastContactDate,
+                    NextContactDate = a.NextContactDate,
                     Notes = a.Notes,
                 }).ToList()
             }).OrderBy(s => s.Order).ToListAsync();

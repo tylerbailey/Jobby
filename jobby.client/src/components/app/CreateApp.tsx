@@ -11,7 +11,7 @@ import { useUser } from "@/context/authContext";
 import { CreateNewApp, GetAllAppLocations } from "@/services/appService";
 import type { AppCreateProps, LocationType } from "@/types";
 import { format } from "date-fns/format";
-import { ChevronDownIcon, Plus } from "lucide-react";
+import { Calendar1, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function CreateApp({ stage, onUpdate }: AppCreateProps) {
@@ -24,6 +24,10 @@ export default function CreateApp({ stage, onUpdate }: AppCreateProps) {
     const [jobSalary, setJobSalary] = useState("")
     const [jobNotes, setJobNotes] = useState("")
     const [applyDate, setApplyDate] = useState<Date>()
+    const [jobContact, setJobContact] = useState("")
+    const [lastContact, setLastContact] = useState<Date>()
+    const [nextContact, setNextContact] = useState<Date>()
+
     const [open, setOpen] = useState(false);
     const { user } = useUser();
 
@@ -51,6 +55,9 @@ export default function CreateApp({ stage, onUpdate }: AppCreateProps) {
             salary: Number.parseFloat(jobSalary) || 0,
             stageId: stage,
             appliedDate: applyDate,
+            contactName: jobContact,
+            lastContactDate: lastContact,
+            nextContactDate: nextContact,
             notes: jobNotes
         })
         onUpdate();
@@ -67,20 +74,25 @@ export default function CreateApp({ stage, onUpdate }: AppCreateProps) {
 
     return (
         <Sheet open={open} onOpenChange={setOpen}>
+            
+        
           <SheetTrigger asChild>
                 <Button variant="ghost" className="mt-3 w-full justify-start text-muted-foreground">
                     <Plus className="mr-2 h-4 w-4" />
                     Add Application
                 </Button>
-          </SheetTrigger>
-          <SheetContent>
+            </SheetTrigger>
+            
+            <SheetContent>
+                
               <SheetHeader>
                   <SheetTitle>Create Application</SheetTitle>
                   <SheetDescription>
                       Create a new application here. Click save when you're done.
                   </SheetDescription>
-              </SheetHeader>
-              <div className="px-4">
+                </SheetHeader>
+                
+              <div className="px-4 overflow-y-auto">
               <Field className="py-3">
                   <FieldLabel htmlFor="input-field-companyname">Company Name</FieldLabel>
                   <FieldDescription>
@@ -178,7 +190,7 @@ export default function CreateApp({ stage, onUpdate }: AppCreateProps) {
                               className="w-[212px] justify-between text-left font-normal data-[empty=true]:text-muted-foreground"
                           >
                               {applyDate ? format(applyDate, "PPP") : <span>Apply Date</span>}
-                              <ChevronDownIcon />
+                                <Calendar1 />
                           </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0" align="start">
@@ -189,7 +201,65 @@ export default function CreateApp({ stage, onUpdate }: AppCreateProps) {
                               defaultMonth={applyDate}
                           />
                       </PopoverContent>
-                  </Popover>
+                    </Popover>
+                    <Field className="py-3">
+                        <FieldLabel htmlFor="input-field-jobsalary">Contact</FieldLabel>
+                        <FieldDescription>
+                            Enter the contact for the job.
+                        </FieldDescription>
+                        <Input
+                            id="input-field-jobcontact"
+                            type="text"
+                            placeholder="Enter the contact name"
+                            value={jobContact}
+                            onChange={(e) => setJobContact(e.target.value)}
+                        />
+                    </Field>
+                    <Label className="py-3">
+                        Last Contact Date
+                    </Label>
+                    <Popover>
+                        <PopoverTrigger asChild>
+                            <Button
+                                variant="outline"
+                                data-empty={!applyDate}
+                                className="w-[212px] justify-between text-left font-normal data-[empty=true]:text-muted-foreground"
+                            >
+                                {lastContact ? format(lastContact, "PPP") : <span>Last Contact Date</span>}
+                                <Calendar1 />
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                                mode="single"
+                                selected={lastContact}
+                                onSelect={setLastContact}
+                                defaultMonth={lastContact}
+                            />
+                        </PopoverContent>
+                    </Popover>
+                    <Label className="py-3">
+                        Next Contact Date
+                    </Label>
+                    <Popover>
+                        <PopoverTrigger asChild>
+                            <Button
+                                variant="outline"
+                                data-empty={!applyDate}
+                                className="w-[212px] justify-between text-left font-normal data-[empty=true]:text-muted-foreground">
+                                {nextContact ? format(nextContact, "PPP") : <span>Next Contact Date</span>}
+                                <Calendar1 />
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                                mode="single"
+                                selected={nextContact}
+                                onSelect={setNextContact}
+                                defaultMonth={nextContact}
+                            />
+                        </PopoverContent>
+                    </Popover>
                   <Field className="py-3">
                       <FieldLabel htmlFor="input-field-jobnotes">Notes</FieldLabel>
                       <FieldDescription>
@@ -206,8 +276,10 @@ export default function CreateApp({ stage, onUpdate }: AppCreateProps) {
                   <SheetClose asChild>
                       <Button variant="outline">Close</Button>
                   </SheetClose>
-              </SheetFooter>
-          </SheetContent>
+                    </SheetFooter>
+             
+                </SheetContent>
+         
       </Sheet>
     );
 }

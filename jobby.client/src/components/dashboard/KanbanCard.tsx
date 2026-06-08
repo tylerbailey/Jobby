@@ -11,7 +11,7 @@ import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetT
 import { DeleteApp, GenerateApp } from "@/services/appService";
 import type { KanbanCardProps } from "@/types";
 import { useDraggable } from "@dnd-kit/react";
-import { CalendarDays, ExternalLink, File, MapPin, MoreVertical, Trash2 } from "lucide-react";
+import { CalendarDays, CircleAlert, ExternalLink, File, MapPin, MoreVertical, Trash2 } from "lucide-react";
 import { type ChangeEvent, useState } from "react";
 import { toast } from "sonner";
 
@@ -22,7 +22,10 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
     const [resumeFile, setResumeFile] = useState<File | null>(null);
     const [open, setOpen] = useState<boolean>(false);
     const [infoOpen, setInfoOpen] = useState<boolean>(false);
-
+    const firstCutOff = new Date();
+    const secondCutOff = new Date();
+    firstCutOff.setDate(firstCutOff.getDate() + 7);
+    secondCutOff.setDate(secondCutOff.getDate() + 2);
     async function handleFileChange(e: ChangeEvent<HTMLInputElement>) {
         const file = e.target.files?.[0];
         setResumeFile(file ?? null);
@@ -39,7 +42,7 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
             const promise = GenerateApp(resumeFile, item.id)
 
             toast.promise(promise, {
-                loading: "Generating resume. Your file will automatically be downloaded when complete.",
+                loading: "Generating resume. Your file will automatically download when complete.",
                 success: () => "Your resume has been created",
                 error: "Error",
             })
@@ -77,6 +80,22 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
                 onClick={() => setInfoOpen(true)}
             >
                 <CardHeader className="px-2">
+                    <div className="flex justify-end">
+                        {item.nextContactDate != null && (
+                            new Date(item.nextContactDate) <= secondCutOff
+                                ? <Badge className="bg-red-50 text-red-700 h-8 w-8"><CircleAlert /></Badge>
+                                : new Date(item.nextContactDate) <= firstCutOff
+                                    ? <Badge className="bg-yellow-50 text-yellow-700 h-8 w-8"><CircleAlert /></Badge>
+                                    : null
+                        )}
+                        {item.upcomingDate != null && (
+                            new Date(item.upcomingDate) <= secondCutOff
+                                ? <Badge className="bg-red-50 text-red-700 h-8 w-8"><CircleAlert /></Badge>
+                                : new Date(item.upcomingDate) <= firstCutOff
+                                    ? <Badge className="bg-yellow-50 text-yellow-700 h-8 w-8"><CircleAlert /></Badge>
+                                    : null
+                        )}
+                    </div>
                     <div className="flex min-w-0 items-start justify-between gap-2">
                         <div className="flex min-w-0 flex-1 items-start gap-1">
                             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-sm font-bold text-primary">
@@ -126,7 +145,8 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
                                 </PopoverContent>
                             </Popover>
                         </div>
-                    </div>
+                    </div> 
+                    
                 </CardHeader>
                 <CardContent className="p-4">
                     <div className="mb-3 flex flex-wrap gap-2">
@@ -149,16 +169,16 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
                         )}
 
                         {item.appliedDate && (
-                            <div className="flex items-center gap-2 border-t pt-2">
+                            <div className="flex items-center gap-2te border-t pt-2">
                                 <CalendarDays className="h-4 w-4" />
-                                <span>{item.appliedDate.toString()}</span>
+                                <span>{formatDate(item.appliedDate)}</span>
                             </div>
                         )}
 
                         {item.upcomingDate && (
                             <div className="flex items-center gap-2 border-t pt-2">
                                 <CalendarDays className="h-4 w-4" />
-                                <span>{item.upcomingType}: {item.upcomingDate.toString()}</span>
+                                <span>{item.upcomingType}: {new Date(item.upcomingDate).toLocaleDateString()}</span>
                             </div>
                         )}
                     </div>
@@ -216,10 +236,10 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
                         <InfoField label="Address" value={item.address} />
                         <InfoField label="Target Salary" value={item.salary ? formatCurrency(item.salary) : undefined} />
                         <InfoField label="Apply Date" value={formatDate(item.appliedDate)} />
-                        <InfoField
-                            label="Upcoming"
-                            value={item.upcomingDate ? `${item.upcomingType ?? "Event"}: ${formatDate(item.upcomingDate)}` : undefined}
-                        />
+                        <InfoField label="Upcoming" value={item.upcomingDate ? `${item.upcomingType ?? "Event"}: ${formatDate(item.upcomingDate)}` : undefined} />
+                        <InfoField label="Contact" value={item.contactName} />
+                        <InfoField label="Last Contact" value={item.lastContactDate ? formatDate(item.lastContactDate) : "None"} />
+                        <InfoField label="Next Contact" value={item.nextContactDate ? formatDate(item.nextContactDate) : "None"} />
 
                         {item.notes && (
                             <Field className="py-3">

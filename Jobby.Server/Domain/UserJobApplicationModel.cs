@@ -40,10 +40,22 @@ namespace Jobby.Server.Domain
         [JsonPropertyName("upcomingType")]
         public string? UpcomingType { get; set; }
 
+        [JsonPropertyName("contactName")]
+        public string? ContactName { get; set; }
+
+        [JsonPropertyName("lastContactDate")]
+        public DateTime? LastContactDate { get; set; }
+
+        [JsonPropertyName("nextContactDate")]
+        public DateTime? NextContactDate { get; set; }
+
         [JsonPropertyName("stageId")]
         public int? StageId { get; set; }
 
         [JsonPropertyName("notes")]
         public string? Notes { get; set; }
+
+        [JsonPropertyName("showAlertBadge")]
+        public bool showAlertBadge { get; set; }
     }
 }

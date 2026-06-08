@@ -37,6 +37,13 @@ namespace Jobby.Server.Entities
         [Column(TypeName = "varchar(1024)")]
         public string? Notes { get; set; }
 
+        [Column(TypeName = "varchar(256)")]
+        public string? ContactName { get; set; }
+
+        public DateTime? LastContactDate { get; set; }
+
+        public DateTime? NextContactDate { get; set; }
+
         public virtual AppStage AppStage { get; set; }
 
         public virtual LocationType LocationType { get; set; }
