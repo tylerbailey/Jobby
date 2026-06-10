@@ -38,6 +38,12 @@ export type ApplicationFormData = {
     nextContactDate?: Date;
     notes?: string;   
 }
+export type AppInfoProps = {
+    item: Application;
+    infoOpen: boolean;
+    setInfoOpen: Dispatch<SetStateAction<boolean>>
+
+}
 
 export type AppCreateProps = {
     stage: number;

@@ -27,7 +27,7 @@ export default function CreateApp({ stage, onUpdate }: AppCreateProps) {
 
     async function saveApp() {
         try {
-            await CreateNewApp({
+            const payload = {
                 companyName: form.companyName,
                 title: form.title,
                 postingUrl: form.postingUrl,
@@ -41,7 +41,8 @@ export default function CreateApp({ stage, onUpdate }: AppCreateProps) {
                 lastContactDate: form.lastContactDate,
                 nextContactDate: form.nextContactDate,
                 notes: form.notes
-            });
+            };
+            await CreateNewApp(payload);
             onUpdate();
             setForm({
                 ...form,
@@ -50,7 +51,7 @@ export default function CreateApp({ stage, onUpdate }: AppCreateProps) {
                 postingUrl: "",
                 locationTypeId: 0,
                 address: "",
-                salary: 0,
+                salary: null,
                 stageId: 0,
                 appliedDate: undefined,
                 upcomingDate: undefined,
@@ -70,4 +71,3 @@ export default function CreateApp({ stage, onUpdate }: AppCreateProps) {
         <AppForm form={form} action={saveApp} setForm={setForm} icon={<Plus className="h-4 w-4" />} buttonText={"Create"} />
     );
 }
-

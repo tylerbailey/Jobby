@@ -23,7 +23,8 @@ namespace Jobby.Server.Controllers
         [HttpPost("new")]
         public async Task<IActionResult> CreateApplication(UserJobApplicationModel application)
         {
-           var createdApp = await _appService.CreateNewAppAsync(application);
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
+            var createdApp = await _appService.CreateNewAppAsync(application, userId);
             return Ok(createdApp);
         }
 

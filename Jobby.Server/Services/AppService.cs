@@ -44,13 +44,13 @@ namespace Jobby.Server.Services
             return application;
         }
 
-        public async Task<UserJobApplicationModel> CreateNewAppAsync(UserJobApplicationModel application)
+        public async Task<UserJobApplicationModel> CreateNewAppAsync(UserJobApplicationModel application, string userId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
             var startingStage = await db.AppStages.Where(s => !s.Disabled).OrderBy(s => s.Order).FirstOrDefaultAsync() ?? new AppStage();
             var newJobApp = new JobApp()
             {
-                UserId = application.UserId,
+                UserId = userId,
                 Title = application.JobTitle,
                 Company = application.CompanyName,
                 JobPostingUrl = application.JobPostingUrl,
@@ -71,7 +71,7 @@ namespace Jobby.Server.Services
             await db.SaveChangesAsync();
             await db.JobHistories.AddAsync(new JobHistory
             {
-                AppId = application.Id.Value,
+                AppId = newJobApp.Id,
                 Color = "green",
                 EventTitle = "Creation",
                 EventDescription = "Application was created.",
@@ -124,18 +124,18 @@ namespace Jobby.Server.Services
                 jobApp.Notes = application.Notes;
                 jobApp.Modified = DateTime.UtcNow;
                 db.JobApps.Update(jobApp);
-            }
 
-            await db.JobHistories.AddAsync(new JobHistory
-            {
-                AppId = application.Id.Value,
-                Color = "blue",
-                EventTitle = "Moved Stage",
-                EventDescription = "Application was updated.",
-                Created = DateTime.UtcNow,
+                await db.JobHistories.AddAsync(new JobHistory
+                {
+                    AppId = jobApp.Id,
+                    Color = "green",
+                    EventTitle = "Application Updated.",
+                    EventDescription = "Application was updated.",
+                    Created = DateTime.UtcNow,
 
-            });
-            await db.SaveChangesAsync();
+                });
+                await db.SaveChangesAsync();
+            } 
         }
 
         public async Task MoveApplicationStage(int applicationId, int stageId, string userId)

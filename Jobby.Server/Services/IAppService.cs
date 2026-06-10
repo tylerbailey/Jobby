@@ -6,7 +6,7 @@ namespace Jobby.Server.Services
     {
         Task<List<UserJobApplicationModel>> GetAppsAsync(string userId);
         Task<UserJobApplicationModel> GetAppAsync(string userId, int applicationId);
-        Task<UserJobApplicationModel> CreateNewAppAsync(UserJobApplicationModel application);
+        Task<UserJobApplicationModel> CreateNewAppAsync(UserJobApplicationModel application, string userId);
         Task DeleteAppAsync(int appId, string userId);
         Task UpdateAppAsync(UserJobApplicationModel application);
         Task MoveApplicationStage(int applicationId, int stageId, string userId);

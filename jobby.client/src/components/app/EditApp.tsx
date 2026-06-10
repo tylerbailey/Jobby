@@ -50,4 +50,3 @@ export function EditAppSheet({ item, onUpdate }: AppEditProps) {
         <AppForm form={form} action={saveApp} setForm={setForm} icon={<Pencil className="h-4 w-4" />} buttonText={"Edit"}  />
     );
 }
-
