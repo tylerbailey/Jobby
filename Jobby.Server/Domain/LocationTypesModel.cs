@@ -8,6 +8,6 @@ namespace Jobby.Server.Domain
         public int Id { get; set; }
 
         [JsonPropertyName("type")]
-        public string Type { get; set; }
-    }
+        public string Type { get; set; } = string.Empty;
+    } 
 }

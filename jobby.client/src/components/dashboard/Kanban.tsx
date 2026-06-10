@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverDescription, PopoverHeader, PopoverTitle, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { UpdateApp } from "@/services/appService";
+import { MoveStage, UpdateApp } from "@/services/appService";
 import { CreateStage, GetAllStages } from "@/services/stageService";
 import type { Application, Stage } from "@/types/";
 import { DragDropProvider, type DragEndEvent } from "@dnd-kit/react";
@@ -50,7 +50,6 @@ export function KanbanBoard() {
 
     useEffect(() => {
         const timer = setTimeout(() => {
-            console.log(searchValue)
         }, 500);
         return () => clearTimeout(timer);
     }, [searchValue]);
@@ -69,7 +68,7 @@ export function KanbanBoard() {
         return undefined;
     }
 
-    function handleDragEnd(event: DragEndEvent) {
+    async function handleDragEnd(event: DragEndEvent) {
         try {
             if (event.canceled) return;
             const { source, target } = event.operation;
@@ -101,8 +100,12 @@ export function KanbanBoard() {
 
             const card = findCard(stagesRef.current, cardId);
             if (card) {
-                UpdateApp({ ...card, stageId: newStageId })
-                    .catch(() => handleRefresh());
+                try {
+                    await MoveStage(card.id, newStageId);
+                } catch {
+                    toast.error("An error occurred while moving your application.");
+                    handleRefresh(); // revert optimistic update on failure
+                }
             }
         }
         catch (ex) {
@@ -191,7 +194,7 @@ export function KanbanBoard() {
                     </Button>
                     <div
                         ref={scrollRef}
-                        className="flex flex-row gap-4 overflow-x-auto px-4"
+                        className="flex flex-row gap-4 overflow-x-hidden px-4"
                     >
                         {stages.map((stage) => (
                             <KanbanColumn

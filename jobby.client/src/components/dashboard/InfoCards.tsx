@@ -5,7 +5,7 @@ export default function InfoCards({ active, applied, rejected }) {
     return (
 
             <div className="flex flex-wrap gap-4">
-                <Card className="w-52">
+                <Card className="w-50 h-50">
                     <CardContent className="flex flex-col items-center py-6">
                         <div className="mb-4 rounded-full bg-blue-100 p-3">
                             <BriefcaseBusiness className="size-5 text-blue-600" />
@@ -21,7 +21,7 @@ export default function InfoCards({ active, applied, rejected }) {
                     </CardContent>
                 </Card>
 
-                <Card className="w-52">
+            <Card className="w-50 h-50">
                     <CardContent className="flex flex-col items-center py-6">
                         <div className="mb-4 rounded-full bg-green-100 p-3">
                             <Send className="size-5 text-green-600" />
@@ -37,7 +37,7 @@ export default function InfoCards({ active, applied, rejected }) {
                     </CardContent>
                 </Card>
 
-                <Card className="w-52">
+            <Card className="w-50 h-50">
                     <CardContent className="flex flex-col items-center py-6">
                         <div className="mb-4 rounded-full bg-red-100 p-3">
                             <XCircle className="size-5 text-red-600" />

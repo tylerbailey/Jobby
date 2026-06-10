@@ -1,5 +1,4 @@
-﻿using DocumentFormat.OpenXml.ExtendedProperties;
-using DocumentFormat.OpenXml.Packaging;
+﻿using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 using Google.GenAI;
 using Jobby.Server.Data;
@@ -15,6 +14,7 @@ namespace Jobby.Server.Services
     public class AppService(IDbContextFactory<AppDbContext> dbContextFactory, IOptions<ApiKeys> settings) : ServiceBase(dbContextFactory), IAppService
     {
         private readonly ApiKeys _options = settings.Value;
+
         public async Task<List<UserJobApplicationModel>> GetAppsAsync(string userId)
         {
             var applications = new List<UserJobApplicationModel>();
@@ -44,11 +44,11 @@ namespace Jobby.Server.Services
             return application;
         }
 
-        public async Task CreateNewAppAsync(UserJobApplicationModel application)
+        public async Task<UserJobApplicationModel> CreateNewAppAsync(UserJobApplicationModel application)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
             var startingStage = await db.AppStages.Where(s => !s.Disabled).OrderBy(s => s.Order).FirstOrDefaultAsync() ?? new AppStage();
-            await db.JobApps.AddAsync(new JobApp()
+            var newJobApp = new JobApp()
             {
                 UserId = application.UserId,
                 Title = application.JobTitle,
@@ -66,8 +66,20 @@ namespace Jobby.Server.Services
                 NextContactDate = application.NextContactDate,
                 Notes = application.Notes,
                 Created = DateTime.UtcNow
-            });
+            };
+            await db.JobApps.AddAsync(newJobApp);
             await db.SaveChangesAsync();
+            await db.JobHistories.AddAsync(new JobHistory
+            {
+                AppId = application.Id.Value,
+                Color = "green",
+                EventTitle = "Creation",
+                EventDescription = "Application was created.",
+                Created = DateTime.UtcNow,
+
+            });
+            application.Id = newJobApp.Id;
+            return application;
         }
 
         public async Task DeleteAppAsync(int appId, string userId)
@@ -77,6 +89,15 @@ namespace Jobby.Server.Services
             if (application != null)
             {
                 application.Disabled = true;
+                await db.JobHistories.AddAsync(new JobHistory
+                {
+                    AppId = application.Id,
+                    Color = "blue",
+                    EventTitle = "Deleted",
+                    EventDescription = "Application was deleted.",
+                    Created = DateTime.UtcNow,
+
+                });
                 await db.SaveChangesAsync();
             }
         }
@@ -104,7 +125,40 @@ namespace Jobby.Server.Services
                 jobApp.Modified = DateTime.UtcNow;
                 db.JobApps.Update(jobApp);
             }
+
+            await db.JobHistories.AddAsync(new JobHistory
+            {
+                AppId = application.Id.Value,
+                Color = "blue",
+                EventTitle = "Moved Stage",
+                EventDescription = "Application was updated.",
+                Created = DateTime.UtcNow,
+
+            });
             await db.SaveChangesAsync();
+        }
+
+        public async Task MoveApplicationStage(int applicationId, int stageId, string userId)
+        {
+            await using var db = await _dbContextFactory.CreateDbContextAsync();
+            var application = await db.JobApps.Where(a => a.Id == applicationId && a.UserId == userId).FirstOrDefaultAsync();
+            if (application != null)
+            {
+                var stage = db.AppStages.Where(a => a.Id == application.StageId && a.UserId == userId).FirstOrDefault();
+                var newStage = db.AppStages.Where(a => a.Id == stageId && a.UserId == userId).FirstOrDefault();
+             
+                db.JobHistories.Add(new JobHistory
+                {
+                    AppId = applicationId,
+                    Color = "blue",
+                    EventTitle = "Moved Stage",
+                    EventDescription = $"Application moved from stage {stage?.Name ?? "unknown"} to stage {newStage?.Name ?? "unknown"}.",
+                    Created = DateTime.UtcNow,
+
+                });
+                application?.StageId = stageId;
+                await db.SaveChangesAsync();
+            }
         }
 
         public async Task<List<LocationTypesModel>> GetAppLocations()

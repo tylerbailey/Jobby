@@ -1,8 +1,12 @@
-﻿namespace Jobby.Server.Domain
+﻿using System.Text.Json.Serialization;
+
+namespace Jobby.Server.Domain
 {
     public class ResumeEdit
     {
+        [JsonPropertyName("id")]
         public int Id { get; set; }
-        public string NewText { get; set; } = "";
+        [JsonPropertyName("newText")]
+        public string NewText { get; set; } = string.Empty;
     }
 }

@@ -1,12 +1,12 @@
-import { Card } from "@/components/ui/card";
-import { KanbanCard } from "@/components/dashboard/KanbanCard";
-import { useDroppable } from '@dnd-kit/react';
 import CreateApp from "@/components/app/CreateApp";
-import type { KanbanColumnProps } from "@/types"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { KanbanCard } from "@/components/dashboard/KanbanCard";
 import { Button } from "@/components/ui/button";
-import { MoreVertical, Trash2 } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { DeleteStage } from "@/services/stageService";
+import type { KanbanColumnProps } from "@/types";
+import { useDroppable } from '@dnd-kit/react';
+import { MoreVertical, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 export function KanbanColumn({ id, title, order, color, stage, items, onUpdate, searchValue }: KanbanColumnProps) {
     const { ref } = useDroppable({
@@ -46,6 +46,7 @@ export function KanbanColumn({ id, title, order, color, stage, items, onUpdate, 
                                     <span>Delete</span>
                                     <Trash2 className="h-4 w-4" />
                                 </Button>
+                                <CreateApp stage={stage} onUpdate={onUpdate}></CreateApp>
                             </PopoverContent>
 
                         </Popover>
@@ -61,7 +62,7 @@ export function KanbanColumn({ id, title, order, color, stage, items, onUpdate, 
                         </div>
                     ))}
                 </div>
-                <CreateApp stage={stage} onUpdate={onUpdate}></CreateApp>
+               
 
             </Card>
         </section>

@@ -9,11 +9,13 @@ import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { DeleteApp, GenerateApp } from "@/services/appService";
-import type { KanbanCardProps } from "@/types";
+import type { HistoryItem, KanbanCardProps } from "@/types";
 import { useDraggable } from "@dnd-kit/react";
 import { CalendarDays, CircleAlert, ExternalLink, File, MapPin, MoreVertical, Trash2 } from "lucide-react";
-import { type ChangeEvent, useState } from "react";
+import { type ChangeEvent, useEffect, useState } from "react";
 import { toast } from "sonner";
+import { GetHistory } from "../../services/historyService";
+import JobHistory from "../timeline/JobHistory";
 
 export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
     const { ref: dragRef } = useDraggable({
@@ -22,10 +24,13 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
     const [resumeFile, setResumeFile] = useState<File | null>(null);
     const [open, setOpen] = useState<boolean>(false);
     const [infoOpen, setInfoOpen] = useState<boolean>(false);
+    const [histories, setHistories] = useState<HistoryItem[]>([])
+
     const firstCutOff = new Date();
     const secondCutOff = new Date();
     firstCutOff.setDate(firstCutOff.getDate() + 7);
     secondCutOff.setDate(secondCutOff.getDate() + 2);
+
     async function handleFileChange(e: ChangeEvent<HTMLInputElement>) {
         const file = e.target.files?.[0];
         setResumeFile(file ?? null);
@@ -62,16 +67,25 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
             toast.warning("You must select a docx file.")
         }
     }
+
     async function handleDelete() {
         if (!item.id) {
             toast.warning("This application must be saved before it can be deleted.");
             return;
         }
 
-        await DeleteApp(item.id);
+        await DeleteApp(item.id.toString());
         onUpdate();
         toast.info("The application has been deleted.")
     }
+
+    useEffect(() => {
+        async function GetItemHistory() {
+            const response = await GetHistory(item.id)
+            setHistories(response.data)
+        }
+        GetItemHistory();
+    },[]);
 
     return (
         <div ref={dragRef} className={isMatch ? "w-full" : "hidden"}>
@@ -84,15 +98,13 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
                         {item.nextContactDate != null && (
                             new Date(item.nextContactDate) <= secondCutOff
                                 ? <Badge className="bg-red-50 text-red-700 h-8 w-8"><CircleAlert /></Badge>
-                                : new Date(item.nextContactDate) <= firstCutOff
-                                    ? <Badge className="bg-yellow-50 text-yellow-700 h-8 w-8"><CircleAlert /></Badge>
+                                : new Date(item.nextContactDate) <= firstCutOff ? <Badge className="bg-yellow-50 text-yellow-700 h-8 w-8"><CircleAlert /></Badge>
                                     : null
                         )}
                         {item.upcomingDate != null && (
                             new Date(item.upcomingDate) <= secondCutOff
                                 ? <Badge className="bg-red-50 text-red-700 h-8 w-8"><CircleAlert /></Badge>
-                                : new Date(item.upcomingDate) <= firstCutOff
-                                    ? <Badge className="bg-yellow-50 text-yellow-700 h-8 w-8"><CircleAlert /></Badge>
+                                : new Date(item.upcomingDate) <= firstCutOff ? <Badge className="bg-yellow-50 text-yellow-700 h-8 w-8"><CircleAlert /></Badge>
                                     : null
                         )}
                     </div>
@@ -125,7 +137,8 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
                                         <span>Delete</span>
                                         <Trash2 className="h-4 w-4" />
                                     </Button>
-                                    <EditAppSheet item={item} onUpdate={onUpdate}></EditAppSheet>
+                                    <EditAppSheet item={item} onUpdate={onUpdate} />
+                                    <JobHistory items={histories} />
                                     <Dialog open={open} onOpenChange={setOpen}>
                                         <DialogTrigger asChild><Button variant="ghost" className="flex h-9 w-full items-center justify-between px-2">
                                             <span>Generate Resume</span>
@@ -141,7 +154,7 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
                                             <Input type="file" accept=".docx" onChange={(e) => handleFileChange(e)}></Input>
                                             <Button onClick={handleResumeGeneration}>Generate</Button>
                                         </DialogContent>
-                                    </Dialog>
+                                    </Dialog>                                    
                                 </PopoverContent>
                             </Popover>
                         </div>
@@ -150,12 +163,10 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
                 </CardHeader>
                 <CardContent className="p-4">
                     <div className="mb-3 flex flex-wrap gap-2">
-
                         <Badge key={"locationTypeId-" + item.locationTypeId} variant={getBadgeVariant(item.locationType ?? "")}>
                             {item.locationType}
                         </Badge>
                     </div>
-
                     <div className="space-y-2 text-sm text-muted-foreground">
                         {item.address && (
                             <div className="flex items-center gap-2">
@@ -178,7 +189,7 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
                         {item.upcomingDate && (
                             <div className="flex items-center gap-2 border-t pt-2">
                                 <CalendarDays className="h-4 w-4" />
-                                <span>{item.upcomingType}: {new Date(item.upcomingDate).toLocaleDateString()}</span>
+                                <span>Interview: {new Date(item.upcomingDate).toLocaleDateString()}</span>
                             </div>
                         )}
                     </div>
@@ -195,7 +206,6 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
                                 </HoverCard>
                             </Badge>
                         </div>
-
                     )}
                 </CardContent>
             </Card>
@@ -235,8 +245,8 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
                         <InfoField label="Location Type" value={item.locationType} />
                         <InfoField label="Address" value={item.address} />
                         <InfoField label="Target Salary" value={item.salary ? formatCurrency(item.salary) : undefined} />
-                        <InfoField label="Apply Date" value={formatDate(item.appliedDate)} />
-                        <InfoField label="Upcoming" value={item.upcomingDate ? `${item.upcomingType ?? "Event"}: ${formatDate(item.upcomingDate)}` : undefined} />
+                        <InfoField label="Apply" value={formatDate(item.appliedDate)} />
+                        <InfoField label="Interview" value={item.upcomingDate ? formatDate(item.upcomingDate) : "None"} />
                         <InfoField label="Contact" value={item.contactName} />
                         <InfoField label="Last Contact" value={item.lastContactDate ? formatDate(item.lastContactDate) : "None"} />
                         <InfoField label="Next Contact" value={item.nextContactDate ? formatDate(item.nextContactDate) : "None"} />

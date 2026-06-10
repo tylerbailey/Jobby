@@ -23,8 +23,8 @@ namespace Jobby.Server.Controllers
         [HttpPost("new")]
         public async Task<IActionResult> CreateApplication(UserJobApplicationModel application)
         {
-            await _appService.CreateNewAppAsync(application);
-            return Ok();
+           var createdApp = await _appService.CreateNewAppAsync(application);
+            return Ok(createdApp);
         }
 
         [HttpPost("update")]
@@ -39,6 +39,14 @@ namespace Jobby.Server.Controllers
         {
             var locations = await _appService.GetAppLocations();
             return Ok(locations);
+        }
+
+        [HttpPost("move/{applicationId}")]
+        public async Task<IActionResult> MoveStage(int applicationId, [FromQuery] int stageId)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
+            await _appService.MoveApplicationStage(applicationId, stageId, userId);
+            return Ok();
         }
 
         [HttpDelete("{applicationId}")]

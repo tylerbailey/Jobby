@@ -62,6 +62,7 @@ builder.Services
 
 builder.Services.AddScoped<IAppService, AppService>();
 builder.Services.AddScoped<IStageService, StageService>();
+builder.Services.AddScoped<IHistoryService, HistoryService>();
 
 builder.Services.AddAuthorization();
 

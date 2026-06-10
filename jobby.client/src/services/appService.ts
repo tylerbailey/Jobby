@@ -17,13 +17,17 @@ export async function UpdateApp(application: Application) {
     return await api.post<Application>("/app/update", application)
 }
 
+export async function MoveStage(applicationId: number, stageId: number) {
+    await api.post(`/app/move/${applicationId}?stageId=${stageId}`);
+}
+
 export async function DeleteApp(appId: string) {
     return await api.delete(`/app/${appId}`);
 }
 
 export async function GenerateApp(
     file: File,
-    appId: string
+    appId: number
 ) {
     const formData = new FormData();
 

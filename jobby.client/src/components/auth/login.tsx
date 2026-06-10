@@ -56,7 +56,6 @@ export function LoginPage({
                 setError(message ?? "Login failed. Please try again.");
                 return;
             }
-
             setError("Login failed. Please try again.");
         }
     }
@@ -107,12 +106,9 @@ export function LoginPage({
                                             required />
                                     </Field>
                                     <Field>
-                                        <Button type="submit">Login</Button>
-                                        <Button variant="outline" type="button">
-                                            Login with Google
-                                        </Button>
+                                        <Button type="submit">Login</Button>                                     
                                         <FieldDescription className="text-center">
-                                            Don&apos;t have an account? <a href="#">Sign up</a>
+                                            Don&apos;t have an account? <a href="/register">Sign up</a>
                                         </FieldDescription>
                                     </Field>
                                 </FieldGroup>
