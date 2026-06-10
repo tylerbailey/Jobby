@@ -1,10 +1,10 @@
 import { UpdateApp } from "@/services/appService";
 import type { AppEditProps, ApplicationFormData } from "@/types";
-import { Pencil } from "lucide-react";
 import { useState } from "react";
-import AppForm from "./AppForm";
+import AppForm from "@/components/app/AppForm";
+import { toast } from "sonner";
 
-export function EditAppSheet({ item, onUpdate }: AppEditProps) {
+export function EditAppSheet({ item, onUpdate, sheetOpen ,setSheetOpen }: AppEditProps) {
 
     const [form, setForm] = useState<ApplicationFormData>({
         formTitle: "Edit Application",
@@ -26,27 +26,34 @@ export function EditAppSheet({ item, onUpdate }: AppEditProps) {
     });
    
     async function saveApp() {
-       await UpdateApp({
-           id: item.id,
-           userId: item.userId,
-           companyName: form.companyName,
-           title: form.title,
-           postingUrl: form.postingUrl,
-           locationTypeId: form.locationTypeId,
-           address: form.address,
-           salary: form.salary,
-           stageId: item.stageId,
-           appliedDate:  form.appliedDate,
-           upcomingDate: form.upcomingDate,
-           contactName: form.contactName,
-           lastContactDate: form.lastContactDate,
-           nextContactDate: form.nextContactDate,
-           notes: form.notes
-       });
-       onUpdate();      
+        try {
+            await UpdateApp({
+                id: item.id,
+                userId: item.userId,
+                companyName: form.companyName,
+                title: form.title,
+                postingUrl: form.postingUrl,
+                locationTypeId: form.locationTypeId,
+                address: form.address,
+                salary: form.salary,
+                stageId: item.stageId,
+                appliedDate: form.appliedDate,
+                upcomingDate: form.upcomingDate,
+                contactName: form.contactName,
+                lastContactDate: form.lastContactDate,
+                nextContactDate: form.nextContactDate,
+                notes: form.notes
+            });
+            onUpdate();
+            setSheetOpen(false);
+        }
+        catch (ex) {
+            toast.error("An error occured editing the application.")
+            throw ex;
+        }
     }
 
     return (
-        <AppForm form={form} action={saveApp} setForm={setForm} icon={<Pencil className="h-4 w-4" />} buttonText={"Edit"}  />
+        <AppForm form={form} setForm={setForm} sheetOpen={sheetOpen} setSheetOpen={ setSheetOpen } action={saveApp} />
     );
 }

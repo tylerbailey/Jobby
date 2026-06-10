@@ -8,4 +8,6 @@ export type HistoryItem = {
 
 export type HistoryItems = {
     items: HistoryItem[];
+    sheetOpen: boolean;
+    setSheetOpen: Dispatch<SetStateAction<boolean>>
 }

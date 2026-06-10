@@ -1,19 +1,13 @@
 
-import { Circle, Timeline } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import type { HistoryItems } from "@/types";
+import { Circle } from "lucide-react";
 
-export default function JobHistory({items:histories }: HistoryItems) {
+export default function JobHistory({ sheetOpen, setSheetOpen, items:histories }: HistoryItems) {
     return (
-        <Sheet>
-            <SheetTrigger asChild><Button
-                variant="ghost"
-                className="flex h-9 w-full items-center justify-between px-2">
-                <span>History</span>
-                <Timeline className="h-4 w-4" />
-            </Button></SheetTrigger>
+        <Sheet open={sheetOpen} onOpenChange={ setSheetOpen }>
+           
             <SheetContent className="">
                 <SheetHeader>
                     <SheetTitle>History</SheetTitle>

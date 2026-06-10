@@ -9,7 +9,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { DeleteApp, GenerateApp } from "@/services/appService";
 import type { HistoryItem, KanbanCardProps } from "@/types";
 import { useDraggable } from "@dnd-kit/react";
-import { CalendarDays, CircleAlert, File, MapPin, MoreVertical, Trash2 } from "lucide-react";
+import { CalendarDays, CircleAlert, File, MapPin, MoreVertical, Pencil, Timeline, Trash2 } from "lucide-react";
 import { type ChangeEvent, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { GetHistory } from "../../services/historyService";
@@ -21,9 +21,14 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
         id: item.id!
     });
     const [resumeFile, setResumeFile] = useState<File | null>(null);
-    const [open, setOpen] = useState<boolean>(false);
-    const [infoOpen, setInfoOpen] = useState<boolean>(false);
     const [histories, setHistories] = useState<HistoryItem[]>([])
+
+    const [dialogueOpen, setDialogueOpen] = useState<boolean>(false);
+    const [infoOpen, setInfoOpen] = useState<boolean>(false);
+    const [menuOpen, setMenuOpen] = useState<boolean>(false);
+    const [editOpen, setEditOpen] = useState<boolean>(false);
+    const [historyOpen, setHistoryOpen] = useState<boolean>(false);
+
 
     const firstCutOff = new Date();
     const secondCutOff = new Date();
@@ -35,6 +40,16 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
         setResumeFile(file ?? null);
     }
 
+    async function handleResumeDialogue() {
+        setMenuOpen(false);
+        setDialogueOpen(true)
+    }
+
+    function handleHistory() {
+        setMenuOpen(false); 
+        setHistoryOpen(true);
+    }
+
     async function handleResumeGeneration() {
         if (!item.id) {
             toast.warning("This application must be saved before generating a resume.");
@@ -42,7 +57,7 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
         }
 
         if (resumeFile != null) {
-            setOpen(false);
+            setDialogueOpen(false);
             const promise = GenerateApp(resumeFile, item.id)
 
             toast.promise(promise, {
@@ -76,6 +91,11 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
         await DeleteApp(item.id.toString());
         onUpdate();
         toast.info("The application has been deleted.")
+    }
+
+    function handleEdit() {
+        setMenuOpen(false);
+        setEditOpen(true);
     }
 
     useEffect(() => {
@@ -122,7 +142,7 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
                             </div>
                         </div>
                         <div className="shrink-0" onClick={(event) => event.stopPropagation()}>
-                            <Popover>
+                            <Popover open={menuOpen} onOpenChange={setMenuOpen}>
                                 <PopoverTrigger asChild>
                                     <Button variant="ghost" size="icon" className="h-7 w-7">
                                         <MoreVertical className="h-4 w-4" />
@@ -130,30 +150,34 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
                                 </PopoverTrigger>
                                 <PopoverContent className="w-48 p-1">
                                     <Button
+                                        onClick={handleEdit}
+                                        variant="ghost"
+                                        className="flex h-9 w-full items-center justify-between px-2">
+                                        <span>Edit Application</span>
+                                        <Pencil className="h-4 w-4" />
+                                    </Button>
+                                    <Button
+                                        onClick={ handleHistory }
+                                        variant="ghost"
+                                        className="flex h-9 w-full items-center justify-between px-2">
+                                        <span>History</span>
+                                        <Timeline className="h-4 w-4" />
+                                    </Button>
+                                    <Button
+                                        onClick={handleResumeDialogue}
+                                        variant="ghost"
+                                        className="flex h-9 w-full items-center justify-between px-2">
+                                        <span>Generate Resume</span>
+                                        <File className="h-4 w-4" />
+                                    </Button>
+
+                                    <Button
                                         onClick={handleDelete}
                                         variant="ghost"
                                         className="flex h-9 w-full items-center justify-between px-2">
                                         <span>Delete</span>
                                         <Trash2 className="h-4 w-4" />
                                     </Button>
-                                    <EditAppSheet item={item} onUpdate={onUpdate} />
-                                    <JobHistory items={histories} />
-                                    <Dialog open={open} onOpenChange={setOpen}>
-                                        <DialogTrigger asChild><Button variant="ghost" className="flex h-9 w-full items-center justify-between px-2">
-                                            <span>Generate Resume</span>
-                                            <File className="h-4 w-4" />
-                                        </Button></DialogTrigger>
-                                        <DialogContent>
-                                            <DialogHeader>
-                                                <DialogTitle>Generate Resume</DialogTitle>
-                                                <DialogDescription>
-                                                    Generate a tailored resume for this job.
-                                                </DialogDescription>
-                                            </DialogHeader>
-                                            <Input type="file" accept=".docx" onChange={(e) => handleFileChange(e)}></Input>
-                                            <Button onClick={handleResumeGeneration}>Generate</Button>
-                                        </DialogContent>
-                                    </Dialog>
                                 </PopoverContent>
                             </Popover>
                         </div>
@@ -208,7 +232,21 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
                     )}
                 </CardContent>
             </Card>
+            <EditAppSheet sheetOpen={editOpen} setSheetOpen={setEditOpen} item={item} onUpdate={onUpdate} />
             <AppInfo item={item} infoOpen={infoOpen} setInfoOpen={setInfoOpen} />
+            <JobHistory sheetOpen={historyOpen} setSheetOpen={setHistoryOpen} items={histories} />
+            <Dialog open={dialogueOpen} onOpenChange={setDialogueOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Generate Resume</DialogTitle>
+                        <DialogDescription>
+                            Generate a tailored resume for this job.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <Input type="file" accept=".docx" onChange={(e) => handleFileChange(e)}></Input>
+                    <Button onClick={handleResumeGeneration}>Generate</Button>
+                </DialogContent>
+            </Dialog>
         </div >
     );
 }

@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverDescription, PopoverHeader, PopoverTitle, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { MoveStage, UpdateApp } from "@/services/appService";
+import { MoveStage } from "@/services/appService";
 import { CreateStage, GetAllStages } from "@/services/stageService";
 import type { Application, Stage } from "@/types/";
 import { DragDropProvider, type DragEndEvent } from "@dnd-kit/react";

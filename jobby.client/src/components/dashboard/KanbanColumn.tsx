@@ -6,19 +6,29 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { DeleteStage } from "@/services/stageService";
 import type { KanbanColumnProps } from "@/types";
 import { useDroppable } from '@dnd-kit/react';
-import { MoreVertical, Trash2 } from "lucide-react";
+import { MoreVertical, Plus, Trash2 } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
 export function KanbanColumn({ id, title, order, color, stage, items, onUpdate, searchValue }: KanbanColumnProps) {
     const { ref } = useDroppable({
         id: stage.toString()
     });
+    const [menuOpen, setMenuOpen] = useState<boolean>(false);
+    const [sheetOpen, setSheetOpen] = useState<boolean>(false);
     const cardStacks = chunkItems(items, 5);
 
     function handleDelete() {
         DeleteStage(id);
+        setMenuOpen(false);
         onUpdate();
         toast.info("The pipeline stage has been deleted.")
     }
+
+    function handleNew() {
+        setSheetOpen(true);
+        setMenuOpen(false);
+    }
+
     return (
         <section className="w-full shrink-0 sm:w-fit sm:min-w-80" ref={ref}>
             <Card className="min-h-[600px] h-full w-full border bg-muted/30 p-3 sm:w-fit sm:min-w-80">
@@ -32,7 +42,7 @@ export function KanbanColumn({ id, title, order, color, stage, items, onUpdate, 
                     </div>
                     <span className="flex items-center gap-2 text-xs font-medium">
                         Step {order}
-                        <Popover>
+                        <Popover open={menuOpen} onOpenChange={setMenuOpen }>
                             <PopoverTrigger asChild>
                                 <Button variant="ghost" size="icon" className="h-7 w-7">
                                     <MoreVertical className="h-4 w-4" />
@@ -40,13 +50,19 @@ export function KanbanColumn({ id, title, order, color, stage, items, onUpdate, 
                             </PopoverTrigger>
                             <PopoverContent className="w-48 p-1">
                                 <Button
+                                    onClick={handleNew}
+                                    variant="ghost"
+                                    className="flex h-9 w-full items-center justify-between px-2">
+                                    <span>New Application</span>
+                                    <Plus className="h-4 w-4" />
+                                </Button>
+                                <Button
                                     onClick={handleDelete}
                                     variant="ghost"
                                     className="flex h-9 w-full items-center justify-between px-2">
                                     <span>Delete</span>
                                     <Trash2 className="h-4 w-4" />
-                                </Button>
-                                <CreateApp stage={stage} onUpdate={onUpdate}></CreateApp>
+                                </Button>                                
                             </PopoverContent>
 
                         </Popover>
@@ -63,8 +79,9 @@ export function KanbanColumn({ id, title, order, color, stage, items, onUpdate, 
                     ))}
                 </div>
                
-
+                
             </Card>
+            <CreateApp sheetOpen={sheetOpen} setSheetOpen={ setSheetOpen } stage={stage} onUpdate={onUpdate}></CreateApp>
         </section>
     );
 

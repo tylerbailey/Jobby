@@ -1,11 +1,10 @@
 import { CreateNewApp } from "@/services/appService";
 import type { AppCreateProps, ApplicationFormData } from "@/types";
-import { Plus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import AppForm from "./AppForm";
+import  AppForm  from "@/components/app/AppForm";
 
-export default function CreateApp({ stage, onUpdate }: AppCreateProps) {
+export default function CreateApp({ stage, onUpdate, sheetOpen, setSheetOpen }: AppCreateProps) {
     const [form, setForm] = useState<ApplicationFormData>({
         formTitle: "Create Application",
         formDesc: "Create a new application here. Click save when you're done.",
@@ -44,6 +43,7 @@ export default function CreateApp({ stage, onUpdate }: AppCreateProps) {
             };
             await CreateNewApp(payload);
             onUpdate();
+            setSheetOpen(false);
             setForm({
                 ...form,
                 companyName: "",
@@ -61,13 +61,15 @@ export default function CreateApp({ stage, onUpdate }: AppCreateProps) {
                 nextContactDate: undefined,
                 notes: ""
             });
+
         }
         catch (ex) {
             toast.error("An error occured creating the application.")
+            throw ex;
         }
     };
 
     return (
-        <AppForm form={form} action={saveApp} setForm={setForm} icon={<Plus className="h-4 w-4" />} buttonText={"Create"} />
+        <AppForm form={form} setForm={setForm} sheetOpen={sheetOpen} setSheetOpen={setSheetOpen} action={saveApp} />
     );
 }

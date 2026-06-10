@@ -47,11 +47,15 @@ export type AppInfoProps = {
 
 export type AppCreateProps = {
     stage: number;
+    sheetOpen: boolean;
+    setSheetOpen: Dispatch<SetStateAction<boolean>>
     onUpdate: () => void;
 }
 
 export type AppEditProps = {
     item: Application
+    sheetOpen: boolean;
+    setSheetOpen: Dispatch<SetStateAction<boolean>>
     onUpdate: () => void;
 }
 
@@ -61,9 +65,9 @@ export type LocationType = {
 }
 
 export type AppFormProps = {
-    form: ApplicationFormData;
-    action: () => void;
+    form: ApplicationFormData;    
     setForm: Dispatch<SetStateAction<ApplicationFormData>>;
-    icon: React.ReactNode;
-    buttonText: string;
+    sheetOpen: boolean;
+    setSheetOpen: Dispatch<SetStateAction<boolean>>
+    action: () => void;
 }
