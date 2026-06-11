@@ -26,7 +26,7 @@ export default function AppInfo({item, infoOpen, setInfoOpen }:AppInfoProps) {
                       </div>
                       <div className="min-w-0">
                           <h3 className="truncate font-semibold">{item.companyName}</h3>
-                          <p className="truncate text-sm text-muted-foreground">{item.title}</p>
+                          <p className="truncate text-sm text-muted-foreground">{item.jobTitle}</p>
                       </div>
                   </div>
 
@@ -42,16 +42,12 @@ export default function AppInfo({item, infoOpen, setInfoOpen }:AppInfoProps) {
                   </div>
 
                   <InfoField label="Company Name" value={item.companyName} />
-                  <InfoField label="Title" value={item.title} />
+                  <InfoField label="Title" value={item.jobTitle} />
                   <InfoField label="Location Type" value={item.locationType} />
                   <InfoField label="Address" value={item.address} />
                   <InfoField label="Target Salary" value={item.salary ? formatCurrency(item.salary) : undefined} />
                   <InfoField label="Apply" value={formatDate(item.appliedDate)} />
-                  <InfoField label="Interview" value={item.upcomingDate ? formatDate(item.upcomingDate) : "None"} />
                   <InfoField label="Contact" value={item.contactName} />
-                  <InfoField label="Last Contact" value={item.lastContactDate ? formatDate(item.lastContactDate) : "None"} />
-                  <InfoField label="Next Contact" value={item.nextContactDate ? formatDate(item.nextContactDate) : "None"} />
-
                   {item.notes && (
                       <Field className="py-3">
                           <FieldLabel>Notes</FieldLabel>
@@ -62,10 +58,10 @@ export default function AppInfo({item, infoOpen, setInfoOpen }:AppInfoProps) {
                   )}
               </div>
 
-              {item.postingUrl && (
+              {item.jobPostingUrl && (
                   <SheetFooter>
                       <Button asChild variant="outline" className="w-full justify-between">
-                          <a href={item.postingUrl} target="_blank" rel="noreferrer">
+                          <a href={item.jobPostingUrl} target="_blank" rel="noreferrer">
                               <span>Open Job Posting</span>
                               <ExternalLink className="h-4 w-4" />
                           </a>

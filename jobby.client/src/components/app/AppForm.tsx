@@ -57,8 +57,8 @@ export default function AppForm({ form, setForm, sheetOpen, setSheetOpen, action
                             id="input-field-jobtitle"
                             type="text"
                             placeholder="Enter the job title"
-                            value={form.title}
-                            onChange={(e) => setForm({ ...form, title: e.target.value })}
+                            value={form.jobTitle}
+                            onChange={(e) => setForm({ ...form, jobTitle: e.target.value })}
                         />
 
                     </Field>
@@ -71,8 +71,8 @@ export default function AppForm({ form, setForm, sheetOpen, setSheetOpen, action
                             id="input-field-jobpostingurl"
                             type="text"
                             placeholder="Enter the job posting URL"
-                            value={form.postingUrl}
-                            onChange={(e) => setForm({ ...form, postingUrl: e.target.value })} />
+                            value={form.jobPostingUrl}
+                            onChange={(e) => setForm({ ...form, jobPostingUrl: e.target.value })} />
                     </Field>
                     <Field>
                         <FieldLabel className="py-3">
@@ -130,16 +130,7 @@ export default function AppForm({ form, setForm, sheetOpen, setSheetOpen, action
                         </FieldDescription>
                         <CalendarPopup value={form.appliedDate} onValueChange={(e) => setForm({ ...form, appliedDate: e })} />
 
-                    </Field>
-                    <Field className="py-3">
-                        <FieldLabel>
-                            Interview Date
-                        </FieldLabel>
-                        <FieldDescription>
-                            The date of the interview, if applicable.
-                        </FieldDescription>
-                        <CalendarPopup value={form.upcomingDate} onValueChange={(e) => setForm({ ...form, upcomingDate: e })} />
-                    </Field>
+                    </Field>                    
                     <Field className="py-3">
                         <FieldLabel htmlFor="input-field-jobContact">Contact</FieldLabel>
                         <FieldDescription>
@@ -151,25 +142,7 @@ export default function AppForm({ form, setForm, sheetOpen, setSheetOpen, action
                             placeholder="Enter the contact name"
                             value={form.contactName}
                             onChange={(e) => setForm({ ...form, contactName: e.target.value })} />
-                    </Field>
-                    <Field>
-                        <FieldLabel className="py-3">
-                            Last Contact Date
-                        </FieldLabel>
-                        <FieldDescription>
-                            The last date of communication with the contact.
-                        </FieldDescription>
-                        <CalendarPopup value={form.lastContactDate} onValueChange={(e) => setForm({ ...form, lastContactDate: e })} />
-                    </Field>
-                    <Field className="py-3">
-                        <FieldLabel className="py-3">
-                            Next Contact Date
-                        </FieldLabel>
-                        <FieldDescription>
-                            The date you plan to meet with contact next.
-                        </FieldDescription>
-                        <CalendarPopup value={form.nextContactDate} onValueChange={(e) => setForm({ ...form, nextContactDate: e })} />
-                    </Field>
+                    </Field>  
                     <Field className="py-3">
                         <FieldLabel htmlFor="input-field-jobnotes">Notes</FieldLabel>
                         <FieldDescription>

@@ -5,13 +5,13 @@ namespace Jobby.Server.Entities
     public class JobApp : BaseModel, IEntity
     {
         [Column(TypeName = "varchar(450)")]
-        public string UserId { get; set; }
+        public string UserId { get; set; } = string.Empty;
 
         [Column(TypeName = "varchar(64)")]
-        public string Company { get; set; }
+        public string Company { get; set; } = string.Empty;
 
         [Column(TypeName = "varchar(32)")]
-        public string Title { get; set; }
+        public string Title { get; set; } = string.Empty;
 
         [Column(TypeName = "varchar(256)")]
         public string? JobPostingUrl { get; set; }
@@ -27,25 +27,24 @@ namespace Jobby.Server.Entities
         [ForeignKey("LocationType")]
         public int LocationTypeId { get; set; }
 
-        public DateTime? Applied { get; set; }
-
-        public DateTime? Upcoming { get; set; }
-
-        [Column(TypeName = "varchar(16)")]
-        public string? UpcomingType { get; set; }
-
         [Column(TypeName = "varchar(1024)")]
         public string? Notes { get; set; }
 
         [Column(TypeName = "varchar(256)")]
         public string? ContactName { get; set; }
 
-        public DateTime? LastContactDate { get; set; }
+        public DateTime? Applied { get; set; }
 
-        public DateTime? NextContactDate { get; set; }
+        public bool IsRejected { get; set; }
 
-        public virtual AppStage AppStage { get; set; }
+        public bool IsAccepted { get; set; }
 
-        public virtual LocationType LocationType { get; set; }
+        public  AppStage? AppStage { get; set; }
+
+        public LocationType? LocationType { get; set; }
+
+        public ICollection<JobHistory> JobHistory { get; set; } = [];
+
+        public ICollection<JobEvent> JobEvents { get; set; } = [];       
     }
 }

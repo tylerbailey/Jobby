@@ -15,21 +15,6 @@ namespace Jobby.Server.Services
     {
         private readonly ApiKeys _options = settings.Value;
 
-        public async Task<List<UserJobApplicationModel>> GetAppsAsync(string userId)
-        {
-            var applications = new List<UserJobApplicationModel>();
-            await using var db = await _dbContextFactory.CreateDbContextAsync();
-            applications = await db.JobApps.Where(a => a.UserId == userId && !a.Disabled).Select(a => new UserJobApplicationModel
-            {
-                Id = a.Id,
-                CompanyName = a.Company,
-                JobTitle = a.Title,
-                JobPostingUrl = a.JobPostingUrl ?? string.Empty,
-                StageId = a.StageId
-            }).ToListAsync();
-            return applications;
-        }
-
         public async Task<UserJobApplicationModel> GetAppAsync(string userId, int applicationId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
@@ -39,47 +24,71 @@ namespace Jobby.Server.Services
                 CompanyName = a.Company,
                 JobTitle = a.Title,
                 JobPostingUrl = a.JobPostingUrl ?? string.Empty,
+                Address = a.Address ?? string.Empty,
+                Salary = a.Salary,
+                LocationTypeId = a.LocationTypeId,
+                LocationType = a.LocationType != null ? a.LocationType.Type : string.Empty,
+                Notes = a.Notes ?? string.Empty,
+                ContactName = a.ContactName ?? string.Empty,
+                AppliedDate = a.Applied,
+                IsRejected = a.IsRejected,
+                IsAccepted = a.IsAccepted,
                 StageId = a.StageId
             }).FirstOrDefaultAsync() ?? new UserJobApplicationModel();
             return application;
         }
 
-        public async Task<UserJobApplicationModel> CreateNewAppAsync(UserJobApplicationModel application, string userId)
+
+        public async Task CreateNewAppAsync(UserJobApplicationModel application, string userId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
-            var startingStage = await db.AppStages.Where(s => !s.Disabled).OrderBy(s => s.Order).FirstOrDefaultAsync() ?? new AppStage();
+            var startingStage = await db.AppStages.Where(s => !s.Disabled && s.UserId == userId).OrderBy(s => s.Order).FirstOrDefaultAsync() ?? new AppStage();
             var newJobApp = new JobApp()
             {
                 UserId = userId,
-                Title = application.JobTitle,
                 Company = application.CompanyName,
+                Title = application.JobTitle,
                 JobPostingUrl = application.JobPostingUrl,
-                StageId = application.StageId.HasValue ? application.StageId.Value : startingStage.Id,
+                Address = application.Address,
                 Salary = application.Salary,
                 LocationTypeId = application.LocationTypeId,
-                Address = application.Address,
-                Applied = application.AppliedDate,
-                Upcoming = application.UpcomingDate,
-                UpcomingType = application.UpcomingType,
-                ContactName = application.ContactName,
-                LastContactDate = application.LastContactDate,
-                NextContactDate = application.NextContactDate,
                 Notes = application.Notes,
+                Applied = application.AppliedDate,
+                ContactName = application.ContactName,
+                IsAccepted = false,
+                IsRejected = false,
+                StageId = application.StageId ?? startingStage.Id,
                 Created = DateTime.UtcNow
             };
-            await db.JobApps.AddAsync(newJobApp);
+            await db.JobApps.AddAsync(new JobApp()
+            {
+                UserId = userId,
+                Company = application.CompanyName,
+                Title = application.JobTitle,
+                JobPostingUrl = application.JobPostingUrl,
+                Address = application.Address,
+                Salary = application.Salary,
+                LocationTypeId = application.LocationTypeId,
+                Notes = application.Notes,
+                Applied = application.AppliedDate,
+                ContactName = application.ContactName,
+                IsAccepted = false,
+                IsRejected = false,
+                StageId = application.StageId ?? startingStage.Id,
+                Created = DateTime.UtcNow
+            });
             await db.SaveChangesAsync();
+
             await db.JobHistories.AddAsync(new JobHistory
             {
                 AppId = newJobApp.Id,
                 Color = "green",
                 EventTitle = "Creation",
                 EventDescription = "Application was created.",
-                Created = DateTime.UtcNow,
-
+                Created = DateTime.UtcNow
             });
-            application.Id = newJobApp.Id;
-            return application;
+            await db.SaveChangesAsync();
+
         }
 
         public async Task DeleteAppAsync(int appId, string userId)
@@ -95,8 +104,7 @@ namespace Jobby.Server.Services
                     Color = "blue",
                     EventTitle = "Deleted",
                     EventDescription = "Application was deleted.",
-                    Created = DateTime.UtcNow,
-
+                    Created = DateTime.UtcNow
                 });
                 await db.SaveChangesAsync();
             }
@@ -116,11 +124,7 @@ namespace Jobby.Server.Services
                 jobApp.LocationTypeId = application.LocationTypeId;
                 jobApp.Address = application.Address;
                 jobApp.Applied = application.AppliedDate;
-                jobApp.Upcoming = application.UpcomingDate;
-                jobApp.UpcomingType = application.UpcomingType;
                 jobApp.ContactName = application.ContactName;
-                jobApp.LastContactDate = application.LastContactDate;
-                jobApp.NextContactDate = application.NextContactDate;
                 jobApp.Notes = application.Notes;
                 jobApp.Modified = DateTime.UtcNow;
                 db.JobApps.Update(jobApp);
@@ -132,13 +136,12 @@ namespace Jobby.Server.Services
                     EventTitle = "Application Updated.",
                     EventDescription = "Application was updated.",
                     Created = DateTime.UtcNow,
-
                 });
                 await db.SaveChangesAsync();
-            } 
+            }
         }
 
-        public async Task MoveApplicationStage(int applicationId, int stageId, string userId)
+        public async Task MoveApplicationStageAsync(int applicationId, int stageId, string userId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
             var application = await db.JobApps.Where(a => a.Id == applicationId && a.UserId == userId).FirstOrDefaultAsync();
@@ -146,7 +149,7 @@ namespace Jobby.Server.Services
             {
                 var stage = db.AppStages.Where(a => a.Id == application.StageId && a.UserId == userId).FirstOrDefault();
                 var newStage = db.AppStages.Where(a => a.Id == stageId && a.UserId == userId).FirstOrDefault();
-             
+
                 db.JobHistories.Add(new JobHistory
                 {
                     AppId = applicationId,
@@ -161,10 +164,10 @@ namespace Jobby.Server.Services
             }
         }
 
-        public async Task<List<LocationTypesModel>> GetAppLocations()
+        public async Task<List<LocationTypeModel>> GetAppLocationsAsync()
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
-            var locations = await db.LocationTypes.Where(l => !l.Disabled).Select(l => new LocationTypesModel
+            var locations = await db.LocationTypes.Where(l => !l.Disabled).Select(l => new LocationTypeModel
             {
                 Id = l.Id,
                 Type = l.Type
@@ -172,7 +175,7 @@ namespace Jobby.Server.Services
             return locations;
         }
 
-        public async Task<MemoryStream> EditDocx(IFormFile file, string jobPostingUrl)
+        public async Task<MemoryStream> EditDocxAsync(IFormFile file, string jobPostingUrl)
         {
             using var memoryStream = new MemoryStream();
             await file.CopyToAsync(memoryStream);

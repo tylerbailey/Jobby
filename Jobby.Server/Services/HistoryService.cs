@@ -7,7 +7,7 @@ namespace Jobby.Server.Services
 {
     public class HistoryService(IDbContextFactory<AppDbContext> dbContextFactory) : ServiceBase(dbContextFactory), IHistoryService
     {
-        public async Task CreateHistory(JobHistoryModel jobHistory)
+        public async Task CreateHistoryAsync(JobHistoryModel jobHistory)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
             await db.JobHistories.AddAsync(new JobHistory()
@@ -21,7 +21,7 @@ namespace Jobby.Server.Services
             await db.SaveChangesAsync();
         }
 
-        public async Task<List<JobHistoryModel>> GetAllHistory(int appId)
+        public async Task<List<JobHistoryModel>> GetHistoryAsync(int appId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
             List<JobHistoryModel> jobHistories = await db.JobHistories.Where(h => h.AppId == appId && !h.Disabled).Select(history => new JobHistoryModel

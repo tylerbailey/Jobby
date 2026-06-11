@@ -1,45 +1,45 @@
 import { CreateNewApp } from "@/services/appService";
-import type { AppCreateProps, ApplicationFormData } from "@/types";
+import type { AppCreateProps, Application, ApplicationFormData } from "@/types";
 import { useState } from "react";
 import { toast } from "sonner";
 import  AppForm  from "@/components/app/AppForm";
 
 export default function CreateApp({ stage, onUpdate, sheetOpen, setSheetOpen }: AppCreateProps) {
     const [form, setForm] = useState<ApplicationFormData>({
+        id: 0,
         formTitle: "Create Application",
         formDesc: "Create a new application here. Click save when you're done.",
         companyName: "",
-        title: "",
-        postingUrl: "",
+        jobTitle: "",
+        jobPostingUrl: "",
         locationTypeId: 0,
+        locationType: "",
         address: "",
-        salary: undefined,
-        stageId: stage,
-        appliedDate: undefined,
-        upcomingDate: undefined,
-        upcomingType: "",
+        salary: 0,
         contactName: "",
-        lastContactDate: undefined,
-        nextContactDate: undefined,
-        notes: ""
+        stageId: stage,
+        notes: "",
+        appliedDate: undefined,
     });
 
     async function saveApp() {
         try {
-            const payload = {
+            const payload: Application = {
+                id: form.id,
+                userId: "",                
                 companyName: form.companyName,
-                title: form.title,
-                postingUrl: form.postingUrl,
+                jobTitle: form.jobTitle,
+                jobPostingUrl: form.jobPostingUrl,
                 locationTypeId: form.locationTypeId,
+                locationType: form.locationType,
                 address: form.address,
                 salary: form.salary,
-                stageId: stage,
-                appliedDate: form.appliedDate,
-                upcomingDate: form.upcomingDate,
                 contactName: form.contactName,
-                lastContactDate: form.lastContactDate,
-                nextContactDate: form.nextContactDate,
-                notes: form.notes
+                stageId: stage,
+                notes: form.notes,
+                appliedDate: form.appliedDate,
+                isAccepted: false,
+                isRejected: false,
             };
             await CreateNewApp(payload);
             onUpdate();
@@ -47,19 +47,16 @@ export default function CreateApp({ stage, onUpdate, sheetOpen, setSheetOpen }: 
             setForm({
                 ...form,
                 companyName: "",
-                title: "",
-                postingUrl: "",
+                jobTitle: "",
+                jobPostingUrl: "",
                 locationTypeId: 0,
+                locationType: "",
                 address: "",
-                salary: undefined,
-                stageId: 0,
-                appliedDate: undefined,
-                upcomingDate: undefined,
-                upcomingType: "",
+                salary: 0,
                 contactName: "",
-                lastContactDate: undefined,
-                nextContactDate: undefined,
-                notes: ""
+                stageId: stage,
+                notes: "",
+                appliedDate: undefined,
             });
 
         }

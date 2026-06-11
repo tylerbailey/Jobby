@@ -4,7 +4,7 @@ namespace Jobby.Server.Services
 {
     public interface IHistoryService
     {
-        Task CreateHistory(JobHistoryModel jobHistory);
-        Task<List<JobHistoryModel>> GetAllHistory(int appId);
+        Task CreateHistoryAsync(JobHistoryModel jobHistory);
+        Task<List<JobHistoryModel>> GetHistoryAsync(int appId);
     }
 }

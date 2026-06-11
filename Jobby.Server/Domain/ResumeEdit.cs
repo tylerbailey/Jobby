@@ -6,6 +6,7 @@ namespace Jobby.Server.Domain
     {
         [JsonPropertyName("id")]
         public int Id { get; set; }
+
         [JsonPropertyName("newText")]
         public string NewText { get; set; } = string.Empty;
     }

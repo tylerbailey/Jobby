@@ -114,18 +114,6 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
             >
                 <CardHeader className="px-2">
                     <div className="flex justify-end">
-                        {item.nextContactDate != null && (
-                            new Date(item.nextContactDate) <= secondCutOff
-                                ? <Badge className="bg-red-50 text-red-700 h-8 w-8"><CircleAlert /></Badge>
-                                : new Date(item.nextContactDate) <= firstCutOff ? <Badge className="bg-yellow-50 text-yellow-700 h-8 w-8"><CircleAlert /></Badge>
-                                    : null
-                        )}
-                        {item.upcomingDate != null && (
-                            new Date(item.upcomingDate) <= secondCutOff
-                                ? <Badge className="bg-red-50 text-red-700 h-8 w-8"><CircleAlert /></Badge>
-                                : new Date(item.upcomingDate) <= firstCutOff ? <Badge className="bg-yellow-50 text-yellow-700 h-8 w-8"><CircleAlert /></Badge>
-                                    : null
-                        )}
                     </div>
                     <div className="flex min-w-0 items-start justify-between gap-2">
                         <div className="flex min-w-0 flex-1 items-start gap-1">
@@ -134,7 +122,7 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
                             </div>
                             <div className="min-w-0 flex-1">
                                 <h3 className="truncate font-semibold leading-tight">
-                                    {item.title}
+                                    {item.jobTitle}
                                 </h3>
                                 <p className="truncate text-sm text-muted-foreground">
                                     {item.companyName}
@@ -207,14 +195,7 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
                                 <CalendarDays className="h-4 w-4" />
                                 <span>{formatDate(item.appliedDate)}</span>
                             </div>
-                        )}
-
-                        {item.upcomingDate && (
-                            <div className="flex items-center gap-2 border-t pt-2">
-                                <CalendarDays className="h-4 w-4" />
-                                <span>Interview: {new Date(item.upcomingDate).toLocaleDateString()}</span>
-                            </div>
-                        )}
+                        )}                      
                     </div>
 
                     {item.notes && (

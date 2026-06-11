@@ -1,48 +1,44 @@
 import type { Dispatch, SetStateAction } from "react";
 
 export type Application = {
-    id?: number;
-    userId?: string;
+    id: number;
+    userId: string;
     companyName: string;
-    title: string;
-    postingUrl: string;
+    jobTitle: string;
+    jobPostingUrl: string;
     locationTypeId: number;
-    locationType?: string;
-    address?: string;
-    salary?: number;
-    stageId?: number;
+    locationType: string;
+    address: string;
+    salary: number;
+    contactName: string;
+    stageId: number;
+    notes: string;
     appliedDate?: Date;
-    upcomingDate?: Date;
-    upcomingType?: string;
-    contactName?: string;
-    lastContactDate?: Date;
-    nextContactDate?: Date;
-    notes?: string;
+    isAccepted: boolean;
+    isRejected: boolean;
 }
 
 export type ApplicationFormData = {
+    id: number;
     formTitle: string;
     formDesc: string;
     companyName: string;
-    title: string;
-    postingUrl: string;
+    jobTitle: string;
+    jobPostingUrl: string;
     locationTypeId: number;
-    address?: string;
-    salary?: number;
-    stageId?: number;
+    locationType: string;
+    address: string;
+    salary: number;
+    contactName: string;
+    stageId: number;
+    notes: string;
     appliedDate?: Date;
-    upcomingDate?: Date;
-    upcomingType?: string;
-    contactName?: string;
-    lastContactDate?: Date;
-    nextContactDate?: Date;
-    notes?: string;   
 }
+
 export type AppInfoProps = {
     item: Application;
     infoOpen: boolean;
     setInfoOpen: Dispatch<SetStateAction<boolean>>
-
 }
 
 export type AppCreateProps = {
@@ -65,7 +61,7 @@ export type LocationType = {
 }
 
 export type AppFormProps = {
-    form: ApplicationFormData;    
+    form: ApplicationFormData;
     setForm: Dispatch<SetStateAction<ApplicationFormData>>;
     sheetOpen: boolean;
     setSheetOpen: Dispatch<SetStateAction<boolean>>

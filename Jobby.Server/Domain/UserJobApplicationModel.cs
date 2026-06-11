@@ -5,7 +5,7 @@ namespace Jobby.Server.Domain
     public class UserJobApplicationModel
     {
         [JsonPropertyName("id")]
-        public int? Id { get; set; }
+        public int Id { get; set; }
 
         [JsonPropertyName("userId")]
         public string UserId { get; set; } = string.Empty;
@@ -31,23 +31,8 @@ namespace Jobby.Server.Domain
         [JsonPropertyName("salary")]
         public int? Salary { get; set; }
 
-        [JsonPropertyName("appliedDate")]
-        public DateTime? AppliedDate { get; set; }
-
-        [JsonPropertyName("upcomingDate")]
-        public DateTime? UpcomingDate { get; set; }
-
-        [JsonPropertyName("upcomingType")]
-        public string? UpcomingType { get; set; }
-
         [JsonPropertyName("contactName")]
         public string? ContactName { get; set; }
-
-        [JsonPropertyName("lastContactDate")]
-        public DateTime? LastContactDate { get; set; }
-
-        [JsonPropertyName("nextContactDate")]
-        public DateTime? NextContactDate { get; set; }
 
         [JsonPropertyName("stageId")]
         public int? StageId { get; set; }
@@ -55,7 +40,13 @@ namespace Jobby.Server.Domain
         [JsonPropertyName("notes")]
         public string? Notes { get; set; }
 
-        [JsonPropertyName("showAlertBadge")]
-        public bool ShowAlertBadge { get; set; }
+        [JsonPropertyName("appliedDate")]
+        public DateTime? AppliedDate { get; set; }
+
+        [JsonPropertyName("isAccepted")]
+        public bool IsAccepted { get; set; }
+
+        [JsonPropertyName("isRejected")]
+        public bool IsRejected { get; set; }
     }
 }

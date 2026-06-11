@@ -10,12 +10,13 @@ import { MoreVertical, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 export function KanbanColumn({ id, title, order, color, stage, items, onUpdate, searchValue }: KanbanColumnProps) {
-    const { ref } = useDroppable({
-        id: stage.toString()
-    });
     const [menuOpen, setMenuOpen] = useState<boolean>(false);
     const [sheetOpen, setSheetOpen] = useState<boolean>(false);
     const cardStacks = chunkItems(items ?? [], 5);
+
+    const { ref } = useDroppable({
+        id: stage.toString()
+    });
 
     function handleDelete() {
         DeleteStage(id);

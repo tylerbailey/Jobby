@@ -24,8 +24,8 @@ namespace Jobby.Server.Controllers
         public async Task<IActionResult> CreateApplication(UserJobApplicationModel application)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
-            var createdApp = await _appService.CreateNewAppAsync(application, userId);
-            return Ok(createdApp);
+            await _appService.CreateNewAppAsync(application, userId);
+            return Ok();
         }
 
         [HttpPost("update")]
@@ -38,7 +38,7 @@ namespace Jobby.Server.Controllers
         [HttpGet("locations")]
         public async Task<IActionResult> GetAllApplicationLocations()
         {
-            var locations = await _appService.GetAppLocations();
+            var locations = await _appService.GetAppLocationsAsync();
             return Ok(locations);
         }
 
@@ -46,7 +46,7 @@ namespace Jobby.Server.Controllers
         public async Task<IActionResult> MoveStage(int applicationId, [FromQuery] int stageId)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
-            await _appService.MoveApplicationStage(applicationId, stageId, userId);
+            await _appService.MoveApplicationStageAsync(applicationId, stageId, userId);
             return Ok();
         }
 
@@ -63,7 +63,7 @@ namespace Jobby.Server.Controllers
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
             var app = await _appService.GetAppAsync(userId, applicationId);
-            var memoryStream = await _appService.EditDocx(file, app.JobPostingUrl);
+            var memoryStream = await _appService.EditDocxAsync(file, app.JobPostingUrl);
             return File(
                 memoryStream.ToArray(),
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document",

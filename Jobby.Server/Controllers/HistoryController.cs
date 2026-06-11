@@ -15,7 +15,7 @@ namespace Jobby.Server.Controllers
         [HttpGet("{appId}")]
         public async Task<IActionResult> GetHistory(int appId)
         {
-            List<JobHistoryModel> jobHistories = await _historyService.GetAllHistory(appId);
+            List<JobHistoryModel> jobHistories = await _historyService.GetHistoryAsync(appId);
             return Ok(jobHistories);
         }
 

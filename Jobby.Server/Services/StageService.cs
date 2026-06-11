@@ -71,22 +71,19 @@ namespace Jobby.Server.Services
                 Items = db.JobApps.Where(a => a.UserId == userId && a.StageId == s.Id && !a.Disabled).Select(a => new UserJobApplicationModel
                 {
                     Id = a.Id,
-                    UserId = a.UserId,
                     CompanyName = a.Company,
                     JobTitle = a.Title,
                     JobPostingUrl = a.JobPostingUrl ?? string.Empty,
-                    AppliedDate = a.Applied,
-                    StageId = a.StageId,
-                    LocationType = a.LocationType.Type,
-                    LocationTypeId = a.LocationTypeId,
-                    Address = a.Address,
+                    Address = a.Address ?? string.Empty,
                     Salary = a.Salary,
-                    UpcomingDate = a.Upcoming,
-                    UpcomingType = a.UpcomingType,
-                    ContactName = a.ContactName,
-                    LastContactDate = a.LastContactDate,
-                    NextContactDate = a.NextContactDate,
-                    Notes = a.Notes,
+                    LocationTypeId = a.LocationTypeId,
+                    LocationType = a.LocationType != null ? a.LocationType.Type : string.Empty,
+                    Notes = a.Notes ?? string.Empty,
+                    ContactName = a.ContactName ?? string.Empty,
+                    AppliedDate = a.Applied,
+                    IsRejected = a.IsRejected,
+                    IsAccepted = a.IsAccepted,
+                    StageId = a.StageId
                 }).ToList()
             }).OrderBy(s => s.Order).ToListAsync();
             return stages;

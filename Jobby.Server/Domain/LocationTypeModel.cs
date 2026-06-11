@@ -2,7 +2,7 @@
 
 namespace Jobby.Server.Domain
 {
-    public class LocationTypesModel
+    public class LocationTypeModel
     {
         [JsonPropertyName("id")]
         public int Id { get; set; }
