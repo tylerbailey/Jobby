@@ -15,7 +15,7 @@ export function KanbanColumn({ id, title, order, color, stage, items, onUpdate, 
     });
     const [menuOpen, setMenuOpen] = useState<boolean>(false);
     const [sheetOpen, setSheetOpen] = useState<boolean>(false);
-    const cardStacks = chunkItems(items, 5);
+    const cardStacks = chunkItems(items ?? [], 5);
 
     function handleDelete() {
         DeleteStage(id);
@@ -36,7 +36,7 @@ export function KanbanColumn({ id, title, order, color, stage, items, onUpdate, 
                     <div className="flex items-center gap-2">
                         <h2 className="font-semibold">{title}</h2>
                         <span className="rounded-full bg-background/80 px-2 py-0.5 text-xs font-medium">
-                            {items.length}
+                            {(items ?? []).length}
                         </span>
 
                     </div>

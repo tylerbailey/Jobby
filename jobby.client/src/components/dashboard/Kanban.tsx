@@ -62,7 +62,7 @@ export function KanbanBoard() {
 
     function findCard(stages: Stage[], cardId: string): Application | undefined {
         for (const stage of stages) {
-            const card = stage.items.find(item => item.id?.toString() === cardId);
+            const card = stage.items?.find(item => item.id?.toString() === cardId);
             if (card) return card;
         }
         return undefined;
@@ -85,13 +85,13 @@ export function KanbanBoard() {
                     if (stage.id === card.stageId) {
                         return {
                             ...stage,
-                            items: stage.items.filter(item => item.id?.toString() !== cardId)
+                            items: stage.items?.filter(item => item.id?.toString() !== cardId)
                         };
                     }
                     if (stage.id === newStageId) {
                         return {
                             ...stage,
-                            items: [...stage.items, { ...card, stageId: newStageId }]
+                            items: [...stage.items!, { ...card, stageId: newStageId }]
                         };
                     }
                     return stage;
@@ -101,14 +101,14 @@ export function KanbanBoard() {
             const card = findCard(stagesRef.current, cardId);
             if (card) {
                 try {
-                    await MoveStage(card.id, newStageId);
+                    await MoveStage(card.id!, newStageId);
                 } catch {
                     toast.error("An error occurred while moving your application.");
                     handleRefresh(); // revert optimistic update on failure
                 }
             }
         }
-        catch (ex) {
+        catch  {
             toast.error("An error occured while moving your application.")
         }
     }
@@ -198,13 +198,13 @@ export function KanbanBoard() {
                     >
                         {stages.map((stage) => (
                             <KanbanColumn
-                                key={stage.id}
-                                id={stage.id}
+                                key={stage.id!}
+                                id={stage.id!}
                                 title={stage.name}
                                 color={stage.color}
                                 order={stage.order}
-                                items={stage.items}
-                                stage={stage.id}
+                                items={stage.items!}
+                                stage={stage.id!}
                                 searchValue={searchValue}
                                 onUpdate={handleRefresh}
                             />

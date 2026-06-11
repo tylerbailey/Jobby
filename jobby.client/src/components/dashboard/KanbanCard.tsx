@@ -2,7 +2,7 @@ import { EditAppSheet } from "@/components/app/EditApp";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -100,7 +100,7 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
 
     useEffect(() => {
         async function GetItemHistory() {
-            const response = await GetHistory(item.id)
+            const response = await GetHistory(item.id!)
             setHistories(response.data)
         }
         GetItemHistory();

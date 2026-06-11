@@ -1,7 +1,7 @@
 import { LoginPage } from "@/components/auth/Login";
 import { RegisterPage } from "@/components/auth/Register";
 import { Dashboard } from "@/components/dashboard/Dashboard";
-import Layout from "@/components/layout/layout";
+import Layout from "@/components/layout/Layout";
 import { ProtectedRoute } from "@/ProtectedRoute";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 

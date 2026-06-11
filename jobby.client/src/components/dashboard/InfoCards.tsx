@@ -1,7 +1,8 @@
 import { Card,  CardContent} from "@/components/ui/card";
 import { BriefcaseBusiness, Send, XCircle } from "lucide-react";
+import type { KanbanInfoCardProps } from "@/types";
 
-export default function InfoCards({ active, applied, rejected }) {
+export default function InfoCards({ active, applied, rejected }: KanbanInfoCardProps) {
     return (
 
             <div className="flex flex-wrap gap-4">
