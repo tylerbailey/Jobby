@@ -1,4 +1,5 @@
 import type { Dispatch, SetStateAction } from "react";
+import type { EventItem } from "./eventItem";
 
 export type Application = {
     id: number;
@@ -16,6 +17,7 @@ export type Application = {
     appliedDate?: Date;
     isAccepted: boolean;
     isRejected: boolean;
+    events: EventItem[];
 }
 
 export type ApplicationFormData = {
@@ -33,6 +35,7 @@ export type ApplicationFormData = {
     stageId: number;
     notes: string;
     appliedDate?: Date;
+    events: EventItem[];
 }
 
 export type AppInfoProps = {

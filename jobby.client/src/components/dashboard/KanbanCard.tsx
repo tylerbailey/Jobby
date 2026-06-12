@@ -9,12 +9,12 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { DeleteApp, GenerateApp } from "@/services/appService";
 import type { HistoryItem, KanbanCardProps } from "@/types";
 import { useDraggable } from "@dnd-kit/react";
-import { CalendarDays, CircleAlert, File, MapPin, MoreVertical, Pencil, Timeline, Trash2 } from "lucide-react";
+import { CalendarDays, Check, File, MapPin, MoreVertical, Pencil, Timeline, Trash2, X } from "lucide-react";
 import { type ChangeEvent, useEffect, useState } from "react";
 import { toast } from "sonner";
-import { GetHistory } from "../../services/historyService";
-import AppInfo from "../app/AppInfo";
-import JobHistory from "../timeline/JobHistory";
+import { GetHistory } from "@/services/historyService";
+import AppInfo from "@/components/app/AppInfo";
+import JobHistory from "@/components/timeline/JobHistory";
 
 export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
     const { ref: dragRef } = useDraggable({
@@ -158,7 +158,18 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
                                         <span>Generate Resume</span>
                                         <File className="h-4 w-4" />
                                     </Button>
-
+                                    <Button          
+                                        variant="ghost"
+                                        className="flex h-9 w-full items-center justify-between px-2">
+                                        <span>Accepted</span>
+                                        <Check className="h-4 w-4" />
+                                    </Button>
+                                    <Button                       
+                                        variant="ghost"
+                                        className="flex h-9 w-full items-center justify-between px-2">
+                                        <span>Rejected</span>
+                                        <X className="h-4 w-4" />
+                                    </Button>
                                     <Button
                                         onClick={handleDelete}
                                         variant="ghost"

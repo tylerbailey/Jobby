@@ -8,9 +8,11 @@ import { GetAllAppLocations } from "@/services/appService";
 import type { AppFormProps, LocationType } from "@/types";
 import { useEffect, useState } from "react";
 import { Field, FieldDescription, FieldLabel } from "../ui/field";
+import { Label } from "../ui/label";
 
 export default function AppForm({ form, setForm, sheetOpen, setSheetOpen, action }: AppFormProps) {
     const [locationTypes, setLocationTypes] = useState<LocationType[]>([]);
+
 
     useEffect(() => {
         async function GetLocations() {
@@ -130,7 +132,7 @@ export default function AppForm({ form, setForm, sheetOpen, setSheetOpen, action
                         </FieldDescription>
                         <CalendarPopup value={form.appliedDate} onValueChange={(e) => setForm({ ...form, appliedDate: e })} />
 
-                    </Field>                    
+                    </Field>
                     <Field className="py-3">
                         <FieldLabel htmlFor="input-field-jobContact">Contact</FieldLabel>
                         <FieldDescription>
@@ -142,7 +144,7 @@ export default function AppForm({ form, setForm, sheetOpen, setSheetOpen, action
                             placeholder="Enter the contact name"
                             value={form.contactName}
                             onChange={(e) => setForm({ ...form, contactName: e.target.value })} />
-                    </Field>  
+                    </Field>
                     <Field className="py-3">
                         <FieldLabel htmlFor="input-field-jobnotes">Notes</FieldLabel>
                         <FieldDescription>

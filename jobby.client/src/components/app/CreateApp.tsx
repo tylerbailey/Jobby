@@ -20,6 +20,7 @@ export default function CreateApp({ stage, onUpdate, sheetOpen, setSheetOpen }: 
         stageId: stage,
         notes: "",
         appliedDate: undefined,
+        events: []
     });
 
     async function saveApp() {
@@ -40,6 +41,7 @@ export default function CreateApp({ stage, onUpdate, sheetOpen, setSheetOpen }: 
                 appliedDate: form.appliedDate,
                 isAccepted: false,
                 isRejected: false,
+                events : form.events
             };
             await CreateNewApp(payload);
             onUpdate();
@@ -57,6 +59,7 @@ export default function CreateApp({ stage, onUpdate, sheetOpen, setSheetOpen }: 
                 stageId: stage,
                 notes: "",
                 appliedDate: undefined,
+              events: []
             });
 
         }

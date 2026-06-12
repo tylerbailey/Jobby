@@ -32,9 +32,7 @@ namespace Jobby.Server.Services
                 EventTitle = history.EventTitle,
                 EventDescription = history.EventDescription
             }).ToListAsync();
-
             return jobHistories;
-    }
-
+        }
     }
 }

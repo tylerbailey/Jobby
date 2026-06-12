@@ -5,8 +5,10 @@ namespace Jobby.Server.Domain
     public class JobEventModel
     {
         [JsonPropertyName("id")]
-
         public int? Id { get; set; }
+
+        [JsonPropertyName("appId")]
+        public int AppId { get; set; }
 
         [JsonPropertyName("eventTitle")]
         public string EventTitle { get; set; } = string.Empty;

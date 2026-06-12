@@ -9,7 +9,7 @@ namespace Jobby.Server.Data
         public DbSet<JobApp> JobApps { get; set; }
         public DbSet<AppStage> AppStages { get; set; }
         public DbSet<LocationType> LocationTypes { get; set; }
-
         public DbSet<JobHistory> JobHistories { get; set; }
+        public DbSet<JobEvent> JobEvents { get; set; }
     }
 }

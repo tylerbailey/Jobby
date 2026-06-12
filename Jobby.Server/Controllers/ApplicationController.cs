@@ -9,9 +9,10 @@ namespace Jobby.Server.Controllers
     [Authorize]
     [ApiController]
     [Route("api/app")]
-    public class ApplicationController(IAppService appService) : Controller
+    public class ApplicationController(IAppService appService, IEventService eventService) : Controller
     {
         private readonly IAppService _appService = appService;
+        private readonly IEventService _eventService = eventService;
 
         [HttpGet("{applicationId}")]
         public async Task<IActionResult> GetApplicationAsync(int applicationId)
@@ -40,6 +41,20 @@ namespace Jobby.Server.Controllers
         {
             var locations = await _appService.GetAppLocationsAsync();
             return Ok(locations);
+        }
+
+        [HttpGet("events/{applicationId}")]
+        public async Task<IActionResult> GetApplicationEvents(int applicationId)
+        {
+            var events = await _eventService.GetEventsAsync(applicationId);
+            return Ok(events);
+        }
+
+        [HttpGet("events/upcoming/{applicationId}")]
+        public async Task<IActionResult> GetUpcomingApplicationEvents(int applicationId)
+        {
+            var events = await _eventService.GetUpcomingEventsAsync(applicationId);
+            return Ok(events);
         }
 
         [HttpPost("move/{applicationId}")]

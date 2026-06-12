@@ -4,7 +4,7 @@ import { useState } from "react";
 import AppForm from "@/components/app/AppForm";
 import { toast } from "sonner";
 
-export function EditAppSheet({ item, onUpdate, sheetOpen ,setSheetOpen }: AppEditProps) {
+export function EditAppSheet({ item, onUpdate, sheetOpen, setSheetOpen }: AppEditProps) { 
 
     const [form, setForm] = useState<ApplicationFormData>({
         id: item.id,
@@ -21,6 +21,7 @@ export function EditAppSheet({ item, onUpdate, sheetOpen ,setSheetOpen }: AppEdi
         stageId: item.stageId,
         notes: item.notes,
         appliedDate: item.appliedDate,
+        events: item.events ?? []
     });
    
     async function saveApp() {
@@ -41,6 +42,7 @@ export function EditAppSheet({ item, onUpdate, sheetOpen ,setSheetOpen }: AppEdi
                 appliedDate: form.appliedDate,
                 isAccepted: item.isAccepted,
                 isRejected: item.isRejected,
+                events: form.events
             });
             onUpdate();
             setSheetOpen(false);

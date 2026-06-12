@@ -62,13 +62,22 @@ namespace Jobby.Server.Services
         public async Task<List<AppStageModel>> GetUserPipeline(string userId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
-            var stages = await db.AppStages.Where(s => !s.Disabled).Select(s => new AppStageModel
+            var stages = await db.AppStages
+                .Where(s => !s.Disabled)
+                .Include(s => s.JobApps.Where(a => a.UserId == userId && !a.Disabled))
+                .ThenInclude(a => a.LocationType)
+                .Include(s => s.JobApps)
+                .ThenInclude(a => a.JobEvents.Where(e => !e.Disabled))
+                .OrderBy(s => s.Order)
+                .ToListAsync();
+
+            var result = stages.Select(s => new AppStageModel
             {
                 Id = s.Id,
                 Name = s.Name,
                 Order = s.Order,
                 Color = s.Color,
-                Items = db.JobApps.Where(a => a.UserId == userId && a.StageId == s.Id && !a.Disabled).Select(a => new UserJobApplicationModel
+                Items = [.. s.JobApps.Select(a => new UserJobApplicationModel
                 {
                     Id = a.Id,
                     CompanyName = a.Company,
@@ -77,16 +86,25 @@ namespace Jobby.Server.Services
                     Address = a.Address ?? string.Empty,
                     Salary = a.Salary,
                     LocationTypeId = a.LocationTypeId,
-                    LocationType = a.LocationType != null ? a.LocationType.Type : string.Empty,
+                    LocationType = a.LocationType?.Type ?? string.Empty,
                     Notes = a.Notes ?? string.Empty,
                     ContactName = a.ContactName ?? string.Empty,
                     AppliedDate = a.Applied,
                     IsRejected = a.IsRejected,
                     IsAccepted = a.IsAccepted,
-                    StageId = a.StageId
-                }).ToList()
-            }).OrderBy(s => s.Order).ToListAsync();
-            return stages;
+                    StageId = a.StageId,
+                    Events = [.. a.JobEvents.Where(e => e.EventDate >= DateTime.UtcNow.AddDays(-7)).Select(e => new JobEventModel
+                    {
+                        Id = e.Id,
+                        AppId = e.AppId,
+                        EventDate = e.EventDate,
+                        EventTitle = e.EventTitle,
+                        EventDescription = e.EventDescription,
+                    })]
+                })]
+            }).ToList();
+
+            return result;
         }
     }
 }

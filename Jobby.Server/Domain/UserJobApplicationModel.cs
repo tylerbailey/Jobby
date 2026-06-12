@@ -13,10 +13,10 @@ namespace Jobby.Server.Domain
         [JsonPropertyName("companyName")]
         public string CompanyName { get; set; } = string.Empty;
 
-        [JsonPropertyName("title")]
+        [JsonPropertyName("jobTitle")]
         public string JobTitle { get; set; } = string.Empty;
 
-        [JsonPropertyName("postingUrl")]
+        [JsonPropertyName("jobPostingUrl")]
         public string JobPostingUrl { get; set; } = string.Empty;
 
         [JsonPropertyName("locationTypeId")]
@@ -48,5 +48,8 @@ namespace Jobby.Server.Domain
 
         [JsonPropertyName("isRejected")]
         public bool IsRejected { get; set; }
+
+        [JsonPropertyName("events")]
+        public List<JobEventModel> Events { get; set; }
     }
 }
