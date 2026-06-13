@@ -11,13 +11,16 @@ namespace Jobby.Server.Services
         public async Task CreateEventAsync(JobEventModel jobEvent)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
-            await db.JobEvents.AddAsync(new JobEvent
+            var entry = new JobEvent
             {
                 AppId = jobEvent.AppId,
                 EventTitle = jobEvent.EventTitle,
                 EventDescription = jobEvent.EventDescription,
-                Created = DateTime.UtcNow
-            });
+                EventDate = jobEvent.EventDate,
+                Created = DateTime.UtcNow,
+            };
+
+            db.JobEvents.Add(entry);
             await db.SaveChangesAsync();
         }
 
@@ -39,7 +42,7 @@ namespace Jobby.Server.Services
         public async Task<List<JobEventModel>> GetUpcomingEventsAsync(int appId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
-            List<JobEventModel> jobEvents = db.JobEvents.Where(j => j.AppId == appId && j.EventDate >= DateTime.UtcNow.AddDays(-14) &&!j.Disabled).Select(j => new JobEventModel()
+            List<JobEventModel> jobEvents = [.. db.JobEvents.Where(j => j.AppId == appId && j.EventDate >= DateTime.UtcNow &&!j.Disabled).Select(j => new JobEventModel()
             {
                 Id = j.Id,
                 AppId = j.AppId,
@@ -47,8 +50,52 @@ namespace Jobby.Server.Services
                 EventDescription = j.EventDescription,
                 EventDate = j.EventDate
 
-            }).ToList();
+            })];
             return jobEvents;
+        }
+
+        public async Task<List<JobEventModel>> GetUserEvents(string userId)
+        {
+            await using var db = await _dbContextFactory.CreateDbContextAsync();
+            var events = await db.JobApps.Where(j => j.UserId == userId && j.JobEvents.Count > 0 && !j.Disabled).SelectMany(j => j.JobEvents.Where(e => !e.Disabled)).Select(e => new JobEventModel()
+            {
+                Id = e.Id,
+                AppId = e.AppId,
+                EventTitle = e.EventTitle,
+                EventDescription = e.EventDescription,
+                EventDate = e.EventDate,
+                JobApplication = new UserJobApplicationModel()
+                {
+                    Id = e.JobApp!.Id,
+                    CompanyName = e.JobApp.Company,
+                    JobTitle = e.JobApp.Title,
+                    JobPostingUrl = e.JobApp.JobPostingUrl ?? string.Empty,
+                    Address = e.JobApp.Address ?? string.Empty,
+                    Salary = e.JobApp.Salary,
+                    LocationTypeId = e.JobApp.LocationTypeId,
+                    LocationType = (e.JobApp.LocationType != null ? e.JobApp.LocationType.Type : string.Empty ),
+                    Notes = e.JobApp.Notes ?? string.Empty,
+                    ContactName = e.JobApp.ContactName ?? string.Empty,
+                    AppliedDate = e.JobApp.Applied,
+                    IsRejected = e.JobApp.IsRejected,
+                    IsAccepted = e.JobApp.IsAccepted,
+                    StageId = e.JobApp.StageId,
+                }
+            }).ToListAsync();
+
+            return events;
+        }
+
+        public async Task DeleteEvent(int eventId, string userId)
+        {
+            await using var db = await _dbContextFactory.CreateDbContextAsync();
+            var foundEvent = await db.JobEvents.Where(e => e.Id == eventId && e.JobApp!.UserId == userId).FirstOrDefaultAsync();
+            if (foundEvent != null)
+            {
+                foundEvent.Disabled = true;
+                await db.SaveChangesAsync();
+            }
+
         }
 
     }

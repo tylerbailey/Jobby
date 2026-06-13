@@ -5,6 +5,10 @@ export async function CreateNewApp(application: Application) {
     return await api.post("/app/new", application);
 }
 
+export async function GetAllApps() {
+    return await api.get<Application[]>("/app/all")
+}
+
 export async function GetAllAppLocations() {
     return await api.get<LocationType[]>("/app/locations");
 }

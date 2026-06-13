@@ -2,9 +2,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
 import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import type { AppInfoProps, EventItem } from "@/types";
+import type { AppInfoProps } from "@/types";
 import { ExternalLink } from "lucide-react";
-import { useState } from "react";
 import { Label } from "../ui/label";
 
 
@@ -90,7 +89,7 @@ export default function AppInfo({ item, infoOpen, setInfoOpen }: AppInfoProps) {
                 )}
             </SheetContent>
         </Sheet>
-    );
+    )
 }
 function formatCurrency(amount: number) {
     return new Intl.NumberFormat("en-US", {

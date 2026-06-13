@@ -21,6 +21,14 @@ namespace Jobby.Server.Controllers
             return Ok(application);
         }
 
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAllApplicationsAsync()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
+            var applications = await _appService.GetAppsAsync(userId);
+            return Ok(applications);
+        }
+
         [HttpPost("new")]
         public async Task<IActionResult> CreateApplication(UserJobApplicationModel application)
         {

@@ -18,5 +18,8 @@ namespace Jobby.Server.Domain
 
         [JsonPropertyName("eventDate")]
         public DateTime EventDate { get; set; }
+
+        [JsonPropertyName("application")]
+        public UserJobApplicationModel JobApplication { get; set; } = new UserJobApplicationModel();
     }
 }

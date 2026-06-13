@@ -39,6 +39,14 @@ const target = env.ASPNETCORE_HTTPS_PORT ? `https://localhost:${env.ASPNETCORE_H
 
 // https://vitejs.dev/config/
 export default defineConfig({
+    optimizeDeps: {
+        include: [
+            '@fullcalendar/react',
+            '@fullcalendar/react/daygrid',
+            '@fullcalendar/react/interaction',
+            '@fullcalendar/react/themes/monarch',
+        ]
+    },
     plugins: [plugin(), tailwindcss()],
     resolve: {
         alias: {

@@ -104,7 +104,7 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
             setHistories(response.data)
         }
         GetItemHistory();
-    }, []);
+    }, [item.id]);
 
     return (
         <div ref={dragRef} className={isMatch ? "w-full" : "hidden"}>
@@ -113,8 +113,6 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
                 onClick={() => setInfoOpen(true)}
             >
                 <CardHeader className="px-2">
-                    <div className="flex justify-end">
-                    </div>
                     <div className="flex min-w-0 items-start justify-between gap-2">
                         <div className="flex min-w-0 flex-1 items-start gap-1">
                             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-sm font-bold text-primary">

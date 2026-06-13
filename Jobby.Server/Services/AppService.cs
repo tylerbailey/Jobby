@@ -38,6 +38,30 @@ namespace Jobby.Server.Services
             return application;
         }
 
+        public async Task<List<UserJobApplicationModel>> GetAppsAsync(string userId)
+        {
+            await using var db = await _dbContextFactory.CreateDbContextAsync();
+            var applications = await db.JobApps.Where(j => j.UserId == userId && !j.Disabled).Select( j =>
+                new UserJobApplicationModel()
+                {
+                    Id = j.Id,
+                    CompanyName = j.Company,
+                    JobTitle = j.Title,
+                    JobPostingUrl = j.JobPostingUrl ?? string.Empty,
+                    Address = j.Address ?? string.Empty,
+                    Salary = j.Salary,
+                    LocationTypeId = j.LocationTypeId,
+                    LocationType = j.LocationType != null ? j.LocationType.Type : string.Empty,
+                    Notes = j.Notes ?? string.Empty,
+                    ContactName = j.ContactName ?? string.Empty,
+                    AppliedDate = j.Applied,
+                    IsRejected = j.IsRejected,
+                    IsAccepted = j.IsAccepted,
+                    StageId = j.StageId                    
+                }
+                ).ToListAsync();
+            return applications;
+        }
 
         public async Task CreateNewAppAsync(UserJobApplicationModel application, string userId)
         {

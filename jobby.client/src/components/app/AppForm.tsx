@@ -8,7 +8,6 @@ import { GetAllAppLocations } from "@/services/appService";
 import type { AppFormProps, LocationType } from "@/types";
 import { useEffect, useState } from "react";
 import { Field, FieldDescription, FieldLabel } from "../ui/field";
-import { Label } from "../ui/label";
 
 export default function AppForm({ form, setForm, sheetOpen, setSheetOpen, action }: AppFormProps) {
     const [locationTypes, setLocationTypes] = useState<LocationType[]>([]);
@@ -158,7 +157,7 @@ export default function AppForm({ form, setForm, sheetOpen, setSheetOpen, action
                 <SheetFooter>
                     <Button onClick={() => action()}>Save</Button>
                     <SheetClose asChild>
-                        <Button variant="outline">Close</Button>
+                        <Button onClick={() => setSheetOpen(false) } variant="outline">Close</Button>
                     </SheetClose>
                 </SheetFooter>
             </SheetContent>

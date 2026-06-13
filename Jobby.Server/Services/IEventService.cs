@@ -7,5 +7,7 @@ namespace Jobby.Server.Services
         Task CreateEventAsync(JobEventModel jobEvent);
         Task<List<JobEventModel>> GetEventsAsync(int appId);
         Task<List<JobEventModel>> GetUpcomingEventsAsync(int appId);
+        Task<List<JobEventModel>> GetUserEvents(string userId);
+        Task DeleteEvent(int eventId, string userId);
     }
 }

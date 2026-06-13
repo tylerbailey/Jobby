@@ -50,6 +50,6 @@ namespace Jobby.Server.Domain
         public bool IsRejected { get; set; }
 
         [JsonPropertyName("events")]
-        public List<JobEventModel> Events { get; set; }
+        public List<JobEventModel> Events { get; set; } = [];
     }
 }
