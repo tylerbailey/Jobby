@@ -88,7 +88,7 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
             toast.warning("This application must be saved before it can be deleted.");
             return;
         }
-
+        setMenuOpen(false);
         await DeleteApp(item.id.toString());
         onUpdate();
         toast.info("The application has been deleted.")
@@ -100,6 +100,7 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
     }
 
     async function handleRejected() {
+        setMenuOpen(false);
         await UpdateApp({
            ... item,
             isRejected: true,
@@ -110,6 +111,7 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
     }
 
     async function handleInProgress() {
+        setMenuOpen(false);
         await UpdateApp({
             ...item,
             isRejected: false,
@@ -120,6 +122,7 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
     }
 
     async function handleAccepted() {
+        setMenuOpen(false);
         await UpdateApp({
             ...item,
             isRejected: false,

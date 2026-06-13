@@ -13,7 +13,7 @@ import {
     SidebarRail,
 } from "@/components/ui/sidebar";
 import * as React from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 const data = {
     navMain: [
@@ -24,19 +24,19 @@ const data = {
                 {
                     title: "Dashboard",
                     url: "/",
-                    isActive: true
-                },     
+                },
                 {
                     title: "Calendar",
                     url: "/calendar",
-                    isActive: true
-                },     
+                },
             ],
         }
     ]
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+    const location = useLocation();
+
     return (
         <Sidebar {...props}>
             <SidebarHeader>
@@ -44,7 +44,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
                         <span className="text-lg font-bold">J</span>
                     </div>
-
                     <div className="min-w-0">
                         <h1 className="truncate text-lg font-bold tracking-tight text-slate-600">
                             Jobby
@@ -56,7 +55,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 </div>
             </SidebarHeader>
             <SidebarContent>
-                {/* We create a SidebarGroup for each parent. */}
                 {data.navMain.map((item) => (
                     <SidebarGroup key={item.title}>
                         <SidebarGroupLabel>{item.title}</SidebarGroupLabel>
@@ -64,7 +62,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                             <SidebarMenu>
                                 {item.items.map((item) => (
                                     <SidebarMenuItem key={item.title}>
-                                        <SidebarMenuButton asChild isActive={item.isActive}>
+                                        <SidebarMenuButton asChild isActive={location.pathname === item.url}>
                                             <Link to={item.url}>{item.title}</Link>
                                         </SidebarMenuButton>
                                     </SidebarMenuItem>
@@ -75,10 +73,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 ))}
             </SidebarContent>
             <SidebarFooter>
-               <NavUser />
-            </SidebarFooter>        
+                <NavUser />
+            </SidebarFooter>
             <SidebarRail />
-
         </Sidebar>
-    )
+    );
 }
