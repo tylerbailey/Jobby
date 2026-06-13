@@ -6,15 +6,16 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { DeleteApp, GenerateApp } from "@/services/appService";
-import type { HistoryItem, KanbanCardProps } from "@/types";
+import { DeleteApp, GenerateApp, UpdateApp } from "@/services/appService";
+import type { Application, HistoryItem, KanbanCardProps } from "@/types";
 import { useDraggable } from "@dnd-kit/react";
-import { CalendarDays, Check, File, MapPin, MoreVertical, Pencil, Timeline, Trash2, X } from "lucide-react";
+import { CalendarDays, Check, Clock3, File, MapPin, MoreVertical, Pencil, Timeline, Trash2, X } from "lucide-react";
 import { type ChangeEvent, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { GetHistory } from "@/services/historyService";
 import AppInfo from "@/components/app/AppInfo";
 import JobHistory from "@/components/timeline/JobHistory";
+import { formatCurrency, formatDate } from "../../helpers/formatHelpers";
 
 export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
     const { ref: dragRef } = useDraggable({
@@ -98,6 +99,35 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
         setEditOpen(true);
     }
 
+    async function handleRejected() {
+        await UpdateApp({
+           ... item,
+            isRejected: true,
+            isAccepted: false            
+        });
+
+        onUpdate();
+    }
+
+    async function handleInProgress() {
+        await UpdateApp({
+            ...item,
+            isRejected: false,
+            isAccepted: false
+        });
+
+        onUpdate();
+    }
+
+    async function handleAccepted() {
+        await UpdateApp({
+            ...item,
+            isRejected: false,
+            isAccepted: true
+        });
+        onUpdate();
+    }
+
     useEffect(() => {
         async function GetItemHistory() {
             const response = await GetHistory(item.id!)
@@ -109,7 +139,7 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
     return (
         <div ref={dragRef} className={isMatch ? "w-full" : "hidden"}>
             <Card
-                className="w-full cursor-pointer transition hover:-translate-y-0.5 hover:shadow-md"
+                className={`w-full cursor-pointer transition hover:-translate-y-0.5 hover:shadow-md  ${getCardColor(item)}`}
                 onClick={() => setInfoOpen(true)}
             >
                 <CardHeader className="px-2">
@@ -156,18 +186,27 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
                                         <span>Generate Resume</span>
                                         <File className="h-4 w-4" />
                                     </Button>
+                                    <Button
+                                        onClick={handleInProgress}
+                                        variant="ghost"
+                                        className="flex h-9 w-full items-center justify-between px-2">
+                                        <span>In Progress</span>
+                                        <Clock3 className="h-4 w-4" />
+                                    </Button>
                                     <Button          
+                                        onClick={handleAccepted}
                                         variant="ghost"
                                         className="flex h-9 w-full items-center justify-between px-2">
                                         <span>Accepted</span>
                                         <Check className="h-4 w-4" />
                                     </Button>
-                                    <Button                       
+                                    <Button      
+                                        onClick={handleRejected}
                                         variant="ghost"
                                         className="flex h-9 w-full items-center justify-between px-2">
                                         <span>Rejected</span>
                                         <X className="h-4 w-4" />
-                                    </Button>
+                                    </Button>                                    
                                     <Button
                                         onClick={handleDelete}
                                         variant="ghost"
@@ -241,12 +280,13 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
     );
 }
 
-function formatCurrency(amount: number) {
-    return new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD"
-    }).format(amount);
+function getCardColor(item: Application) {
+    if (item.isRejected)
+        return "bg-red-50"
+    else if (item.isAccepted)
+        return "bg-green-50"
 }
+
 function getBadgeVariant(type: string): "default" | "secondary" | "outline" {
     switch (type?.toLowerCase()) {
         case "remote":
@@ -260,14 +300,8 @@ function getBadgeVariant(type: string): "default" | "secondary" | "outline" {
     }
 }
 
-function formatDate(date?: Date) {
-    if (!date) return undefined;
-    return new Intl.DateTimeFormat("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric"
-    }).format(new Date(date));
-}
+
+
 
 
 

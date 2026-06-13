@@ -16,14 +16,15 @@ import InfoCards from "./InfoCards";
 export function KanbanBoard() {
     const [stages, setStages] = useState<Stage[]>([]);
     const [refresh, setRefresh] = useState(0);
-    const stagesRef = useRef(stages);
     const [name, setName] = useState("");
     const [order, setOrder] = useState("");
     const [color, setColor] = useState("");
-    const [searchValue, setSearchValue] = useState("")
-    const [totalApps, setTotalApps] = useState(0)
+    const [searchValue, setSearchValue] = useState("");
+    const [totalApps, setTotalApps] = useState(0);
+    const [totalRejected, setTotalRejected] = useState(0)
     const [appliedApps, setAppliedApps] = useState(0)
     const scrollRef = useRef<HTMLDivElement>(null);
+    const stagesRef = useRef(stages);
 
     function scrollLeft() {
         scrollRef.current?.scrollBy({ left: -300, behavior: "smooth" });
@@ -44,6 +45,7 @@ export function KanbanBoard() {
             setStages(data);
             setTotalApps(data.reduce((total, stage) => total + (stage.items ?? []).length, 0));
             setAppliedApps(data.reduce((total, stage) => total + (stage.items ?? []).filter(item => item.appliedDate != null).length, 0));
+            setTotalRejected(data.reduce((total, stage) => total + (stage.items ?? []).filter(item => item.isRejected == true).length, 0));
         }
         GetMyStages();
     }, [refresh]);
@@ -180,7 +182,7 @@ export function KanbanBoard() {
                 <InfoCards
                     active={totalApps}
                     applied={appliedApps}
-                    rejected={0}
+                    rejected={totalRejected}
                 />
             </div>
             <DragDropProvider onDragEnd={handleDragEnd}>

@@ -151,6 +151,8 @@ namespace Jobby.Server.Services
                 jobApp.ContactName = application.ContactName;
                 jobApp.Notes = application.Notes;
                 jobApp.Modified = DateTime.UtcNow;
+                jobApp.IsAccepted = application.IsAccepted;
+                jobApp.IsRejected = application.IsRejected;
                 db.JobApps.Update(jobApp);
 
                 await db.JobHistories.AddAsync(new JobHistory
