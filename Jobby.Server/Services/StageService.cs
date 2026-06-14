@@ -16,14 +16,22 @@ namespace Jobby.Server.Services
 
             if (conflict)
             {
-                var stagesToShift = await db.AppStages
-                    .Where(s => s.UserId == userId && s.Order >= appStage.Order)
-                    .ToListAsync();
-
-                foreach (var stage in stagesToShift)
-                    stage.Order++;
+                var conflictingStages = await db.AppStages.Where(s => s.UserId == userId && s.Order >= appStage.Order).OrderBy(s => s.Order).ToListAsync();
+                int previousStage = appStage.Order;
+                foreach (var stage in conflictingStages)
+                {
+                    if (stage.Order <= previousStage + 1)
+                    {
+                        previousStage = stage.Order;
+                        stage.Order++;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                await db.SaveChangesAsync();
             }
-
             db.AppStages.Add(new AppStage
             {
                 UserId = userId,
@@ -54,7 +62,7 @@ namespace Jobby.Server.Services
             var stage = await db.AppStages.Where(s => s.Id == stageId && s.UserId == userId).FirstOrDefaultAsync();
             if (stage != null && (stage.JobApps == null || stage.JobApps.Count == 0))
             {
-                stage.Disabled = true;
+                db.AppStages.Remove(stage);
                 await db.SaveChangesAsync();
             }
         }
@@ -77,7 +85,7 @@ namespace Jobby.Server.Services
                 Name = s.Name,
                 Order = s.Order,
                 Color = s.Color,
-                Items = [.. s.JobApps.Select(a => new UserJobApplicationModel
+                Items = [.. (s.JobApps ?? []).Select(a => new UserJobApplicationModel
                 {
                     Id = a.Id,
                     CompanyName = a.Company,
@@ -89,15 +97,15 @@ namespace Jobby.Server.Services
                     LocationType = a.LocationType?.Type ?? string.Empty,
                     Notes = a.Notes ?? string.Empty,
                     ContactName = a.ContactName ?? string.Empty,
-                    AppliedDate = a.Applied,
+                    AppliedDate = a.Applied.HasValue ? DateTime.SpecifyKind(a.Applied.Value, DateTimeKind.Utc) : null,
                     IsRejected = a.IsRejected,
                     IsAccepted = a.IsAccepted,
                     StageId = a.StageId,
-                    Events = [.. a.JobEvents.Where(e => e.EventDate >= DateTime.UtcNow.AddDays(-7)).Select(e => new JobEventModel
+                    Events = [.. a.JobEvents.Where(e => e.EventDate >= DateTime.UtcNow).Select(e => new JobEventModel
                     {
                         Id = e.Id,
                         AppId = e.AppId,
-                        EventDate = e.EventDate,
+                        EventDate =  DateTime.SpecifyKind(e.EventDate, DateTimeKind.Utc),
                         EventTitle = e.EventTitle,
                         EventDescription = e.EventDescription,
                     })]

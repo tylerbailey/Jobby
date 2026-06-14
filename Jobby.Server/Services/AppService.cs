@@ -30,7 +30,7 @@ namespace Jobby.Server.Services
                 LocationType = a.LocationType != null ? a.LocationType.Type : string.Empty,
                 Notes = a.Notes ?? string.Empty,
                 ContactName = a.ContactName ?? string.Empty,
-                AppliedDate = a.Applied,
+                AppliedDate = a.Applied.HasValue ? DateTime.SpecifyKind(a.Applied.Value, DateTimeKind.Utc) : null,
                 IsRejected = a.IsRejected,
                 IsAccepted = a.IsAccepted,
                 StageId = a.StageId
@@ -54,7 +54,7 @@ namespace Jobby.Server.Services
                     LocationType = j.LocationType != null ? j.LocationType.Type : string.Empty,
                     Notes = j.Notes ?? string.Empty,
                     ContactName = j.ContactName ?? string.Empty,
-                    AppliedDate = j.Applied,
+                    AppliedDate = j.Applied.HasValue ? DateTime.SpecifyKind(j.Applied.Value, DateTimeKind.Utc) : null,
                     IsRejected = j.IsRejected,
                     IsAccepted = j.IsAccepted,
                     StageId = j.StageId                    
@@ -84,23 +84,7 @@ namespace Jobby.Server.Services
                 StageId = application.StageId ?? startingStage.Id,
                 Created = DateTime.UtcNow
             };
-            await db.JobApps.AddAsync(new JobApp()
-            {
-                UserId = userId,
-                Company = application.CompanyName,
-                Title = application.JobTitle,
-                JobPostingUrl = application.JobPostingUrl,
-                Address = application.Address,
-                Salary = application.Salary,
-                LocationTypeId = application.LocationTypeId,
-                Notes = application.Notes,
-                Applied = application.AppliedDate,
-                ContactName = application.ContactName,
-                IsAccepted = false,
-                IsRejected = false,
-                StageId = application.StageId ?? startingStage.Id,
-                Created = DateTime.UtcNow
-            });
+            await db.JobApps.AddAsync(newJobApp);
             await db.SaveChangesAsync();
 
             await db.JobHistories.AddAsync(new JobHistory

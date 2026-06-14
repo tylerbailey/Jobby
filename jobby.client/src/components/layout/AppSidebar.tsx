@@ -1,19 +1,7 @@
-import { NavUser } from "@/components/layout/NavUser";
-import {
-    Sidebar,
-    SidebarContent,
-    SidebarFooter,
-    SidebarGroup,
-    SidebarGroupContent,
-    SidebarGroupLabel,
-    SidebarHeader,
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
-    SidebarRail,
-} from "@/components/ui/sidebar";
+import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarRail, } from "@/components/ui/sidebar";
 import * as React from "react";
 import { Link, useLocation } from "react-router-dom";
+import { NavUser } from "@/components/layout/NavUser";
 
 const data = {
     navMain: [
@@ -23,7 +11,7 @@ const data = {
             items: [
                 {
                     title: "Dashboard",
-                    url: "/",
+                    url: "/dashboard",
                 },
                 {
                     title: "Calendar",

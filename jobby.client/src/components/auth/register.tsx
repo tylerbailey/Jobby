@@ -18,7 +18,7 @@ export function RegisterPage() {
         try {
             await register(email, password, displayName);
             navigate("/login");
-        } catch (ex) {
+        } catch {
 
             toast.error("Could not create account. Check your email and password.");
         } 

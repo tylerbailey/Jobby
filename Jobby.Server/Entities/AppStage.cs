@@ -16,6 +16,6 @@ namespace Jobby.Server.Entities
         [Column(TypeName = "varchar(32)")]
         public string Color { get; set; } = string.Empty;
 
-        public ICollection<JobApp> JobApps { get; set; } = [];
+        public ICollection<JobApp>? JobApps { get; set; } = [];
     }
 }

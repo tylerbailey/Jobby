@@ -1,35 +1,32 @@
 import { useEffect, useState } from "react";
 import { GetAllApps } from "../../services/appService";
+import { CreateEvent } from "../../services/eventService";
 import type { AddEventProps, Application } from "../../types";
-import CalendarPopup from "../ui/calendar-popup";
+import { Button } from "../ui/button";
+import { DateTimePicker } from "../ui/date-time";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog";
-import { Field, FieldDescription, FieldGroup, FieldLabel } from "../ui/field";
+import { Field, FieldDescription, FieldLabel } from "../ui/field";
 import { Input } from "../ui/input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "../ui/select";
-import { Button } from "../ui/button";
-import { CreateEvent } from "../../services/eventService";
 
 function AddEvent({ onUpdate, isOpen, setIsOpen }: AddEventProps) {
     const [eventTitle, setEventTitle] = useState("");
     const [eventDescription, setEventDescription] = useState("");
     const [eventDate, setEventDate] = useState<Date>();
-    const [eventTime, setEventTime] = useState("");
     const [applications, setApplications] = useState<Application[]>();
     const [selectedApp, setSelectedApp] = useState("");
+    const [datePickerOpen, setDatePickerOpen] = useState<boolean>();
 
     useEffect(() => {
         async function getApplications() {
             const apps = await GetAllApps();
             setApplications(apps.data)
         }
-
         getApplications();
     }, [])
 
-    async function handleCreate() {
-        const [hours, minutes, seconds] = eventTime.split(":").map(Number);
-        const date = new Date(eventDate);
-        date.setHours(hours, minutes, seconds);
+    async function handleCreate() {     
+        const date = new Date(eventDate);    
         await CreateEvent({
             appId: Number.parseInt(selectedApp),
             eventTitle: eventTitle,
@@ -37,6 +34,7 @@ function AddEvent({ onUpdate, isOpen, setIsOpen }: AddEventProps) {
             eventDate: date,
         })
         onUpdate();
+        setIsOpen(false);
     }
 
     return (
@@ -94,25 +92,9 @@ function AddEvent({ onUpdate, isOpen, setIsOpen }: AddEventProps) {
                         onChange={(e) => setEventDescription(e.target.value)}
                     />
                 </Field>
-                <FieldGroup className="flex-row items-center justify-center">
-                    <Field className="py-3">
-                        <FieldLabel>
-                            Date
-                        </FieldLabel>
-                        <CalendarPopup value={eventDate} onValueChange={(e) => setEventDate(e)} />
-                    </Field>
-                    <Field className="w-32">
-                        <FieldLabel htmlFor="time-picker-optional">Time</FieldLabel>
-                        <Input
-                            value={eventTime}
-                            onChange={(e) => setEventTime(e.target.value)}
-                            type="time"
-                            id="time-picker-optional"
-                            step="1"
-                            className="appearance-none bg-background [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
-                        />
-                    </Field>
-                </FieldGroup>
+                
+                        <DateTimePicker dateTime={eventDate} isOpen={datePickerOpen} setIsOpen={setDatePickerOpen} action={(e) => setEventDate(e)} />
+
                 <DialogFooter>
                     <Button className="w-full justify-center" onClick={handleCreate}>Create</Button>
                 </DialogFooter>

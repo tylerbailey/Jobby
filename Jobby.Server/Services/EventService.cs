@@ -16,11 +16,11 @@ namespace Jobby.Server.Services
                 AppId = jobEvent.AppId,
                 EventTitle = jobEvent.EventTitle,
                 EventDescription = jobEvent.EventDescription,
-                EventDate = jobEvent.EventDate,
+                EventDate = DateTime.SpecifyKind(jobEvent.EventDate, DateTimeKind.Utc),
                 Created = DateTime.UtcNow,
             };
 
-            db.JobEvents.Add(entry);
+            await db.JobEvents.AddAsync(entry);
             await db.SaveChangesAsync();
         }
 
@@ -33,7 +33,7 @@ namespace Jobby.Server.Services
               AppId = j.AppId,
               EventTitle = j.EventTitle,
               EventDescription = j.EventDescription,
-              EventDate = j.EventDate
+              EventDate = DateTime.SpecifyKind(j.EventDate, DateTimeKind.Utc)
 
             }).ToList();
             return jobEvents;
@@ -63,7 +63,7 @@ namespace Jobby.Server.Services
                 AppId = e.AppId,
                 EventTitle = e.EventTitle,
                 EventDescription = e.EventDescription,
-                EventDate = e.EventDate,
+                EventDate = DateTime.SpecifyKind(e.EventDate, DateTimeKind.Utc),
                 JobApplication = new UserJobApplicationModel()
                 {
                     Id = e.JobApp!.Id,
@@ -76,7 +76,7 @@ namespace Jobby.Server.Services
                     LocationType = (e.JobApp.LocationType != null ? e.JobApp.LocationType.Type : string.Empty ),
                     Notes = e.JobApp.Notes ?? string.Empty,
                     ContactName = e.JobApp.ContactName ?? string.Empty,
-                    AppliedDate = e.JobApp.Applied,
+                    AppliedDate = e.JobApp.Applied.HasValue ? DateTime.SpecifyKind(e.JobApp.Applied.Value, DateTimeKind.Utc) : null,
                     IsRejected = e.JobApp.IsRejected,
                     IsAccepted = e.JobApp.IsAccepted,
                     StageId = e.JobApp.StageId,

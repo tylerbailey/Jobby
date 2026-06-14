@@ -1,4 +1,6 @@
+import AppInfo from "@/components/app/AppInfo";
 import { EditAppSheet } from "@/components/app/EditApp";
+import JobHistory from "@/components/timeline/JobHistory";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -6,20 +8,19 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { getBadgeVariant, getCardColor } from "@/helpers/componentHelpers";
+import { formatCurrency, formatDate } from "@/helpers/formatHelpers";
 import { DeleteApp, GenerateApp, UpdateApp } from "@/services/appService";
-import type { Application, HistoryItem, KanbanCardProps } from "@/types";
+import { GetHistory } from "@/services/historyService";
+import type { HistoryItem, KanbanCardProps } from "@/types";
 import { useDraggable } from "@dnd-kit/react";
 import { CalendarDays, Check, Clock3, File, MapPin, MoreVertical, Pencil, Timeline, Trash2, X } from "lucide-react";
 import { type ChangeEvent, useEffect, useState } from "react";
 import { toast } from "sonner";
-import { GetHistory } from "@/services/historyService";
-import AppInfo from "@/components/app/AppInfo";
-import JobHistory from "@/components/timeline/JobHistory";
-import { formatCurrency, formatDate } from "../../helpers/formatHelpers";
 
 export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
     const { ref: dragRef } = useDraggable({
-        id: item.id!
+        id: item.id
     });
     const [resumeFile, setResumeFile] = useState<File | null>(null);
     const [histories, setHistories] = useState<HistoryItem[]>([])
@@ -47,7 +48,7 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
     }
 
     function handleHistory() {
-        setMenuOpen(false); 
+        setMenuOpen(false);
         setHistoryOpen(true);
     }
 
@@ -99,12 +100,22 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
         setEditOpen(true);
     }
 
+    async function handleAccepted() {
+        setMenuOpen(false);
+        await UpdateApp({
+            ...item,
+            isRejected: false,
+            isAccepted: true
+        });
+        onUpdate();
+    }
+
     async function handleRejected() {
         setMenuOpen(false);
         await UpdateApp({
-           ... item,
+            ...item,
             isRejected: true,
-            isAccepted: false            
+            isAccepted: false
         });
 
         onUpdate();
@@ -121,15 +132,6 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
         onUpdate();
     }
 
-    async function handleAccepted() {
-        setMenuOpen(false);
-        await UpdateApp({
-            ...item,
-            isRejected: false,
-            isAccepted: true
-        });
-        onUpdate();
-    }
 
     useEffect(() => {
         async function GetItemHistory() {
@@ -141,10 +143,8 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
 
     return (
         <div ref={dragRef} className={isMatch ? "w-full" : "hidden"}>
-            <Card
-                className={`w-full cursor-pointer transition hover:-translate-y-0.5 hover:shadow-md  ${getCardColor(item)}`}
-                onClick={() => setInfoOpen(true)}
-            >
+            <Card className={`w-full cursor-pointer transition hover:-translate-y-0.5 hover:shadow-md  ${getCardColor(item)}`}
+                onClick={() => setInfoOpen(true)} >
                 <CardHeader className="px-2">
                     <div className="flex min-w-0 items-start justify-between gap-2">
                         <div className="flex min-w-0 flex-1 items-start gap-1">
@@ -176,7 +176,7 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
                                         <Pencil className="h-4 w-4" />
                                     </Button>
                                     <Button
-                                        onClick={ handleHistory }
+                                        onClick={handleHistory}
                                         variant="ghost"
                                         className="flex h-9 w-full items-center justify-between px-2">
                                         <span>History</span>
@@ -196,20 +196,20 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
                                         <span>In Progress</span>
                                         <Clock3 className="h-4 w-4" />
                                     </Button>
-                                    <Button          
+                                    <Button
                                         onClick={handleAccepted}
                                         variant="ghost"
                                         className="flex h-9 w-full items-center justify-between px-2">
                                         <span>Accepted</span>
                                         <Check className="h-4 w-4" />
                                     </Button>
-                                    <Button      
+                                    <Button
                                         onClick={handleRejected}
                                         variant="ghost"
                                         className="flex h-9 w-full items-center justify-between px-2">
                                         <span>Rejected</span>
                                         <X className="h-4 w-4" />
-                                    </Button>                                    
+                                    </Button>
                                     <Button
                                         onClick={handleDelete}
                                         variant="ghost"
@@ -221,7 +221,6 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
                             </Popover>
                         </div>
                     </div>
-
                 </CardHeader>
                 <CardContent className="p-4">
                     <div className="mb-3 flex flex-wrap gap-2">
@@ -236,21 +235,17 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
                                 <span>{item.address}</span>
                             </div>
                         )}
-
                         {item.salary && (
                             <div className="font-medium text-foreground">{formatCurrency(item.salary)}</div>
                         )}
-
                         {item.appliedDate && (
                             <div className="flex items-center gap-2te border-t pt-2">
                                 <CalendarDays className="h-4 w-4" />
                                 <span>{formatDate(item.appliedDate)}</span>
                             </div>
-                        )}                      
+                        )}
                     </div>
-
                     {item.notes && (
-
                         <div className="mt-3 flex items-center gap-2">
                             <Badge variant={"outline"}>
                                 <HoverCard>
@@ -282,29 +277,3 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
         </div >
     );
 }
-
-function getCardColor(item: Application) {
-    if (item.isRejected)
-        return "bg-red-50"
-    else if (item.isAccepted)
-        return "bg-green-50"
-}
-
-function getBadgeVariant(type: string): "default" | "secondary" | "outline" {
-    switch (type?.toLowerCase()) {
-        case "remote":
-            return "secondary";
-        case "hybrid":
-            return "outline";
-        case "on-site":
-            return "default";
-        default:
-            return "secondary";
-    }
-}
-
-
-
-
-
-

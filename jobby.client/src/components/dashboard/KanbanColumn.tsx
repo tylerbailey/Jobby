@@ -9,20 +9,28 @@ import { useDroppable } from '@dnd-kit/react';
 import { MoreVertical, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-export function KanbanColumn({ id, title, order, color, stage, items, onUpdate, searchValue }: KanbanColumnProps) {
+export function KanbanColumn({ stage, onUpdate, searchValue }: KanbanColumnProps) {
     const [menuOpen, setMenuOpen] = useState<boolean>(false);
     const [sheetOpen, setSheetOpen] = useState<boolean>(false);
-    const cardStacks = chunkItems(items ?? [], 5);
-
     const { ref } = useDroppable({
         id: stage.toString()
     });
-
-    function handleDelete() {
-        DeleteStage(id);
-        setMenuOpen(false);
-        onUpdate();
-        toast.info("The pipeline stage has been deleted.")
+    const cardStacks = chunkItems(stage.items ?? [], 5);
+    async function handleDelete() {
+        try {
+            if (stage.items.length == 0) {
+                await DeleteStage(stage.id);
+                setMenuOpen(false);
+                onUpdate();
+                toast.info("The pipeline stage has been deleted.")
+            }
+            else {
+                toast.warning("You must remove all applications from the stage before deleting.")
+            }
+        }
+        catch {
+            toast.error("An error occurred while deleting the stage")
+        }
     }
 
     function handleNew() {
@@ -33,17 +41,16 @@ export function KanbanColumn({ id, title, order, color, stage, items, onUpdate, 
     return (
         <section className="w-full shrink-0 sm:w-fit sm:min-w-80" ref={ref}>
             <Card className="min-h-[600px] h-full w-full border bg-muted/30 p-3 sm:w-fit sm:min-w-80">
-                <div className={`mb-3 flex items-center justify-between rounded-lg border px-3 py-2 ${getStageColors(color)}`}>
+                <div className={`mb-3 flex items-center justify-between rounded-lg border px-3 py-2 ${getStageColors(stage.color)}`}>
                     <div className="flex items-center gap-2">
-                        <h2 className="font-semibold">{title}</h2>
+                        <h2 className="font-semibold">{stage.name}</h2>
                         <span className="rounded-full bg-background/80 px-2 py-0.5 text-xs font-medium">
-                            {(items ?? []).length}
+                            {(stage.items ?? []).length}
                         </span>
-
                     </div>
                     <span className="flex items-center gap-2 text-xs font-medium">
-                        Step {order}
-                        <Popover open={menuOpen} onOpenChange={setMenuOpen }>
+                        Step {stage.order}
+                        <Popover open={menuOpen} onOpenChange={setMenuOpen}>
                             <PopoverTrigger asChild>
                                 <Button variant="ghost" size="icon" className="h-7 w-7">
                                     <MoreVertical className="h-4 w-4" />
@@ -63,13 +70,11 @@ export function KanbanColumn({ id, title, order, color, stage, items, onUpdate, 
                                     className="flex h-9 w-full items-center justify-between px-2">
                                     <span>Delete</span>
                                     <Trash2 className="h-4 w-4" />
-                                </Button>                                
+                                </Button>
                             </PopoverContent>
-
                         </Popover>
                     </span>
                 </div>
-
                 <div className="flex gap-3 pb-1">
                     {cardStacks.map((stack, index) => (
                         <div key={`${stage}-stack-${index}`} className="flex w-full shrink-0 flex-col gap-3 sm:w-72">
@@ -79,10 +84,8 @@ export function KanbanColumn({ id, title, order, color, stage, items, onUpdate, 
                         </div>
                     ))}
                 </div>
-               
-                
             </Card>
-            <CreateApp sheetOpen={sheetOpen} setSheetOpen={ setSheetOpen } stage={stage} onUpdate={onUpdate}></CreateApp>
+            <CreateApp sheetOpen={sheetOpen} setSheetOpen={setSheetOpen} stage={stage.id} onUpdate={onUpdate}></CreateApp>
         </section>
     );
 

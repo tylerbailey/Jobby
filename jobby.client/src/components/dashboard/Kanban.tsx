@@ -1,3 +1,4 @@
+import InfoCards from "@/components/dashboard/InfoCards";
 import { KanbanColumn } from "@/components/dashboard/KanbanColumn";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,7 +12,6 @@ import { DragDropProvider, type DragEndEvent } from "@dnd-kit/react";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import InfoCards from "./InfoCards";
 
 export function KanbanBoard() {
     const [stages, setStages] = useState<Stage[]>([]);
@@ -25,14 +25,6 @@ export function KanbanBoard() {
     const [appliedApps, setAppliedApps] = useState(0)
     const scrollRef = useRef<HTMLDivElement>(null);
     const stagesRef = useRef(stages);
-
-    function scrollLeft() {
-        scrollRef.current?.scrollBy({ left: -300, behavior: "smooth" });
-    }
-
-    function scrollRight() {
-        scrollRef.current?.scrollBy({ left: 300, behavior: "smooth" });
-    }
 
     useEffect(() => {
         stagesRef.current = stages;
@@ -110,32 +102,37 @@ export function KanbanBoard() {
                 }
             }
         }
-        catch  {
+        catch {
             toast.error("An error occured while moving your application.")
         }
+    }
+
+    function handleScrollLeft() {
+        scrollRef.current?.scrollBy({ left: -300, behavior: "smooth" });
+    }
+
+    function handleScrollRight() {
+        scrollRef.current?.scrollBy({ left: 300, behavior: "smooth" });
     }
 
     function handleRefresh() {
         setRefresh(prev => prev + 1);
     }
+
     return (
-
         <div className="space-y-6">
-
-            <div className="flex items-start justify-between gap-8">
+            <div className="flex items-center justify-between gap-8">
                 <div className="flex flex-col gap-6">
                     <div className="flex items-center gap-4">
                         <h1 className="text-4xl font-bold tracking-tight">
                             Job Application Pipeline
                         </h1>
-
                         <Popover>
                             <PopoverTrigger asChild>
                                 <Button variant="outline" size="icon">
                                     <Plus />
                                 </Button>
                             </PopoverTrigger>
-
                             <PopoverContent>
                                 <PopoverHeader>
                                     <PopoverTitle>New Pipeline Stage</PopoverTitle>
@@ -147,7 +144,7 @@ export function KanbanBoard() {
                                 <Input type="number" value={order} onChange={(e) => setOrder(e.target.value)} />
                                 <Label>Color</Label>
                                 <Select value={color} onValueChange={setColor}>
-                                    <SelectTrigger className="">
+                                    <SelectTrigger>
                                         <SelectValue placeholder="Select color" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -168,56 +165,42 @@ export function KanbanBoard() {
                             </PopoverContent>
                         </Popover>
                     </div>
-
                     <div className="w-96">
                         <Input
                             type="search"
                             placeholder="Search..."
                             value={searchValue}
-                            onChange={(e) => setSearchValue(e.target.value)}
-                        />
+                            onChange={(e) => setSearchValue(e.target.value)} />
                     </div>
                 </div>
-
                 <InfoCards
-                    active={totalApps}
+                    active={totalApps - totalRejected}
                     applied={appliedApps}
-                    rejected={totalRejected}
-                />
+                    rejected={totalRejected} />
             </div>
             <DragDropProvider onDragEnd={handleDragEnd}>
                 <div className="relative flex items-center">
                     <Button
                         size="icon"
-                        onMouseDown={scrollLeft}
-                        className="fixed left-70 top-1/2 opacity-50 hover:opacity-100 z-50 shadow-md"
-                    >
+                        onMouseDown={handleScrollLeft}
+                        className="fixed left-70 top-1/2 opacity-50 hover:opacity-100 z-50 shadow-md">
                         <ChevronLeft />
                     </Button>
                     <div
                         ref={scrollRef}
-                        className="flex flex-row gap-4 overflow-x-hidden px-4"
-                    >
+                        className="flex flex-row gap-4 overflow-x-hidden px-4">
                         {stages.map((stage) => (
                             <KanbanColumn
                                 key={stage.id!}
-                                id={stage.id!}
-                                title={stage.name}
-                                color={stage.color}
-                                order={stage.order}
-                                items={stage.items!}
-                                stage={stage.id!}
+                                stage={stage}
                                 searchValue={searchValue}
-                                onUpdate={handleRefresh}
-                            />
+                                onUpdate={handleRefresh} />
                         ))}
                     </div>
-
                     <Button
                         size="icon"
-                        onMouseDown={scrollRight}
-                        className="fixed right-4 opacity-50 hover:opacity-100 top-1/2 z-50 shadow-md"
-                    >
+                        onMouseDown={handleScrollRight}
+                        className="fixed right-4 opacity-50 hover:opacity-100 top-1/2 z-50 shadow-md">
                         <ChevronRight />
                     </Button>
                 </div>

@@ -1,3 +1,5 @@
+import { format } from "date-fns";
+
 export function formatCurrency(amount: number) {
     return new Intl.NumberFormat("en-US", {
         style: "currency",
@@ -5,12 +7,7 @@ export function formatCurrency(amount: number) {
     }).format(amount);
 }
 
-
 export function formatDate(date?: Date) {
     if (!date) return undefined;
-    return new Intl.DateTimeFormat("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric"
-    }).format(new Date(date));
+    return format(new Date(date), "M/d/yyyy h:mm aa");
 }

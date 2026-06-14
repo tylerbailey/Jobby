@@ -1,12 +1,8 @@
-import type { Application } from "@/types";
+import type { Application, Stage } from "@/types";
 
 export type KanbanColumnProps = {
-    id: number;
-    title: string;
-    color: string;
-    order: number;
-    stage: number;
-    items?: Application[];
+
+    stage: Stage;
     searchValue: string;
     onUpdate: () => void;
 };

@@ -12,7 +12,7 @@ export function NavUser() {
         setUser(null);
         localStorage.removeItem("user");
         localStorage.removeItem("token");
-        navigate("/login");
+        navigate("/");
     }
     return (
         <DropdownMenu>

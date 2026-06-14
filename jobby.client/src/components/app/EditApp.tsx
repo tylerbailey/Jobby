@@ -47,9 +47,8 @@ export function EditAppSheet({ item, onUpdate, sheetOpen, setSheetOpen }: AppEdi
             onUpdate();
             setSheetOpen(false);
         }
-        catch (ex) {
+        catch {
             toast.error("An error occured editing the application.")
-            throw ex;
         }
     }
 

@@ -2,7 +2,7 @@ import type { EventItem } from "@/types";
 import { api } from "@/api";
 
 export async function CreateEvent(event: EventItem) {
-    return await api.post(`/event/new`, event);
+     await api.post(`/event/new`, event);
 }
 
 export async function GetUserEvents() {
@@ -10,5 +10,5 @@ export async function GetUserEvents() {
 }
 
 export async function DeleteEvent(event: EventItem) {
-    return await api.delete(`/event/delete/${event.id}`);
+     await api.delete(`/event/delete/${event.id}`);
 }

@@ -4,13 +4,14 @@ import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
 import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import type { AppInfoProps } from "@/types";
 import { ExternalLink } from "lucide-react";
-import { Label } from "../ui/label";
+import { Label } from "@/components/ui/label";
+import InfoField from "@/components/ui/info-field";
+import { getBadgeVariant } from "@/helpers/componentHelpers";
+import { formatCurrency, formatDate } from "@/helpers/formatHelpers";
 
 
 
 export default function AppInfo({ item, infoOpen, setInfoOpen }: AppInfoProps) {
-  
-
     return (
         <Sheet open={infoOpen} onOpenChange={setInfoOpen}>
             <SheetContent className="overflow-y-auto">
@@ -91,39 +92,5 @@ export default function AppInfo({ item, infoOpen, setInfoOpen }: AppInfoProps) {
         </Sheet>
     )
 }
-function formatCurrency(amount: number) {
-    return new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD"
-    }).format(amount);
-}
-function getBadgeVariant(type: string): "default" | "secondary" | "outline" {
-    switch (type?.toLowerCase()) {
-        case "remote":
-            return "secondary";
-        case "hybrid":
-            return "outline";
-        case "on-site":
-            return "default";
-        default:
-            return "secondary";
-    }
-}
 
-function formatDate(date?: Date) {
-    if (!date) return undefined;
-    return new Intl.DateTimeFormat("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric"
-    }).format(new Date(date));
-}
 
-function InfoField({ label, value }: { label: string; value?: string }) {
-    return (
-        <Field className="py-3">
-            <FieldLabel>{label}</FieldLabel>
-            <FieldDescription>{value || "Not provided"}</FieldDescription>
-        </Field>
-    );
-}

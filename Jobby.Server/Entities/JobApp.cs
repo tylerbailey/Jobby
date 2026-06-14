@@ -43,8 +43,8 @@ namespace Jobby.Server.Entities
 
         public LocationType? LocationType { get; set; }
 
-        public ICollection<JobHistory> JobHistory { get; set; } = [];
+        public ICollection<JobHistory>? JobHistory { get; set; } = [];
 
-        public ICollection<JobEvent> JobEvents { get; set; } = [];       
+        public ICollection<JobEvent>? JobEvents { get; set; } = [];       
     }
 }

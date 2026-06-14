@@ -35,6 +35,7 @@ export type ApplicationFormData = {
     stageId: number;
     notes: string;
     appliedDate?: Date;
+    appliedTime?: Date;
     events: EventItem[];
 }
 

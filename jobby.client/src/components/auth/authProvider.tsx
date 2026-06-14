@@ -17,10 +17,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             localStorage.removeItem("token");
             return null;
         }
-
         return JSON.parse(stored);
     });
-
     return (
         <AuthContext.Provider value={{ user, setUser }}>
             {children}

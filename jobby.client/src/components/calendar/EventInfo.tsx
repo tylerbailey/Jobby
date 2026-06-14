@@ -1,9 +1,9 @@
-import type { EventInfoProps } from "@/types";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import InfoField from "../ui/info-field";
+import { Dialog, DialogContent, DialogFooter, DialogHeader } from "@/components/ui/dialog";
 import { formatDate } from "@/helpers/formatHelpers";
 import { DeleteEvent } from "@/services/eventService";
+import type { EventInfoProps } from "@/types";
+import InfoField from "../ui/info-field";
 
 export default function EventForm({ eventItem, onUpdate, isOpen, setIsOpen }: EventInfoProps) {
 

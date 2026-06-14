@@ -1,8 +1,8 @@
+import AppForm from "@/components/app/AppForm";
 import { CreateNewApp } from "@/services/appService";
 import type { AppCreateProps, Application, ApplicationFormData } from "@/types";
 import { useState } from "react";
 import { toast } from "sonner";
-import  AppForm  from "@/components/app/AppForm";
 
 export default function CreateApp({ stage, onUpdate, sheetOpen, setSheetOpen }: AppCreateProps) {
     const [form, setForm] = useState<ApplicationFormData>({
@@ -63,9 +63,8 @@ export default function CreateApp({ stage, onUpdate, sheetOpen, setSheetOpen }: 
             });
 
         }
-        catch (ex) {
-            toast.error("An error occured creating the application.")
-            throw ex;
+        catch {
+            toast.error("An error occured creating the application.")        
         }
     };
 

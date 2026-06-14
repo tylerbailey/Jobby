@@ -18,7 +18,7 @@ export default function EventCalendar() {
     const [selectedEvent, setSelectedEvent] = useState<EventItem>();
     const [infoOpen, setInfoOpen] = useState<boolean>(false);
     const [addEventOpen, setAddEventOpen] = useState<boolean>(false);
-    const [refresh, setRefresh] = useState<number>();
+    const [refresh, setRefresh] = useState<number>(0);
     const controller = useCalendarController();
     function handleRefresh() {
         setRefresh(refresh + 1);
@@ -40,6 +40,7 @@ export default function EventCalendar() {
             <FullCalendar
                 controller={controller}
                 plugins={[themePlugin, dayGridPlugin, interactionPlugin]}
+
                 eventClick={(info) => {
                     const original = calendarEvents.find(e => e.id?.toString() === info.event.id);
                     setSelectedEvent(original);

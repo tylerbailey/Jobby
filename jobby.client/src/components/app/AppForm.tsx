@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import CalendarPopup from "@/components/ui/calendar-popup";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -7,20 +6,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { GetAllAppLocations } from "@/services/appService";
 import type { AppFormProps, LocationType } from "@/types";
 import { useEffect, useState } from "react";
+import { DateTimePicker } from "../ui/date-time";
 import { Field, FieldDescription, FieldLabel } from "../ui/field";
 
 export default function AppForm({ form, setForm, sheetOpen, setSheetOpen, action }: AppFormProps) {
     const [locationTypes, setLocationTypes] = useState<LocationType[]>([]);
-
+    const [datePickerOpen, setDatePickerOpen] = useState<boolean>();
 
     useEffect(() => {
         async function GetLocations() {
-            try {
                 const response = await GetAllAppLocations();
-                setLocationTypes(response.data);
-            } catch (err) {
-                console.error("Failed to fetch locations:", err);
-            }
+                setLocationTypes(response.data);            
         }
         GetLocations();
     }, []);
@@ -129,9 +125,10 @@ export default function AppForm({ form, setForm, sheetOpen, setSheetOpen, action
                         <FieldDescription>
                             The date you applied, if applicable.
                         </FieldDescription>
-                        <CalendarPopup value={form.appliedDate} onValueChange={(e) => setForm({ ...form, appliedDate: e })} />
+                        <DateTimePicker dateTime={form.appliedDate} isOpen={datePickerOpen} setIsOpen={setDatePickerOpen} action={(e) => setForm({ ...form, appliedDate: e })} />
 
                     </Field>
+
                     <Field className="py-3">
                         <FieldLabel htmlFor="input-field-jobContact">Contact</FieldLabel>
                         <FieldDescription>
