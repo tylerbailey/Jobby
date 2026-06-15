@@ -80,13 +80,19 @@ export default function LandingPage() {
         <div className="min-h-screen bg-background">
             {/* Hero */}
             <section className="flex flex-col items-center text-left px-6 pt-16 pb-10">
-                <div className="flex items-center gap-3 mb-8">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
-                        <span className="text-lg font-bold">J</span>
+                <div className="flex items-center gap-4 px-4 py-6">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
+                        <span className="text-2xl font-bold">J</span>
                     </div>
-                    <span className="text-lg font-semibold tracking-tight">Jobby</span>
+                    <div className="min-w-0">
+                        <h1 className="truncate text-2xl font-bold tracking-tight text-slate-600">
+                            Jobby
+                        </h1>
+                        <p className="truncate text-sm text-slate-600">
+                            Track every opportunity.
+                        </p>
+                    </div>
                 </div>
-
                 <h1 className="text-4xl font-bold tracking-tight max-w-xl mb-4 leading-tight">
                     Your job search,{" "}
                     <span className="text-primary">finally organized</span>

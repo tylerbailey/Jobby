@@ -12,7 +12,7 @@ import { getBadgeVariant, getCardColor } from "@/helpers/componentHelpers";
 import { formatCurrency, formatDate } from "@/helpers/formatHelpers";
 import { DeleteApp, GenerateApp, UpdateApp } from "@/services/appService";
 import { GetHistory } from "@/services/historyService";
-import type { HistoryItem, KanbanCardProps } from "@/types";
+import type { EventItem, HistoryItem, KanbanCardProps } from "@/types";
 import { useDraggable } from "@dnd-kit/react";
 import { CalendarDays, Check, Clock3, File, MapPin, MoreVertical, Pencil, Timeline, Trash2, X } from "lucide-react";
 import { type ChangeEvent, useEffect, useState } from "react";
@@ -24,18 +24,11 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
     });
     const [resumeFile, setResumeFile] = useState<File | null>(null);
     const [histories, setHistories] = useState<HistoryItem[]>([])
-
     const [dialogueOpen, setDialogueOpen] = useState<boolean>(false);
     const [infoOpen, setInfoOpen] = useState<boolean>(false);
     const [menuOpen, setMenuOpen] = useState<boolean>(false);
     const [editOpen, setEditOpen] = useState<boolean>(false);
     const [historyOpen, setHistoryOpen] = useState<boolean>(false);
-
-
-    const firstCutOff = new Date();
-    const secondCutOff = new Date();
-    firstCutOff.setDate(firstCutOff.getDate() + 7);
-    secondCutOff.setDate(secondCutOff.getDate() + 2);
 
     async function handleFileChange(e: ChangeEvent<HTMLInputElement>) {
         const file = e.target.files?.[0];
@@ -100,6 +93,7 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
         setEditOpen(true);
     }
 
+    //Refactoring these into a single method
     async function handleAccepted() {
         setMenuOpen(false);
         await UpdateApp({
@@ -245,6 +239,15 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
                             </div>
                         )}
                     </div>
+                    {item.events.length > 0 && (
+                        item.events.map((event) => (
+                            <div className={`flex items-center gap-2te border-t pt-2 ${eventColor(event)}`}>
+                                <CalendarDays className={`h-4 w-4`} />
+                                <span >{formatDate(event.eventDate)}</span>
+                            </div>
+                        ))
+
+                    )}
                     {item.notes && (
                         <div className="mt-3 flex items-center gap-2">
                             <Badge variant={"outline"}>
@@ -276,4 +279,21 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
             </Dialog>
         </div >
     );
+}
+
+function eventColor(item: EventItem) {
+    const now = new Date();
+    const firstCutOff = new Date();
+    const secondCutOff = new Date();
+    firstCutOff.setDate(now.getDate() + 7);
+    secondCutOff.setDate(now.getDate() + 2);
+
+    const eventDate = new Date(item.eventDate);
+
+    if (eventDate <= secondCutOff) {
+        return "text-red-700";
+    } else if (eventDate <= firstCutOff) {
+        return "text-yellow-700";
+    }
+    return "";
 }

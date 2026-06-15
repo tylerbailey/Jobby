@@ -27,6 +27,19 @@ export function RegisterPage() {
     return (
         <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
             <div className="w-full max-w-sm">
+                <div className="flex items-center gap-4 px-4 py-6">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
+                        <span className="text-2xl font-bold">J</span>
+                    </div>
+                    <div className="min-w-0">
+                        <h1 className="truncate text-2xl font-bold tracking-tight text-slate-600">
+                            Jobby
+                        </h1>
+                        <p className="truncate text-sm text-slate-600">
+                            Track every opportunity.
+                        </p>
+                    </div>
+                </div>
                 <Card className="w-full max-w-sm">
                     <CardHeader>
                         <CardTitle>Create your account</CardTitle>
