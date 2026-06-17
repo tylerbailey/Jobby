@@ -3,6 +3,7 @@ import { CreateNewApp } from "@/services/appService";
 import type { AppCreateProps, Application, ApplicationFormData } from "@/types";
 import { useState } from "react";
 import { toast } from "sonner";
+import { Status } from "../../enum/enums";
 
 export default function CreateApp({ stage, onUpdate, sheetOpen, setSheetOpen }: AppCreateProps) {
     const [form, setForm] = useState<ApplicationFormData>({
@@ -39,8 +40,8 @@ export default function CreateApp({ stage, onUpdate, sheetOpen, setSheetOpen }: 
                 stageId: stage,
                 notes: form.notes,
                 appliedDate: form.appliedDate,
-                isAccepted: false,
-                isRejected: false,
+                status: Status.InProgress,
+                isArchived: false,
                 events : form.events
             };
             await CreateNewApp(payload);

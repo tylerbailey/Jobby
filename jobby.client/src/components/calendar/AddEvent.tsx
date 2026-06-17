@@ -61,7 +61,6 @@ function AddEvent({ onUpdate, isOpen, setIsOpen }: AddEventProps) {
                                 {applications && applications.map((app) => (
                                     <SelectItem value={app.id.toString()}>{app.companyName} - {app.jobTitle}</SelectItem>
                                 ))}
-
                             </SelectGroup>
                         </SelectContent>
                     </Select>

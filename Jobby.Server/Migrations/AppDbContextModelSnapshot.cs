@@ -157,14 +157,11 @@ namespace Jobby.Server.Migrations
                     b.Property<bool>("Disabled")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsAccepted")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsRejected")
+                    b.Property<bool>("IsArchived")
                         .HasColumnType("bit");
 
                     b.Property<string>("JobPostingUrl")
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("varchar(512)");
 
                     b.Property<int>("LocationTypeId")
                         .HasColumnType("int");
@@ -175,10 +172,16 @@ namespace Jobby.Server.Migrations
                     b.Property<string>("Notes")
                         .HasColumnType("varchar(1024)");
 
+                    b.Property<int?>("RecruitorId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("Salary")
                         .HasColumnType("int");
 
                     b.Property<int>("StageId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
                         .HasColumnType("int");
 
                     b.Property<string>("Title")
@@ -192,6 +195,8 @@ namespace Jobby.Server.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("LocationTypeId");
+
+                    b.HasIndex("RecruitorId");
 
                     b.HasIndex("StageId");
 
@@ -299,6 +304,52 @@ namespace Jobby.Server.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("LocationTypes");
+                });
+
+            modelBuilder.Entity("Jobby.Server.Entities.Recruiter", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Agency")
+                        .IsRequired()
+                        .HasColumnType("varchar(64)");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("Disabled")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("varchar(64)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("varchar(64)");
+
+                    b.Property<string>("Notes")
+                        .IsRequired()
+                        .HasColumnType("varchar(1024)");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("varchar(12)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Recruiters");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -442,6 +493,10 @@ namespace Jobby.Server.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Jobby.Server.Entities.Recruiter", "Recruitor")
+                        .WithMany("Applications")
+                        .HasForeignKey("RecruitorId");
+
                     b.HasOne("Jobby.Server.Entities.AppStage", "AppStage")
                         .WithMany("JobApps")
                         .HasForeignKey("StageId")
@@ -451,6 +506,8 @@ namespace Jobby.Server.Migrations
                     b.Navigation("AppStage");
 
                     b.Navigation("LocationType");
+
+                    b.Navigation("Recruitor");
                 });
 
             modelBuilder.Entity("Jobby.Server.Entities.JobEvent", b =>
@@ -536,6 +593,11 @@ namespace Jobby.Server.Migrations
                     b.Navigation("JobEvents");
 
                     b.Navigation("JobHistory");
+                });
+
+            modelBuilder.Entity("Jobby.Server.Entities.Recruiter", b =>
+                {
+                    b.Navigation("Applications");
                 });
 #pragma warning restore 612, 618
         }

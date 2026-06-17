@@ -6,7 +6,7 @@ import interactionPlugin from "@fullcalendar/react/interaction";
 import '@fullcalendar/react/skeleton.css';
 import '@fullcalendar/react/themes/monarch/theme.css';
 import '@fullcalendar/react/themes/monarch/palettes/purple.css'
-import themePlugin from "@fullcalendar/react/themes/monarch"; // pick your theme
+import themePlugin from "@fullcalendar/react/themes/monarch";
 import { Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Button } from '../ui/button';
@@ -33,7 +33,7 @@ export default function EventCalendar() {
     return (
         <div className="p-10">
             <div className="flex items-center justify-between mb-2">
-                <Button onClick={() => setAddEventOpen(true)}>
+                <Button size="icon" onClick={() => setAddEventOpen(true)}>
                     <Plus className="h-4 w-4" />
                 </Button>
             </div>

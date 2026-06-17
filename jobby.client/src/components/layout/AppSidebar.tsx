@@ -17,6 +17,11 @@ const data = {
                     title: "Calendar",
                     url: "/calendar",
                 },
+                {
+                    title: "Archives",
+                    url: "/archive",
+                },
+                
             ],
         }
     ]

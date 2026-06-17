@@ -43,13 +43,16 @@ namespace Jobby.Server.Domain
         [JsonPropertyName("appliedDate")]
         public DateTime? AppliedDate { get; set; }
 
-        [JsonPropertyName("isAccepted")]
-        public bool IsAccepted { get; set; }
+        [JsonPropertyName("status")]
+        public int Status { get; set; }
 
-        [JsonPropertyName("isRejected")]
-        public bool IsRejected { get; set; }
+        [JsonPropertyName("isArchived")]
+        public bool IsArchived { get; set; }
 
         [JsonPropertyName("events")]
         public List<JobEventModel> Events { get; set; } = [];
+
+        [JsonPropertyName("recruiter")]
+        public RecruiterModel Recruiter { get; set; } = new RecruiterModel();
     }
 }

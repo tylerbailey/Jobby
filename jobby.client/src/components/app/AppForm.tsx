@@ -79,11 +79,11 @@ export default function AppForm({ form, setForm, sheetOpen, setSheetOpen, action
                             The location where you will you work.
                         </FieldDescription>
                         <Select value={form.locationTypeId.toString()} onValueChange={(e) => setForm({ ...form, locationTypeId: Number.parseInt(e) })}>
-                            <SelectTrigger className="w-full max-w-48">
-                                <SelectValue placeholder="Select a type" />
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select color" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectGroup>
+                                <SelectGroup>                               
                                     <SelectLabel>Locations</SelectLabel>
                                     {locationTypes.map((loc) => (
                                         <SelectItem key={"loc-" + loc.id} value={loc.id.toString()}>

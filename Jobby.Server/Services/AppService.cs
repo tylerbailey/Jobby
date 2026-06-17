@@ -18,7 +18,7 @@ namespace Jobby.Server.Services
         public async Task<UserJobApplicationModel> GetAppAsync(string userId, int applicationId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
-            var application = await db.JobApps.Where(a => a.UserId == userId && a.Id == applicationId && !a.Disabled).Select(a => new UserJobApplicationModel
+            var application = await db.JobApps.Where(a => a.UserId == userId && a.Id == applicationId && !a.Disabled && !a.IsArchived).Select(a => new UserJobApplicationModel
             {
                 Id = a.Id,
                 CompanyName = a.Company,
@@ -31,8 +31,8 @@ namespace Jobby.Server.Services
                 Notes = a.Notes ?? string.Empty,
                 ContactName = a.ContactName ?? string.Empty,
                 AppliedDate = a.Applied.HasValue ? DateTime.SpecifyKind(a.Applied.Value, DateTimeKind.Utc) : null,
-                IsRejected = a.IsRejected,
-                IsAccepted = a.IsAccepted,
+               Status = a.Status,
+               IsArchived = a.IsArchived,
                 StageId = a.StageId
             }).FirstOrDefaultAsync() ?? new UserJobApplicationModel();
             return application;
@@ -41,7 +41,7 @@ namespace Jobby.Server.Services
         public async Task<List<UserJobApplicationModel>> GetAppsAsync(string userId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
-            var applications = await db.JobApps.Where(j => j.UserId == userId && !j.Disabled).Select( j =>
+            var applications = await db.JobApps.Where(j => j.UserId == userId && !j.Disabled && !j.IsArchived).Select(j =>
                 new UserJobApplicationModel()
                 {
                     Id = j.Id,
@@ -55,9 +55,9 @@ namespace Jobby.Server.Services
                     Notes = j.Notes ?? string.Empty,
                     ContactName = j.ContactName ?? string.Empty,
                     AppliedDate = j.Applied.HasValue ? DateTime.SpecifyKind(j.Applied.Value, DateTimeKind.Utc) : null,
-                    IsRejected = j.IsRejected,
-                    IsAccepted = j.IsAccepted,
-                    StageId = j.StageId                    
+                    Status = j.Status,
+                    IsArchived = j.IsArchived,
+                    StageId = j.StageId
                 }
                 ).ToListAsync();
             return applications;
@@ -77,10 +77,10 @@ namespace Jobby.Server.Services
                 Salary = application.Salary,
                 LocationTypeId = application.LocationTypeId,
                 Notes = application.Notes,
-                Applied = application.AppliedDate,
+                Applied = application.AppliedDate.HasValue ? DateTime.SpecifyKind(application.AppliedDate.Value, DateTimeKind.Utc) : null,
                 ContactName = application.ContactName,
-                IsAccepted = false,
-                IsRejected = false,
+                Status = application.Status,
+                IsArchived = false,
                 StageId = application.StageId ?? startingStage.Id,
                 Created = DateTime.UtcNow
             };
@@ -131,12 +131,12 @@ namespace Jobby.Server.Services
                 jobApp.Salary = application.Salary;
                 jobApp.LocationTypeId = application.LocationTypeId;
                 jobApp.Address = application.Address;
-                jobApp.Applied = application.AppliedDate;
+                jobApp.Applied = application.AppliedDate.HasValue ? DateTime.SpecifyKind(application.AppliedDate.Value, DateTimeKind.Utc) : null;
                 jobApp.ContactName = application.ContactName;
                 jobApp.Notes = application.Notes;
                 jobApp.Modified = DateTime.UtcNow;
-                jobApp.IsAccepted = application.IsAccepted;
-                jobApp.IsRejected = application.IsRejected;
+                jobApp.Status = application.Status;
+                jobApp.IsArchived = application.IsArchived;
                 db.JobApps.Update(jobApp);
 
                 await db.JobHistories.AddAsync(new JobHistory
@@ -227,6 +227,50 @@ namespace Jobby.Server.Services
             memoryStream.Position = 0;
 
             return memoryStream;
+        }
+
+        public async Task ArchiveAppAsync(int appId, bool isArchived, string userId)
+        {
+
+            await using var db = await _dbContextFactory.CreateDbContextAsync();
+            var jobApp = await db.JobApps.FirstOrDefaultAsync(a => a.Id == appId);
+            if (jobApp != null)
+            {
+                jobApp.IsArchived = isArchived;
+                await db.JobHistories.AddAsync(new JobHistory
+                {
+                    AppId = jobApp.Id,
+                    Color = isArchived ? "gray" : "green",
+                    EventTitle = isArchived ? "Application archived" : "Application removed from archive",
+                    EventDescription = isArchived ? "Application marked as archived" : "Application was unarchived",
+                    Created = DateTime.UtcNow,
+                });
+            }
+        }
+
+        public async Task<List<UserJobApplicationModel>> GetArchivedApps(string userId)
+        {
+            await using var db = await _dbContextFactory.CreateDbContextAsync();
+            var applications = await db.JobApps.Where(j => j.UserId == userId && !j.Disabled && j.IsArchived).Select(j =>
+                new UserJobApplicationModel()
+                {
+                    Id = j.Id,
+                    CompanyName = j.Company,
+                    JobTitle = j.Title,
+                    JobPostingUrl = j.JobPostingUrl ?? string.Empty,
+                    Address = j.Address ?? string.Empty,
+                    Salary = j.Salary,
+                    LocationTypeId = j.LocationTypeId,
+                    LocationType = j.LocationType != null ? j.LocationType.Type : string.Empty,
+                    Notes = j.Notes ?? string.Empty,
+                    ContactName = j.ContactName ?? string.Empty,
+                    AppliedDate = j.Applied.HasValue ? DateTime.SpecifyKind(j.Applied.Value, DateTimeKind.Utc) : null,
+                    Status = j.Status,
+                    IsArchived = j.IsArchived,
+                    StageId = j.StageId
+                }
+                ).ToListAsync();
+            return applications;
         }
     }
 }

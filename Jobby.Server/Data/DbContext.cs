@@ -11,5 +11,6 @@ namespace Jobby.Server.Data
         public DbSet<LocationType> LocationTypes { get; set; }
         public DbSet<JobHistory> JobHistories { get; set; }
         public DbSet<JobEvent> JobEvents { get; set; }
+        public DbSet<Recruiter> Recruiters { get; set; }
     }
 }

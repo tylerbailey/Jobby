@@ -13,7 +13,7 @@ namespace Jobby.Server.Entities
         [Column(TypeName = "varchar(32)")]
         public string Title { get; set; } = string.Empty;
 
-        [Column(TypeName = "varchar(256)")]
+        [Column(TypeName = "varchar(512)")]
         public string? JobPostingUrl { get; set; }
 
         [Column(TypeName = "varchar(256)")]
@@ -35,14 +35,19 @@ namespace Jobby.Server.Entities
 
         public DateTime? Applied { get; set; }
 
-        public bool IsRejected { get; set; }
+        public int Status { get; set; }
 
-        public bool IsAccepted { get; set; }
+        public bool IsArchived { get; set; }
+
+        [ForeignKey("Recruitor")]
+        public int? RecruitorId { get; set; }
 
         public  AppStage? AppStage { get; set; }
 
         public LocationType? LocationType { get; set; }
 
+        public Recruiter? Recruitor { get; set; }
+            
         public ICollection<JobHistory>? JobHistory { get; set; } = [];
 
         public ICollection<JobEvent>? JobEvents { get; set; } = [];       

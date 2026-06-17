@@ -1,4 +1,5 @@
 import type { Application } from "@/types";
+import { Status } from "../enum/enums";
 
 export function getBadgeVariant(type: string): "default" | "secondary" | "outline" {
     switch (type?.toLowerCase()) {
@@ -14,10 +15,12 @@ export function getBadgeVariant(type: string): "default" | "secondary" | "outlin
 }
 
 export function getCardColor(item: Application) {
-    if (item.isRejected)
-        return "bg-red-50"
-    else if (item.isAccepted)
-        return "bg-green-50"
+    switch (item.status) {
+        case Status.Rejected:
+            return "bg-red-50";
+        case Status.Accepted:
+            return "bg-green-50"
+    }
 }
 
 export function getIconColors(color: string) {

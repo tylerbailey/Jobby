@@ -9,13 +9,13 @@ import { useDroppable } from '@dnd-kit/react';
 import { MoreVertical, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { Colors } from "../../enum/enums";
 export function KanbanColumn({ stage, onUpdate, searchValue }: KanbanColumnProps) {
     const [menuOpen, setMenuOpen] = useState<boolean>(false);
     const [sheetOpen, setSheetOpen] = useState<boolean>(false);
     const { ref } = useDroppable({
-        id: stage.toString()
+        id: stage.id.toString()
     });
-    const cardStacks = chunkItems(stage.items ?? [], 5);
     async function handleDelete() {
         try {
             if (stage.items.length == 0) {
@@ -75,15 +75,13 @@ export function KanbanColumn({ stage, onUpdate, searchValue }: KanbanColumnProps
                         </Popover>
                     </span>
                 </div>
-                <div className="flex gap-3 pb-1">
-                    {cardStacks.map((stack, index) => (
-                        <div key={`${stage}-stack-${index}`} className="flex w-full shrink-0 flex-col gap-3 sm:w-72">
-                            {stack.map((item) => (
-                                <KanbanCard key={item.id} item={item} onUpdate={onUpdate} isMatch={searchObject(item, searchValue)} />
-                            ))}
-                        </div>
-                    ))}
-                </div>
+
+                {stage.items && stage.items.map((item) => (
+
+                    <KanbanCard key={item.id} item={item} onUpdate={onUpdate} isMatch={searchObject(item, searchValue)} />
+
+                ))}
+
             </Card>
             <CreateApp sheetOpen={sheetOpen} setSheetOpen={setSheetOpen} stage={stage.id} onUpdate={onUpdate}></CreateApp>
         </section>
@@ -96,25 +94,7 @@ export function KanbanColumn({ stage, onUpdate, searchValue }: KanbanColumnProps
     }
 
     function getStageColors(color: string) {
-        switch (color) {
-            case "purple": return "bg-purple-50 border-purple-200 text-purple-700";
-            case "blue": return "bg-blue-50 border-blue-200 text-blue-700";
-            case "amber": return "bg-amber-50 border-amber-200 text-amber-700";
-            case "teal": return "bg-teal-50 border-teal-200 text-teal-700";
-            case "yellow": return "bg-yellow-50 border-yellow-200 text-yellow-700";
-            case "green": return "bg-green-50 border-green-200 text-green-700";
-            case "red": return "bg-red-50 border-red-200 text-red-700";
-            default: return "bg-gray-50 border-gray-200 text-gray-700";
-        }
+        return Colors[color];
     }
 }
 
-function chunkItems<T>(items: T[], chunkSize: number) {
-    const chunks: T[][] = [];
-
-    for (let index = 0; index < items.length; index += chunkSize) {
-        chunks.push(items.slice(index, index + chunkSize));
-    }
-
-    return chunks;
-}

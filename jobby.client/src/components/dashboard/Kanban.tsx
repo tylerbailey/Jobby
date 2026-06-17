@@ -12,6 +12,7 @@ import { DragDropProvider, type DragEndEvent } from "@dnd-kit/react";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import { Colors, Status } from "../../enum/enums";
 
 export function KanbanBoard() {
     const [stages, setStages] = useState<Stage[]>([]);
@@ -37,7 +38,7 @@ export function KanbanBoard() {
             setStages(data);
             setTotalApps(data.reduce((total, stage) => total + (stage.items ?? []).length, 0));
             setAppliedApps(data.reduce((total, stage) => total + (stage.items ?? []).filter(item => item.appliedDate != null).length, 0));
-            setTotalRejected(data.reduce((total, stage) => total + (stage.items ?? []).filter(item => item.isRejected == true).length, 0));
+            setTotalRejected(data.reduce((total, stage) => total + (stage.items ?? []).filter(item => item.status == Status.Rejected).length, 0));
         }
         GetMyStages();
     }, [refresh]);
@@ -129,7 +130,7 @@ export function KanbanBoard() {
                         </h1>
                         <Popover>
                             <PopoverTrigger asChild>
-                                <Button variant="outline" size="icon">
+                                <Button size="icon">
                                     <Plus />
                                 </Button>
                             </PopoverTrigger>
@@ -149,13 +150,8 @@ export function KanbanBoard() {
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectGroup>
-                                            <SelectItem value="purple">Purple</SelectItem>
-                                            <SelectItem value="blue">Blue</SelectItem>
-                                            <SelectItem value="amber">Amber</SelectItem>
-                                            <SelectItem value="teal">Teal</SelectItem>
-                                            <SelectItem value="yellow">Yellow</SelectItem>
-                                            <SelectItem value="green">Green</SelectItem>
-                                            <SelectItem value="red">Red</SelectItem>
+                                            {Object.entries(Colors).map(([label]) => (
+                                                <SelectItem key={label} value={label}>{label}</SelectItem>))}
                                         </SelectGroup>
                                     </SelectContent>
                                 </Select>

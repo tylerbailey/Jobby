@@ -77,8 +77,8 @@ namespace Jobby.Server.Services
                     Notes = e.JobApp.Notes ?? string.Empty,
                     ContactName = e.JobApp.ContactName ?? string.Empty,
                     AppliedDate = e.JobApp.Applied.HasValue ? DateTime.SpecifyKind(e.JobApp.Applied.Value, DateTimeKind.Utc) : null,
-                    IsRejected = e.JobApp.IsRejected,
-                    IsAccepted = e.JobApp.IsAccepted,
+                    Status = e.JobApp.Status,
+                    IsArchived = e.JobApp.IsArchived,
                     StageId = e.JobApp.StageId,
                 }
             }).ToListAsync();

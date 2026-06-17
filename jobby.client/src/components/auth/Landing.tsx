@@ -122,7 +122,7 @@ export default function LandingPage() {
                                     </div>
                                     <span className={`text-xs font-medium ${col.stepColor}`}>{col.step}</span>
                                 </div>
-                                <div className="space-y-2">
+                                <div className="space-y-2 p-4">
                                     {col.cards.map((card) => (
                                         <Card key={card.company + card.title} className="w-full shadow-none">
                                             <CardHeader className="px-3 pb-0 pt-3">

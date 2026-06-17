@@ -13,6 +13,10 @@ export async function GetAllAppLocations() {
     return await api.get<LocationType[]>("/app/locations");
 }
 
+export async function GetArchivedApps() {
+    return await api.get<Application[]>("/app/archive")
+} 
+
 export async function UpdateApp(application: Application) {
     return await api.post<Application>("/app/update", application)
 }
@@ -21,7 +25,7 @@ export async function MoveStage(applicationId: number, stageId: number) {
     await api.post(`/app/move/${applicationId}?stageId=${stageId}`);
 }
 
-export async function DeleteApp(appId: string) {
+export async function DeleteApp(appId: number) {
     return await api.delete(`/app/${appId}`);
 }
 

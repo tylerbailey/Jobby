@@ -92,5 +92,21 @@ namespace Jobby.Server.Controllers
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                 "TailoredResume.docx");
         }
+
+        [HttpPost("archive")]
+        public async Task<IActionResult> ArchiveApplicationAsync(int applicationId, bool isArchived)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
+            await _appService.ArchiveAppAsync(applicationId, isArchived, userId);
+            return Ok();
+        }
+
+        [HttpGet("archive")]
+        public async Task<IActionResult> GetArchivedApplications()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
+            var archives = await _appService.GetArchivedApps(userId);
+            return Ok(archives);
+        }
        }
 }

@@ -85,7 +85,7 @@ namespace Jobby.Server.Services
                 Name = s.Name,
                 Order = s.Order,
                 Color = s.Color,
-                Items = [.. (s.JobApps ?? []).Select(a => new UserJobApplicationModel
+                Items = [.. (s.JobApps ?? []).Where(a => !a.Disabled && !a.IsArchived).Select(a => new UserJobApplicationModel
                 {
                     Id = a.Id,
                     CompanyName = a.Company,
@@ -98,10 +98,10 @@ namespace Jobby.Server.Services
                     Notes = a.Notes ?? string.Empty,
                     ContactName = a.ContactName ?? string.Empty,
                     AppliedDate = a.Applied.HasValue ? DateTime.SpecifyKind(a.Applied.Value, DateTimeKind.Utc) : null,
-                    IsRejected = a.IsRejected,
-                    IsAccepted = a.IsAccepted,
+                    Status = a.Status,
+                    IsArchived = a.IsArchived,
                     StageId = a.StageId,
-                    Events = [.. a.JobEvents.Where(e => e.EventDate >= DateTime.UtcNow).Select(e => new JobEventModel
+                    Events = [.. (a.JobEvents ?? []).Where(e => e.EventDate >= DateTime.UtcNow).Select(e => new JobEventModel
                     {
                         Id = e.Id,
                         AppId = e.AppId,

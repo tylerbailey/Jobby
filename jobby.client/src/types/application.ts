@@ -15,8 +15,8 @@ export type Application = {
     stageId: number;
     notes: string;
     appliedDate?: Date;
-    isAccepted: boolean;
-    isRejected: boolean;
+    status: number;
+    isArchived: boolean;
     events: EventItem[];
 }
 

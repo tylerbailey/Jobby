@@ -14,14 +14,14 @@ import { DeleteApp, GenerateApp, UpdateApp } from "@/services/appService";
 import { GetHistory } from "@/services/historyService";
 import type { EventItem, HistoryItem, KanbanCardProps } from "@/types";
 import { useDraggable } from "@dnd-kit/react";
-import { CalendarDays, Check, Clock3, File, MapPin, MoreVertical, Pencil, Timeline, Trash2, X } from "lucide-react";
+import { Archive, CalendarDays, Check, Clock3, File, MapPin, MoreVertical, Pencil, Timeline, Trash2, X } from "lucide-react";
 import { type ChangeEvent, useEffect, useState } from "react";
 import { toast } from "sonner";
+import { Status } from "../../enum/enums";
+
 
 export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
-    const { ref: dragRef } = useDraggable({
-        id: item.id
-    });
+    const { ref: dragRef } = useDraggable({ id: item.id.toString() });
     const [resumeFile, setResumeFile] = useState<File | null>(null);
     const [histories, setHistories] = useState<HistoryItem[]>([])
     const [dialogueOpen, setDialogueOpen] = useState<boolean>(false);
@@ -83,7 +83,7 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
             return;
         }
         setMenuOpen(false);
-        await DeleteApp(item.id.toString());
+        await DeleteApp(item.id);
         onUpdate();
         toast.info("The application has been deleted.")
     }
@@ -93,39 +93,25 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
         setEditOpen(true);
     }
 
-    //Refactoring these into a single method
-    async function handleAccepted() {
+    async function handleArchive() {
         setMenuOpen(false);
         await UpdateApp({
             ...item,
-            isRejected: false,
-            isAccepted: true
+            isArchived: true
         });
         onUpdate();
+        toast.info("The application has been archived.")
     }
 
-    async function handleRejected() {
+    async function handleStatus(newStatus: number) {
         setMenuOpen(false);
         await UpdateApp({
             ...item,
-            isRejected: true,
-            isAccepted: false
-        });
+            status: newStatus
 
+        });
         onUpdate();
     }
-
-    async function handleInProgress() {
-        setMenuOpen(false);
-        await UpdateApp({
-            ...item,
-            isRejected: false,
-            isAccepted: false
-        });
-
-        onUpdate();
-    }
-
 
     useEffect(() => {
         async function GetItemHistory() {
@@ -183,26 +169,34 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
                                         <span>Generate Resume</span>
                                         <File className="h-4 w-4" />
                                     </Button>
-                                    <Button
-                                        onClick={handleInProgress}
+                                    {item.status != Status.InProgress && (<Button
+                                        onClick={() => handleStatus(Status.InProgress)}
                                         variant="ghost"
                                         className="flex h-9 w-full items-center justify-between px-2">
                                         <span>In Progress</span>
                                         <Clock3 className="h-4 w-4" />
-                                    </Button>
-                                    <Button
-                                        onClick={handleAccepted}
+                                    </Button>)}
+
+                                    {item.status != Status.Accepted && (<Button
+                                        onClick={() => handleStatus(Status.Accepted)}
                                         variant="ghost"
                                         className="flex h-9 w-full items-center justify-between px-2">
                                         <span>Accepted</span>
                                         <Check className="h-4 w-4" />
-                                    </Button>
-                                    <Button
-                                        onClick={handleRejected}
+                                    </Button>)}
+                                    {item.status != Status.Rejected && (<Button
+                                        onClick={() => handleStatus(Status.Rejected)}
                                         variant="ghost"
                                         className="flex h-9 w-full items-center justify-between px-2">
                                         <span>Rejected</span>
                                         <X className="h-4 w-4" />
+                                    </Button>)}
+                                    <Button
+                                        onClick={handleArchive}
+                                        variant="ghost"
+                                        className="flex h-9 w-full items-center justify-between px-2">
+                                        <span>Archive</span>
+                                        <Archive className="h-4 w-4" />
                                     </Button>
                                     <Button
                                         onClick={handleDelete}

@@ -12,5 +12,7 @@ namespace Jobby.Server.Services
         Task<List<LocationTypeModel>> GetAppLocationsAsync();
         Task MoveApplicationStageAsync(int applicationId, int stageId, string userId);
         Task UpdateAppAsync(UserJobApplicationModel application);
+        Task ArchiveAppAsync(int appId, bool isArchived, string userId);
+        Task<List<UserJobApplicationModel>> GetArchivedApps(string userId);
     }
 }
