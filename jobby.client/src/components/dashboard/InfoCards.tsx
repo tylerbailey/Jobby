@@ -1,6 +1,10 @@
 import { Card, CardContent } from "@/components/ui/card";
-import type { KanbanInfoCardProps } from "@/types";
 
+export type KanbanInfoCardProps = {
+    active: number;
+    applied: number;
+    rejected: number;
+}
 export default function InfoCards({ active, applied, rejected }: KanbanInfoCardProps) {
     return (
         <div className="grid grid-cols-3 gap-3">

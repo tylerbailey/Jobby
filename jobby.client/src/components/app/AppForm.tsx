@@ -4,13 +4,34 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrig
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
 import { GetAllAppLocations } from "@/services/appService";
-import type { AppFormProps, LocationType } from "@/types";
+import type { AppFormProps, EventItem, AppLocationType } from "@/types";
 import { useEffect, useState } from "react";
-import { DateTimePicker } from "../ui/date-time";
-import { Field, FieldDescription, FieldLabel } from "../ui/field";
+import { DateTimePicker } from "@/components/ui/date-time";
+import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
+
+export type ApplicationFormData = {
+    id: number;
+    formTitle: string;
+    formDesc: string;
+    companyName: string;
+    jobTitle: string;
+    jobPostingUrl: string;
+    locationTypeId: number;
+    locationType: string;
+    address: string;
+    salary: number;
+    contactName: string;
+    stageId: number;
+    notes: string;
+    status: number;
+    isArchived: boolean;
+    appliedDate?: Date;
+    appliedTime?: Date;
+    events: EventItem[];
+}
 
 export default function AppForm({ form, setForm, sheetOpen, setSheetOpen, action }: AppFormProps) {
-    const [locationTypes, setLocationTypes] = useState<LocationType[]>([]);
+    const [locationTypes, setLocationTypes] = useState<AppLocationType[]>([]);
     const [datePickerOpen, setDatePickerOpen] = useState<boolean>();
 
     useEffect(() => {

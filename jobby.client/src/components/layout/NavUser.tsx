@@ -26,7 +26,7 @@ export function NavUser() {
                     <MoreVertical className="h-4 w-4" />
                 </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-40" align="end">
+            <DropdownMenuContent className="w-40" align="center">
                 <DropdownMenuGroup>
                     <DropdownMenuItem onClick={handleLogout}>
                         Log out

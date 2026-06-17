@@ -9,17 +9,9 @@ namespace Jobby.Server.Controllers
     [Authorize]
     [ApiController]
     [Route("api/app")]
-    public class ApplicationController(IAppService appService, IEventService eventService) : Controller
+    public class AppController(IAppService appService) : Controller
     {
         private readonly IAppService _appService = appService;
-        private readonly IEventService _eventService = eventService;
-
-        [HttpGet("{applicationId}")]
-        public async Task<IActionResult> GetApplicationAsync(int applicationId)
-        {
-            var application = await _appService.GetAppAsync(User.Identity!.Name ?? string.Empty, applicationId);
-            return Ok(application);
-        }
 
         [HttpGet("all")]
         public async Task<IActionResult> GetAllApplicationsAsync()
@@ -51,20 +43,6 @@ namespace Jobby.Server.Controllers
             return Ok(locations);
         }
 
-        [HttpGet("events/{applicationId}")]
-        public async Task<IActionResult> GetApplicationEvents(int applicationId)
-        {
-            var events = await _eventService.GetEventsAsync(applicationId);
-            return Ok(events);
-        }
-
-        [HttpGet("events/upcoming/{applicationId}")]
-        public async Task<IActionResult> GetUpcomingApplicationEvents(int applicationId)
-        {
-            var events = await _eventService.GetUpcomingEventsAsync(applicationId);
-            return Ok(events);
-        }
-
         [HttpPost("move/{applicationId}")]
         public async Task<IActionResult> MoveStage(int applicationId, [FromQuery] int stageId)
         {
@@ -91,14 +69,6 @@ namespace Jobby.Server.Controllers
                 memoryStream.ToArray(),
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                 "TailoredResume.docx");
-        }
-
-        [HttpPost("archive")]
-        public async Task<IActionResult> ArchiveApplicationAsync(int applicationId, bool isArchived)
-        {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
-            await _appService.ArchiveAppAsync(applicationId, isArchived, userId);
-            return Ok();
         }
 
         [HttpGet("archive")]

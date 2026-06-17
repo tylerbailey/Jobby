@@ -4,12 +4,19 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { DeleteStage } from "@/services/stageService";
-import type { KanbanColumnProps } from "@/types";
 import { useDroppable } from '@dnd-kit/react';
 import { MoreVertical, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Colors } from "../../enum/enums";
+
+export type KanbanColumnProps = {
+
+    stage: Stage;
+    searchValue: string;
+    onUpdate: () => void;
+};
+
 export function KanbanColumn({ stage, onUpdate, searchValue }: KanbanColumnProps) {
     const [menuOpen, setMenuOpen] = useState<boolean>(false);
     const [sheetOpen, setSheetOpen] = useState<boolean>(false);

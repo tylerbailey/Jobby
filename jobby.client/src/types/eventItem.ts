@@ -8,15 +8,3 @@ export type EventItem = {
     eventDate: Date;
     application?: Application;
 }
-export type AddEventProps = {
-    isOpen: boolean;
-    setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-    onUpdate: ()=> void;
-}
-
-export type EventInfoProps = {
-    isOpen: boolean;
-    setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-    eventItem: EventItem;
-    onUpdate: () => void;
-}

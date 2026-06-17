@@ -1,15 +1,28 @@
+import type { ApplicationFormData } from "@/components/app/AppForm";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
-import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import type { AppInfoProps } from "@/types";
-import { ExternalLink } from "lucide-react";
-import { Label } from "@/components/ui/label";
 import InfoField from "@/components/ui/info-field";
+import { Label } from "@/components/ui/label";
+import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { getBadgeVariant } from "@/helpers/componentHelpers";
 import { formatCurrency, formatDate } from "@/helpers/formatHelpers";
+import type { Application } from "@/types";
+import { ExternalLink } from "lucide-react";
+import type { Dispatch, SetStateAction } from "react";
 
-
+export type AppInfoProps = {
+    item: Application;
+    infoOpen: boolean;
+    setInfoOpen: Dispatch<SetStateAction<boolean>>
+}
+export type AppFormProps = {
+    form: ApplicationFormData;
+    setForm: Dispatch<SetStateAction<ApplicationFormData>>;
+    sheetOpen: boolean;
+    setSheetOpen: Dispatch<SetStateAction<boolean>>
+    action: () => void;
+}
 
 export default function AppInfo({ item, infoOpen, setInfoOpen }: AppInfoProps) {
     return (

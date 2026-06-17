@@ -1,15 +1,21 @@
+import { Button } from "@/components/ui/button";
+import { DateTimePicker } from "@/components/ui/date-time";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { GetAllApps } from "@/services/appService";
+import { CreateEvent } from "@/services/eventService";
+import type { Application } from "@/types";
 import { useEffect, useState } from "react";
-import { GetAllApps } from "../../services/appService";
-import { CreateEvent } from "../../services/eventService";
-import type { AddEventProps, Application } from "../../types";
-import { Button } from "../ui/button";
-import { DateTimePicker } from "../ui/date-time";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog";
-import { Field, FieldDescription, FieldLabel } from "../ui/field";
-import { Input } from "../ui/input";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "../ui/select";
 
-function AddEvent({ onUpdate, isOpen, setIsOpen }: AddEventProps) {
+export type AddEventProps = {
+    isOpen: boolean;
+    setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    onUpdate: () => void;
+}
+
+export default function AddEvent({ onUpdate, isOpen, setIsOpen }: AddEventProps) {
     const [eventTitle, setEventTitle] = useState("");
     const [eventDescription, setEventDescription] = useState("");
     const [eventDate, setEventDate] = useState<Date>();
@@ -25,8 +31,8 @@ function AddEvent({ onUpdate, isOpen, setIsOpen }: AddEventProps) {
         getApplications();
     }, [])
 
-    async function handleCreate() {     
-        const date = new Date(eventDate);    
+    async function handleCreate() {
+        const date = new Date(eventDate);
         await CreateEvent({
             appId: Number.parseInt(selectedApp),
             eventTitle: eventTitle,
@@ -75,8 +81,7 @@ function AddEvent({ onUpdate, isOpen, setIsOpen }: AddEventProps) {
                         type="text"
                         placeholder="Enter the event title"
                         value={eventTitle}
-                        onChange={(e) => setEventTitle(e.target.value)}
-                    />
+                        onChange={(e) => setEventTitle(e.target.value)} />
                 </Field>
                 <Field className="py-3">
                     <FieldLabel htmlFor="input-field-jobtitle">Description</FieldLabel>
@@ -88,12 +93,9 @@ function AddEvent({ onUpdate, isOpen, setIsOpen }: AddEventProps) {
                         type="text"
                         placeholder="Enter the event title"
                         value={eventDescription}
-                        onChange={(e) => setEventDescription(e.target.value)}
-                    />
+                        onChange={(e) => setEventDescription(e.target.value)} />
                 </Field>
-                
-                        <DateTimePicker dateTime={eventDate} isOpen={datePickerOpen} setIsOpen={setDatePickerOpen} action={(e) => setEventDate(e)} />
-
+                <DateTimePicker dateTime={eventDate} isOpen={datePickerOpen} setIsOpen={setDatePickerOpen} action={(e) => setEventDate(e)} />
                 <DialogFooter>
                     <Button className="w-full justify-center" onClick={handleCreate}>Create</Button>
                 </DialogFooter>
@@ -102,4 +104,4 @@ function AddEvent({ onUpdate, isOpen, setIsOpen }: AddEventProps) {
     );
 }
 
-export default AddEvent;
+ 

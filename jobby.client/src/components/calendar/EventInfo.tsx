@@ -2,8 +2,15 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader } from "@/components/ui/dialog";
 import { formatDate } from "@/helpers/formatHelpers";
 import { DeleteEvent } from "@/services/eventService";
-import type { EventInfoProps } from "@/types";
+import type { EventItem } from "@/types";
 import InfoField from "../ui/info-field";
+
+export type EventInfoProps = {
+    isOpen: boolean;
+    setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    eventItem: EventItem;
+    onUpdate: () => void;
+}
 
 export default function EventForm({ eventItem, onUpdate, isOpen, setIsOpen }: EventInfoProps) {
 

@@ -2,9 +2,7 @@ import InfoCards from "@/components/dashboard/InfoCards";
 import { KanbanColumn } from "@/components/dashboard/KanbanColumn";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Popover, PopoverContent, PopoverDescription, PopoverHeader, PopoverTitle, PopoverTrigger } from "@/components/ui/popover";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MoveStage } from "@/services/appService";
 import { CreateStage, GetAllStages } from "@/services/stageService";
 import type { Application, Stage } from "@/types/";
@@ -13,9 +11,12 @@ import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Colors, Status } from "../../enum/enums";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
+import { Field, FieldDescription, FieldLabel } from "../ui/field";
 
 export function KanbanBoard() {
     const [stages, setStages] = useState<Stage[]>([]);
+    const [dialogOpen, setDialogOpen] = useState<boolean>(false);
     const [refresh, setRefresh] = useState(0);
     const [name, setName] = useState("");
     const [order, setOrder] = useState("");
@@ -51,6 +52,7 @@ export function KanbanBoard() {
 
     async function handleCreate() {
         await CreateStage({ name, order: parseInt(order), color });
+        setDialogOpen(false);
         handleRefresh();
         toast.info("The stage was successfully created.");
     }
@@ -128,38 +130,78 @@ export function KanbanBoard() {
                         <h1 className="text-4xl font-bold tracking-tight">
                             Job Application Pipeline
                         </h1>
-                        <Popover>
-                            <PopoverTrigger asChild>
+                        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                            <DialogTrigger asChild>
                                 <Button size="icon">
                                     <Plus />
                                 </Button>
-                            </PopoverTrigger>
-                            <PopoverContent>
-                                <PopoverHeader>
-                                    <PopoverTitle>New Pipeline Stage</PopoverTitle>
-                                    <PopoverDescription>Create a new stage for your pipeline.</PopoverDescription>
-                                </PopoverHeader>
-                                <Label>Name</Label>
-                                <Input type="text" value={name} onChange={(e) => setName(e.target.value)} />
-                                <Label>Order</Label>
-                                <Input type="number" value={order} onChange={(e) => setOrder(e.target.value)} />
-                                <Label>Color</Label>
-                                <Select value={color} onValueChange={setColor}>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select color" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectGroup>
-                                            {Object.entries(Colors).map(([label]) => (
-                                                <SelectItem key={label} value={label}>{label}</SelectItem>))}
-                                        </SelectGroup>
-                                    </SelectContent>
-                                </Select>
-                                <Button onClick={handleCreate}>
-                                    Create
-                                </Button>
-                            </PopoverContent>
-                        </Popover>
+                            </DialogTrigger>
+
+                            <DialogContent>
+                                <DialogHeader>
+                                    <DialogTitle>New Pipeline Stage</DialogTitle>
+                                    <DialogDescription>
+                                        Create a new stage for your pipeline.
+                                    </DialogDescription>
+                                </DialogHeader>
+
+                                <Field className="py-3">
+                                    <FieldLabel htmlFor="input-stage-name">Name</FieldLabel>
+                                    <FieldDescription>
+                                        The name of the pipeline stage.
+                                    </FieldDescription>
+                                    <Input
+                                        id="input-stage-name"
+                                        type="text"
+                                        placeholder="Enter the stage name"
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
+                                    />
+                                </Field>
+
+                                <Field className="py-3">
+                                    <FieldLabel htmlFor="input-stage-order">Order</FieldLabel>
+                                    <FieldDescription>
+                                        The position of the stage in the pipeline.
+                                    </FieldDescription>
+                                    <Input
+                                        id="input-stage-order"
+                                        type="number"
+                                        placeholder="Enter the display order"
+                                        value={order}
+                                        onChange={(e) => setOrder(e.target.value)}
+                                    />
+                                </Field>
+
+                                <Field className="py-3">
+                                    <FieldLabel>Color</FieldLabel>
+                                    <FieldDescription>
+                                        The color used to display the stage.
+                                    </FieldDescription>
+                                    <Select value={color} onValueChange={setColor}>
+                                        <SelectTrigger className="w-full">
+                                            <SelectValue placeholder="Select a color" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                <SelectLabel>Colors</SelectLabel>
+                                                {Object.entries(Colors).map(([label]) => (
+                                                    <SelectItem key={label} value={label}>
+                                                        {label}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
+                                </Field>
+
+                                <DialogFooter>
+                                    <Button className="w-full" onClick={handleCreate}>
+                                        Create
+                                    </Button>
+                                </DialogFooter>
+                            </DialogContent>
+                        </Dialog>
                     </div>
                     <div className="w-96">
                         <Input

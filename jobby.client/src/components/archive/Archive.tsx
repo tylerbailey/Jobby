@@ -11,9 +11,6 @@ import { Status } from "@/enum/enums";
 import { DeleteApp, GetArchivedApps, UpdateApp } from "@/services/appService";
 import { toast } from "sonner";
 
-
-
-
 export default function ArchivedApps() {
     const [refresh, setRefresh] = useState(0);
     const [search, setSearch] = useState("");
@@ -44,10 +41,10 @@ export default function ArchivedApps() {
     }
 
     return (
-        <div className="space-y-4 p-10">
+        <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold tracking-tight">Archived Applications</h1>
+                    <h1 className="text-4xl font-bold tracking-tight">Archived Applications</h1>
                     <p className="text-sm text-muted-foreground mt-1">
                         {items.length} archived application{items.length !== 1 ? "s" : ""}
                     </p>

@@ -9,8 +9,8 @@ namespace Jobby.Server.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("api/event")]
-    public class EventController(IEventService eventService) : Controller
+    [Route("api/events")]
+    public class CalendarEventController(IEventService eventService) : Controller
     {
         private readonly IEventService _eventService = eventService;
 
@@ -35,6 +35,20 @@ namespace Jobby.Server.Controllers
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
             await _eventService.DeleteEvent(eventId, userId);
             return Ok();
+        }
+
+        [HttpGet("{applicationId}")]
+        public async Task<IActionResult> GetApplicationEvents(int applicationId)
+        {
+            var events = await _eventService.GetEventsAsync(applicationId);
+            return Ok(events);
+        }
+
+        [HttpGet("upcoming/{applicationId}")]
+        public async Task<IActionResult> GetUpcomingApplicationEvents(int applicationId)
+        {
+            var events = await _eventService.GetUpcomingEventsAsync(applicationId);
+            return Ok(events);
         }
     }
 }

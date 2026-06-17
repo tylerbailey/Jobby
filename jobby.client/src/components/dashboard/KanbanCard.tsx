@@ -8,18 +8,22 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Status } from "@/enum/enums";
 import { getBadgeVariant, getCardColor } from "@/helpers/componentHelpers";
 import { formatCurrency, formatDate } from "@/helpers/formatHelpers";
 import { DeleteApp, GenerateApp, UpdateApp } from "@/services/appService";
 import { GetHistory } from "@/services/historyService";
-import type { EventItem, HistoryItem, KanbanCardProps } from "@/types";
+import type { Application, EventItem, HistoryItem } from "@/types";
 import { useDraggable } from "@dnd-kit/react";
 import { Archive, CalendarDays, Check, Clock3, File, MapPin, MoreVertical, Pencil, Timeline, Trash2, X } from "lucide-react";
 import { type ChangeEvent, useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Status } from "../../enum/enums";
 
-
+export type KanbanCardProps = {
+    item: Application;
+    isMatch: boolean;
+    onUpdate: () => void;
+}
 export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
     const { ref: dragRef } = useDraggable({ id: item.id.toString() });
     const [resumeFile, setResumeFile] = useState<File | null>(null);
@@ -115,7 +119,7 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
 
     useEffect(() => {
         async function GetItemHistory() {
-            const response = await GetHistory(item.id!)
+            const response = await GetHistory(item.id)
             setHistories(response.data)
         }
         GetItemHistory();

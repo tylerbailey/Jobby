@@ -1,12 +1,18 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import type { HistoryItems } from "@/types";
-import { Circle } from "lucide-react";
-import { formatDate } from "@/helpers/formatHelpers";
 import { getIconColors } from "@/helpers/componentHelpers";
+import { formatDate } from "@/helpers/formatHelpers";
+import type { HistoryItem } from "@/types";
+import { Circle } from "lucide-react";
+import type { Dispatch, SetStateAction } from "react";
 
-export default function JobHistory({ sheetOpen, setSheetOpen, items:histories }: HistoryItems) {
+export type HistoryProps = {
+    items: HistoryItem[];
+    sheetOpen: boolean;
+    setSheetOpen: Dispatch<SetStateAction<boolean>>
+}
+export default function JobHistory({ sheetOpen, setSheetOpen, items:histories }: HistoryProps) {
     return (
         <Sheet open={sheetOpen} onOpenChange={ setSheetOpen }>           
             <SheetContent>

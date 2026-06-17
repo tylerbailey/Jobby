@@ -7,9 +7,3 @@ export type HistoryItem = {
     eventDescription: string;
     eventDate: Date;
 }
-
-export type HistoryItems = {
-    items: HistoryItem[];
-    sheetOpen: boolean;
-    setSheetOpen: Dispatch<SetStateAction<boolean>>
-}

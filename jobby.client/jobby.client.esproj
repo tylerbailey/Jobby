@@ -8,4 +8,11 @@
     <!-- Folder where production build objects will be placed -->
     <BuildOutputFolder>$(MSBuildProjectDirectory)\dist</BuildOutputFolder>
   </PropertyGroup>
+  <ItemGroup>
+    <None Remove="src\components\recruiter - Copy\**" />
+    <TypeScriptConfiguration Remove="src\components\recruiter - Copy\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="src\components\recruiters\" />
+  </ItemGroup>
 </Project>

@@ -20,6 +20,7 @@ export default function EventCalendar() {
     const [addEventOpen, setAddEventOpen] = useState<boolean>(false);
     const [refresh, setRefresh] = useState<number>(0);
     const controller = useCalendarController();
+
     function handleRefresh() {
         setRefresh(refresh + 1);
     }
@@ -31,11 +32,17 @@ export default function EventCalendar() {
         loadUserEvents();
     }, [refresh])
     return (
-        <div className="p-10">
-            <div className="flex items-center justify-between mb-2">
-                <Button size="icon" onClick={() => setAddEventOpen(true)}>
-                    <Plus className="h-4 w-4" />
-                </Button>
+
+        <div className="space-y-6">
+            <div className="flex items-center gap-4 pb-3">
+                <h1 className="text-4xl font-bold tracking-tight">
+                    Events Calendar
+                </h1>
+ 
+                    <Button size="icon" onClick={() => setAddEventOpen(true)}>
+                        <Plus className="h-4 w-4" />
+                    </Button>
+            
             </div>
             <FullCalendar
                 controller={controller}
@@ -49,7 +56,7 @@ export default function EventCalendar() {
                 initialView="dayGridMonth"
                 weekends={true}
                 height="calc(100vh - 100px)"
-                
+
                 headerToolbar={{
                     center: "title",
                     right: "prev,next today"

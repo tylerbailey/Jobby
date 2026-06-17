@@ -1,9 +1,16 @@
-import AppForm from "@/components/app/AppForm";
+import AppForm, { type ApplicationFormData } from "@/components/app/AppForm";
 import { CreateNewApp } from "@/services/appService";
-import type { AppCreateProps, Application, ApplicationFormData } from "@/types";
-import { useState } from "react";
+import type { Application } from "@/types";
+import { useState, type Dispatch, type SetStateAction } from "react";
 import { toast } from "sonner";
 import { Status } from "../../enum/enums";
+
+export type AppCreateProps = {
+    stage: number;
+    sheetOpen: boolean;
+    setSheetOpen: Dispatch<SetStateAction<boolean>>
+    onUpdate: () => void;
+}
 
 export default function CreateApp({ stage, onUpdate, sheetOpen, setSheetOpen }: AppCreateProps) {
     const [form, setForm] = useState<ApplicationFormData>({
@@ -20,6 +27,8 @@ export default function CreateApp({ stage, onUpdate, sheetOpen, setSheetOpen }: 
         contactName: "",
         stageId: stage,
         notes: "",
+        status: Status.InProgress,
+        isArchived: false,
         appliedDate: undefined,
         events: []
     });
@@ -40,8 +49,8 @@ export default function CreateApp({ stage, onUpdate, sheetOpen, setSheetOpen }: 
                 stageId: stage,
                 notes: form.notes,
                 appliedDate: form.appliedDate,
-                status: Status.InProgress,
-                isArchived: false,
+                status: form.status,
+                isArchived: form.isArchived,
                 events : form.events
             };
             await CreateNewApp(payload);

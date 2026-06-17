@@ -12,3 +12,11 @@ export async function GetUserEvents() {
 export async function DeleteEvent(event: EventItem) {
      await api.delete(`/event/delete/${event.id}`);
 }
+
+export async function GetEvents(appId: number) {
+    return await api.get(`/events/${appId}`);
+}
+
+export async function GetUpcomingEvents(appId: number) {
+    return await api.get(`/events/upcoming/${appId}`);
+}
