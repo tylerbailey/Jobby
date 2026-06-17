@@ -1,5 +1,5 @@
 import AppForm, { type ApplicationFormData } from "@/components/app/AppForm";
-import { CreateNewApp } from "@/services/appService";
+import { createNewApp } from "@/services/appService";
 import type { Application } from "@/types";
 import { useState, type Dispatch, type SetStateAction } from "react";
 import { toast } from "sonner";
@@ -53,7 +53,7 @@ export default function CreateApp({ stage, onUpdate, sheetOpen, setSheetOpen }: 
                 isArchived: form.isArchived,
                 events : form.events
             };
-            await CreateNewApp(payload);
+            await createNewApp(payload);
             onUpdate();
             setSheetOpen(false);
             setForm({

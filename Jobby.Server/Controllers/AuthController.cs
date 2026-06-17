@@ -12,16 +12,10 @@ namespace Jobby.Server.Controllers;
 [Authorize]
 [ApiController]
 [Route("api/auth")]
-public class AuthController : ControllerBase
+public class AuthController(UserManager<ApplicationUser> users, IConfiguration config) : ControllerBase
 {
-    private readonly UserManager<ApplicationUser> _users;
-    private readonly IConfiguration _config;
-
-    public AuthController(UserManager<ApplicationUser> users, IConfiguration config)
-    {
-        _users = users;
-        _config = config;
-    }
+    private readonly UserManager<ApplicationUser> _users = users;
+    private readonly IConfiguration _config = config;
 
     [AllowAnonymous]
     [HttpPost("register")]
@@ -39,7 +33,7 @@ public class AuthController : ControllerBase
         if (!result.Succeeded)
             return BadRequest(result.Errors);
 
-        return Ok(new AuthResponse(CreateToken(user), user.Id, user.Email!, user.DisplayName));
+        return Ok();
     }
 
     [AllowAnonymous]

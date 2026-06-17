@@ -3,8 +3,8 @@ import { KanbanColumn } from "@/components/dashboard/KanbanColumn";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { MoveStage } from "@/services/appService";
-import { CreateStage, GetAllStages } from "@/services/stageService";
+import { moveAppStage } from "@/services/appService";
+import { createStage, getAllStages } from "@/services/stageService";
 import type { Application, Stage } from "@/types/";
 import { DragDropProvider, type DragEndEvent } from "@dnd-kit/react";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
@@ -34,7 +34,7 @@ export function KanbanBoard() {
 
     useEffect(() => {
         async function GetMyStages() {
-            const response = await GetAllStages();
+            const response = await getAllStages();
             const data = response.data;
             setStages(data);
             setTotalApps(data.reduce((total, stage) => total + (stage.items ?? []).length, 0));
@@ -51,7 +51,7 @@ export function KanbanBoard() {
     }, [searchValue]);
 
     async function handleCreate() {
-        await CreateStage({ name, order: parseInt(order), color });
+        await createStage({ name, order: parseInt(order), color });
         setDialogOpen(false);
         handleRefresh();
         toast.info("The stage was successfully created.");
@@ -98,7 +98,7 @@ export function KanbanBoard() {
             const card = findCard(stagesRef.current, cardId);
             if (card) {
                 try {
-                    await MoveStage(card.id!, newStageId);
+                    await moveAppStage(card.id!, newStageId);
                 } catch {
                     toast.error("An error occurred while moving your application.");
                     handleRefresh(); // revert optimistic update on failure

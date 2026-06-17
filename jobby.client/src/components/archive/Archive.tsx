@@ -8,7 +8,7 @@ import { ArchiveRestore, Search, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getBadgeVariant } from "@/helpers/componentHelpers";
 import { Status } from "@/enum/enums";
-import { DeleteApp, GetArchivedApps, UpdateApp } from "@/services/appService";
+import { deleteApp, getArchivedApps, updateApp } from "@/services/appService";
 import { toast } from "sonner";
 
 export default function ArchivedApps() {
@@ -18,7 +18,7 @@ export default function ArchivedApps() {
 
     useEffect(() => {
         async function getArchived() {
-            const response = await GetArchivedApps();
+            const response = await getArchivedApps();
             setItems(response.data);
         }
         getArchived();
@@ -29,13 +29,13 @@ export default function ArchivedApps() {
     }
 
     async function handleDelete(application: Application) {
-        await DeleteApp(application.id);
+        await deleteApp(application.id);
         handleRefresh();
         toast.info("Archived application deleted.")
     }
 
     async function handleUnarchive(application: Application) {
-        await UpdateApp({ ...application, isArchived: false })
+        await updateApp({ ...application, isArchived: false })
         handleRefresh();
         toast.info("Archived application restored.")
     }

@@ -1,4 +1,4 @@
-import { GetUserEvents } from '@/services/eventService';
+import { getUserEvents } from '@/services/eventService';
 import type { EventItem } from '@/types';
 import FullCalendar, { useCalendarController } from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/react/daygrid";
@@ -26,28 +26,25 @@ export default function EventCalendar() {
     }
     useEffect(() => {
         async function loadUserEvents() {
-            const userEvents = await GetUserEvents();
+            const userEvents = await getUserEvents();
             setCalendarEvents(userEvents.data);
         }
         loadUserEvents();
     }, [refresh])
-    return (
 
+    return (
         <div className="space-y-6">
             <div className="flex items-center gap-4 pb-3">
                 <h1 className="text-4xl font-bold tracking-tight">
                     Events Calendar
                 </h1>
- 
-                    <Button size="icon" onClick={() => setAddEventOpen(true)}>
-                        <Plus className="h-4 w-4" />
-                    </Button>
-            
+                <Button size="icon" onClick={() => setAddEventOpen(true)}>
+                    <Plus className="h-4 w-4" />
+                </Button>
             </div>
             <FullCalendar
                 controller={controller}
                 plugins={[themePlugin, dayGridPlugin, interactionPlugin]}
-
                 eventClick={(info) => {
                     const original = calendarEvents.find(e => e.id?.toString() === info.event.id);
                     setSelectedEvent(original);
@@ -56,7 +53,6 @@ export default function EventCalendar() {
                 initialView="dayGridMonth"
                 weekends={true}
                 height="calc(100vh - 100px)"
-
                 headerToolbar={{
                     center: "title",
                     right: "prev,next today"
@@ -65,16 +61,12 @@ export default function EventCalendar() {
                     id: event.id?.toString(),
                     title: event.eventTitle,
                     date: event.eventDate,
-                }))}
-            />
+                }))} />
             {selectedEvent && (
                 <EventInfo onUpdate={handleRefresh} eventItem={selectedEvent} isOpen={infoOpen} setIsOpen={setInfoOpen} />
             )}
-
             <AddEvent onUpdate={handleRefresh} isOpen={addEventOpen} setIsOpen={setAddEventOpen} />
         </div>
-
-
     );
 }
 

@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader } from "@/components/ui/dialog";
 import { formatDate } from "@/helpers/formatHelpers";
-import { DeleteEvent } from "@/services/eventService";
+import { deleteEvent } from "@/services/eventService";
 import type { EventItem } from "@/types";
 import InfoField from "../ui/info-field";
 
@@ -15,7 +15,7 @@ export type EventInfoProps = {
 export default function EventForm({ eventItem, onUpdate, isOpen, setIsOpen }: EventInfoProps) {
 
     async function handleDelete() {
-        await DeleteEvent(eventItem)
+        await deleteEvent(eventItem)
         onUpdate();
         setIsOpen(false);
     }

@@ -1,35 +1,35 @@
 import { api } from "@/api";
-import type { Application, EventItem, AppLocationType } from "@/types";
+import type { Application, AppLocationType } from "@/types";
 
-export async function CreateNewApp(application: Application) {
+export async function createNewApp(application: Application) {
     return await api.post("/app/new", application);
 }
 
-export async function GetAllApps() {
+export async function getAllApps() {
     return await api.get<Application[]>("/app/all")
 }
 
-export async function GetAllAppLocations() {
+export async function getAllAppLocations() {
     return await api.get<AppLocationType[]>("/app/locations");
 }
 
-export async function GetArchivedApps() {
+export async function getArchivedApps() {
     return await api.get<Application[]>("/app/archive")
 } 
 
-export async function UpdateApp(application: Application) {
+export async function updateApp(application: Application) {
     return await api.post<Application>("/app/update", application)
 }
 
-export async function MoveStage(applicationId: number, stageId: number) {
+export async function moveAppStage(applicationId: number, stageId: number) {
     await api.post(`/app/move/${applicationId}?stageId=${stageId}`);
 }
 
-export async function DeleteApp(appId: number) {
+export async function deleteApp(appId: number) {
     return await api.delete(`/app/${appId}`);
 }
 
-export async function GenerateApp(
+export async function generateApp(
     file: File,
     appId: number
 ) {

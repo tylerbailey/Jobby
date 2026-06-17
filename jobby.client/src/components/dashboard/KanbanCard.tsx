@@ -11,8 +11,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Status } from "@/enum/enums";
 import { getBadgeVariant, getCardColor } from "@/helpers/componentHelpers";
 import { formatCurrency, formatDate } from "@/helpers/formatHelpers";
-import { DeleteApp, GenerateApp, UpdateApp } from "@/services/appService";
-import { GetHistory } from "@/services/historyService";
+import { deleteApp, generateApp, updateApp } from "@/services/appService";
+import { getHistory } from "@/services/historyService";
 import type { Application, EventItem, HistoryItem } from "@/types";
 import { useDraggable } from "@dnd-kit/react";
 import { Archive, CalendarDays, Check, Clock3, File, MapPin, MoreVertical, Pencil, Timeline, Trash2, X } from "lucide-react";
@@ -57,7 +57,7 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
 
         if (resumeFile != null) {
             setDialogueOpen(false);
-            const promise = GenerateApp(resumeFile, item.id)
+            const promise = generateApp(resumeFile, item.id)
 
             toast.promise(promise, {
                 loading: "Generating resume. Your file will automatically download when complete.",
@@ -87,7 +87,7 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
             return;
         }
         setMenuOpen(false);
-        await DeleteApp(item.id);
+        await deleteApp(item.id);
         onUpdate();
         toast.info("The application has been deleted.")
     }
@@ -99,7 +99,7 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
 
     async function handleArchive() {
         setMenuOpen(false);
-        await UpdateApp({
+        await updateApp({
             ...item,
             isArchived: true
         });
@@ -109,7 +109,7 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
 
     async function handleStatus(newStatus: number) {
         setMenuOpen(false);
-        await UpdateApp({
+        await updateApp({
             ...item,
             status: newStatus
 
@@ -119,7 +119,7 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
 
     useEffect(() => {
         async function GetItemHistory() {
-            const response = await GetHistory(item.id)
+            const response = await getHistory(item.id)
             setHistories(response.data)
         }
         GetItemHistory();

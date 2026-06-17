@@ -1,14 +1,14 @@
 import type { Stage } from "@/types";
 import { api } from "@/api";
 
-export async function CreateStage(stage: Stage) {
+export async function createStage(stage: Stage) {
     return await api.post<Stage>("/stage/new", stage);
 }
 
-export async function GetAllStages() {
+export async function getAllStages() {
     return await api.get<Stage[]>("/stage/pipeline");
 }
 
-export async function DeleteStage(stageId: number) {
+export async function deleteStage(stageId: number) {
     await api.delete("/stage/delete/" + stageId)
 }

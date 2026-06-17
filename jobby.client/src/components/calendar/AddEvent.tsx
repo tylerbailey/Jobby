@@ -4,8 +4,8 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { GetAllApps } from "@/services/appService";
-import { CreateEvent } from "@/services/eventService";
+import { getAllApps } from "@/services/appService";
+import { createEvent } from "@/services/eventService";
 import type { Application } from "@/types";
 import { useEffect, useState } from "react";
 
@@ -25,7 +25,7 @@ export default function AddEvent({ onUpdate, isOpen, setIsOpen }: AddEventProps)
 
     useEffect(() => {
         async function getApplications() {
-            const apps = await GetAllApps();
+            const apps = await getAllApps();
             setApplications(apps.data)
         }
         getApplications();
@@ -33,7 +33,7 @@ export default function AddEvent({ onUpdate, isOpen, setIsOpen }: AddEventProps)
 
     async function handleCreate() {
         const date = new Date(eventDate);
-        await CreateEvent({
+        await createEvent({
             appId: Number.parseInt(selectedApp),
             eventTitle: eventTitle,
             eventDescription: eventDescription,

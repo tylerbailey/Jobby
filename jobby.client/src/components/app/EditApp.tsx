@@ -1,4 +1,4 @@
-import { UpdateApp } from "@/services/appService";
+import { updateApp } from "@/services/appService";
 import { useState, type Dispatch, type SetStateAction } from "react";
 import AppForm, { type ApplicationFormData } from "@/components/app/AppForm";
 import { toast } from "sonner";
@@ -33,7 +33,7 @@ export function EditAppSheet({ item, onUpdate, sheetOpen, setSheetOpen }: AppEdi
    
     async function saveApp() {
         try {
-            await UpdateApp({
+            await updateApp({
                 id: form.id,
                 userId: item.userId,
                 companyName: form.companyName,

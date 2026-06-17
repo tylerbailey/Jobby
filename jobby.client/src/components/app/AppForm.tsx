@@ -1,13 +1,14 @@
 import { Button } from "@/components/ui/button";
+import { DateTimePicker } from "@/components/ui/date-time";
+import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
-import { GetAllAppLocations } from "@/services/appService";
-import type { AppFormProps, EventItem, AppLocationType } from "@/types";
+import { getAllAppLocations } from "@/services/appService";
+import type { AppLocationType, EventItem } from "@/types";
 import { useEffect, useState } from "react";
-import { DateTimePicker } from "@/components/ui/date-time";
-import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
+import type { AppFormProps } from "@/components/app/AppInfo";
 
 export type ApplicationFormData = {
     id: number;
@@ -36,7 +37,7 @@ export default function AppForm({ form, setForm, sheetOpen, setSheetOpen, action
 
     useEffect(() => {
         async function GetLocations() {
-                const response = await GetAllAppLocations();
+                const response = await getAllAppLocations();
                 setLocationTypes(response.data);            
         }
         GetLocations();

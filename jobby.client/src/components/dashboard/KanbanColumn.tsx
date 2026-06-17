@@ -3,7 +3,7 @@ import { KanbanCard } from "@/components/dashboard/KanbanCard";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { DeleteStage } from "@/services/stageService";
+import { deleteStage } from "@/services/stageService";
 import { useDroppable } from '@dnd-kit/react';
 import { MoreVertical, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
@@ -26,7 +26,7 @@ export function KanbanColumn({ stage, onUpdate, searchValue }: KanbanColumnProps
     async function handleDelete() {
         try {
             if (stage.items.length == 0) {
-                await DeleteStage(stage.id);
+                await deleteStage(stage.id);
                 setMenuOpen(false);
                 onUpdate();
                 toast.info("The pipeline stage has been deleted.")
