@@ -3,8 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Bell, Calendar, CalendarDays, FileText, LayoutDashboard, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
-import { getBadgeVariant } from "../../helpers/componentHelpers";
-import { formatCurrency } from "../../helpers/formatHelpers";
+import { getBadgeVariant } from "@/helpers/componentHelpers";
+import { formatCurrency } from "@/helpers/formatHelpers";
 
 const features = [
     {

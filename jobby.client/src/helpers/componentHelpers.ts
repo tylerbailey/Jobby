@@ -1,5 +1,5 @@
 import type { Application } from "@/types";
-import { Status } from "../enum/enums";
+import { Status } from "@/enums/enums";
 
 export function getBadgeVariant(type: string): "default" | "secondary" | "outline" {
     switch (type?.toLowerCase()) {

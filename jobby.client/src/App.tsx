@@ -1,15 +1,17 @@
 import LandingPage from "@/components/auth/Landing";
-import { LoginPage } from "@/components/auth/Login";
-import { RegisterPage } from "@/components/auth/Register";
 import EventCalendar from "@/components/calendar/EventCalendar";
 import Layout from "@/components/layout/Layout";
 import { ProtectedRoute } from "@/ProtectedRoute";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ArchivedApps from "@/components/archive/Archive";
-import { KanbanBoard } from "@/components/dashboard/Kanban";
+import { KanbanBoard } from "@/components/kanban/Kanban";
+import { AuthProvider } from "@/providers/authProvider";
+import { LoginPage } from "@/components/auth/login";
+import { RegisterPage } from "@/components/auth/register";
 
 export default function App() {
     return (
+        <AuthProvider>
         <BrowserRouter>
             <Routes>
                 <Route path="/" element={<LandingPage  /> } />
@@ -23,6 +25,7 @@ export default function App() {
                     </Route>
                 </Route>
             </Routes>
-        </BrowserRouter>
+            </BrowserRouter>
+            </AuthProvider>
     );
 }

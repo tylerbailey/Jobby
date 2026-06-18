@@ -2,12 +2,12 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, } from "@/components/ui/card"
 import { Field, FieldDescription, FieldGroup, FieldLabel, } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { useUser } from "@/context/authContext"
 import { cn } from "@/lib/utils"
-import { login } from "@/services/authService"
 import axios from "axios"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { useAuth } from "../../context/authContext"
+import { toast } from "sonner"
 
 export function LoginPage({
     className,
@@ -16,34 +16,21 @@ export function LoginPage({
     const navigate = useNavigate();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
-    const { setUser } = useUser();
+    const context = useAuth();
 
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
-        setError("");
         try {
-            const response = await login(email, password);
-            setUser({
-                id: response.id,
-                email: response.email,
-                displayName: response.displayName ?? ""
-            });
-            localStorage.setItem("user", JSON.stringify({
-                id: response.id,
-                email: response.email,
-                displayName: response.displayName ?? ""
-            }));
-            localStorage.setItem("token", response.token);
+            await context.login(email, password);
             navigate("/dashboard");
         } catch (err) {
             if (axios.isAxiosError(err)) {
                 const message = err.response?.data?.message;
 
-                setError(message ?? "Login failed. Please try again.");
+                toast.error(message ?? "Login failed. Please try again.");
                 return;
             }
-            setError("Login failed. Please try again.");
+            toast.error("Login failed. Please try again.");
         }
     }
     return (
@@ -70,12 +57,7 @@ export function LoginPage({
                                 Enter your email below to login to your account
                             </CardDescription>
                         </CardHeader>
-                        <CardContent>
-                            {error && (
-                                <p style={{ color: "red" }}>
-                                    {error}
-                                </p>
-                            )}
+                        <CardContent>                            
                             <form onSubmit={handleSubmit}>
                                 <FieldGroup>
                                     <Field>

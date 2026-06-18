@@ -3,7 +3,7 @@ import { createNewApp } from "@/services/appService";
 import type { Application } from "@/types";
 import { useState, type Dispatch, type SetStateAction } from "react";
 import { toast } from "sonner";
-import { Status } from "../../enum/enums";
+import { Status } from "@/enums/enums";
 
 export type AppCreateProps = {
     stage: number;

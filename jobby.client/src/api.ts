@@ -3,7 +3,8 @@ import { toast } from "sonner";
 
 export const api = axios.create({
     baseURL: import.meta.env.VITE_API_URL
-});
+}); 
+
 api.interceptors.response.use(
     response => response,
     error => {
@@ -30,6 +31,7 @@ api.interceptors.response.use(
         return Promise.reject(error);
     }
 );
+
 api.interceptors.request.use(config => {
     const token = localStorage.getItem("token");
 

@@ -1,6 +1,8 @@
-import { isLoggedIn } from "@/services/authService";
+
 import { Navigate, Outlet } from "react-router-dom";
+import { useAuth } from "@/context/authContext";
 
 export function ProtectedRoute() {
-    return isLoggedIn() ? <Outlet /> : <Navigate to="/" replace />;
+    const { isLoggedIn } = useAuth();
+    return isLoggedIn ? <Outlet /> : <Navigate to="/" replace />;
 }

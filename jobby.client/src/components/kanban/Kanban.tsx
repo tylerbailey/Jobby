@@ -1,5 +1,5 @@
-import InfoCards from "@/components/dashboard/InfoCards";
-import { KanbanColumn } from "@/components/dashboard/KanbanColumn";
+import InfoCards from "@/components/kanban/InfoCards";
+import { KanbanColumn } from "@/components/kanban/KanbanColumn";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -10,9 +10,9 @@ import { DragDropProvider, type DragEndEvent } from "@dnd-kit/react";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { Colors, Status } from "../../enum/enums";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
-import { Field, FieldDescription, FieldLabel } from "../ui/field";
+import { Colors, Status } from "@/enums/enums";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
 
 export function KanbanBoard() {
     const [stages, setStages] = useState<Stage[]>([]);
@@ -44,11 +44,11 @@ export function KanbanBoard() {
         GetMyStages();
     }, [refresh]);
 
-    useEffect(() => {
-        const timer = setTimeout(() => {
-        }, 500);
-        return () => clearTimeout(timer);
-    }, [searchValue]);
+    // useEffect(() => {
+    //     const timer = setTimeout(() => {
+    //     }, 500);
+    //     return () => clearTimeout(timer);
+    // }, [searchValue]);
 
     async function handleCreate() {
         await createStage({ name, order: parseInt(order), color });
@@ -101,7 +101,7 @@ export function KanbanBoard() {
                     await moveAppStage(card.id!, newStageId);
                 } catch {
                     toast.error("An error occurred while moving your application.");
-                    handleRefresh(); // revert optimistic update on failure
+                    handleRefresh(); 
                 }
             }
         }
@@ -155,8 +155,7 @@ export function KanbanBoard() {
                                         type="text"
                                         placeholder="Enter the stage name"
                                         value={name}
-                                        onChange={(e) => setName(e.target.value)}
-                                    />
+                                        onChange={(e) => setName(e.target.value)} />
                                 </Field>
 
                                 <Field className="py-3">
@@ -169,8 +168,7 @@ export function KanbanBoard() {
                                         type="number"
                                         placeholder="Enter the display order"
                                         value={order}
-                                        onChange={(e) => setOrder(e.target.value)}
-                                    />
+                                        onChange={(e) => setOrder(e.target.value)} />
                                 </Field>
 
                                 <Field className="py-3">

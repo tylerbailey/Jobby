@@ -1,17 +1,15 @@
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { useUser } from "@/context/authContext";
 import { MoreVertical } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/authContext";
 
 export function NavUser() {
     const navigate = useNavigate();
-    const { user, setUser } = useUser();
+    const context = useAuth();
 
     function handleLogout() {
-        setUser(null);
-        localStorage.removeItem("user");
-        localStorage.removeItem("token");
+        context.logout();
         navigate("/");
     }
     return (
@@ -21,7 +19,7 @@ export function NavUser() {
                     size="lg"
                     className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
                     <div className="grid flex-1 text-left text-sm leading-tight">
-                        <span className="truncate text-xs">{(user.email)}</span>
+                        <span className="truncate text-xs">{(context.user.email)}</span>
                     </div>
                     <MoreVertical className="h-4 w-4" />
                 </Button>

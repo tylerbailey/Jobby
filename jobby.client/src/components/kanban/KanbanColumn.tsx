@@ -1,5 +1,5 @@
 import CreateApp from "@/components/app/CreateApp";
-import { KanbanCard } from "@/components/dashboard/KanbanCard";
+import { KanbanCard } from "@/components/kanban/KanbanCard";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -8,7 +8,7 @@ import { useDroppable } from '@dnd-kit/react';
 import { MoreVertical, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Colors } from "../../enum/enums";
+import { Colors } from "@/enums/enums";
 
 export type KanbanColumnProps = {
 

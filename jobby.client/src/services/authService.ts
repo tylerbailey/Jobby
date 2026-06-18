@@ -2,17 +2,15 @@ import { api } from "@/api";
 import type { AuthResponse } from "@/types";
 
 
-export async function login(email: string, password: string) {
+export async function loginUser(email: string, password: string) {
     const response = await api.post<AuthResponse>("/auth/login", {
         email,
         password
     });
-
-    localStorage.setItem("token", response.data.token);
     return response.data;
 }
 
-export async function register(
+export async function registerUser(
     email: string,
     password: string,
     displayName?: string
@@ -22,16 +20,8 @@ export async function register(
         password,
         displayName
     });
-
-    localStorage.setItem("token", response.data.token);
     return response.data;
 }
 
-export function logout() {
-    localStorage.removeItem("token");
-}
 
-export function isLoggedIn() {
-    return Boolean(localStorage.getItem("token"));
-}
 

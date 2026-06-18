@@ -1,4 +1,4 @@
-import { register } from "@/services/authService";
+
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -6,20 +6,20 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription }
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { useAuth } from "@/context/authContext";
 
 export function RegisterPage() {
     const navigate = useNavigate();
-
+    const context = useAuth();
     const [displayName, setDisplayName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
     async function handleSubmit() {
         try {
-            await register(email, password, displayName);
+            await context.register(email, password, displayName);
             navigate("/login");
         } catch {
-
             toast.error("Could not create account. Check your email and password.");
         } 
     }
