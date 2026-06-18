@@ -9,6 +9,7 @@ import { MoreVertical, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Colors } from "@/enums/enums";
+import type { Stage } from "@/types";
 
 export type KanbanColumnProps = {
 
@@ -47,7 +48,7 @@ export function KanbanColumn({ stage, onUpdate, searchValue }: KanbanColumnProps
 
     return (
         <section className="w-full shrink-0 sm:w-fit sm:min-w-80" ref={ref}>
-            <Card className="min-h-[600px] h-full w-full border bg-muted/30 p-3 sm:w-fit sm:min-w-80">
+            <Card className="min-h-[600px] w-full border bg-muted/30 p-3 sm:w-fit sm:min-w-80">
                 <div className={`mb-3 flex items-center justify-between rounded-lg border px-3 py-2 ${getStageColors(stage.color)}`}>
                     <div className="flex items-center gap-2">
                         <h2 className="font-semibold">{stage.name}</h2>

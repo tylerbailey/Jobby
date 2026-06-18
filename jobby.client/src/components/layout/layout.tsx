@@ -8,7 +8,7 @@ export default function Layout() {
         <SidebarProvider>
             <AppSidebar />
             <SidebarInset className="overflow-hidden">
-                <main className="min-h-screen bg-background p-6">
+                <main className="bg-background p-6">
                 <Outlet />
                 <Toaster position={"top-right"} richColors={true} />
                 </main>

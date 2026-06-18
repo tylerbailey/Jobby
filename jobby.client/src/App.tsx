@@ -1,13 +1,13 @@
-import LandingPage from "@/components/auth/Landing";
-import EventCalendar from "@/components/calendar/EventCalendar";
-import Layout from "@/components/layout/Layout";
-import { ProtectedRoute } from "@/ProtectedRoute";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ArchivedApps from "@/components/archive/Archive";
-import { KanbanBoard } from "@/components/kanban/Kanban";
-import { AuthProvider } from "@/providers/authProvider";
+import LandingPage from "@/components/auth/Landing";
 import { LoginPage } from "@/components/auth/login";
 import { RegisterPage } from "@/components/auth/register";
+import EventCalendar from "@/components/calendar/EventCalendar";
+import Dashboard from "@/components/Dashboard/Dashboard";
+import Layout from "@/components/layout/Layout";
+import { ProtectedRoute } from "@/ProtectedRoute";
+import { AuthProvider } from "@/providers/authProvider";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 export default function App() {
     return (
@@ -19,7 +19,7 @@ export default function App() {
                 <Route path="/register" element={<RegisterPage />} />
                 <Route element={<ProtectedRoute />}>
                     <Route element={<Layout />}>              
-                        <Route path="/dashboard" element={<KanbanBoard />} />      
+                        <Route path="/dashboard" element={<Dashboard />} />      
                         <Route path="/calendar" element={<EventCalendar />} />
                             <Route path="/archive" element={<ArchivedApps />} />                    
                     </Route>
