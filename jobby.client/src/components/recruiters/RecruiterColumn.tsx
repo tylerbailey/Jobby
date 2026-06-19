@@ -27,7 +27,7 @@ export default function RecruiterColumn({ recruiters, onUpdate }: RecruiterCardP
                 </CardHeader>
                 <CardContent>
                     {recruiters.map((recruiter) => (
-                        <RecruiterCard onUpdate={onUpdate} recruiter={recruiter} />
+                        <RecruiterCard key={`recruiter${recruiter.id}` } onUpdate={onUpdate} recruiter={recruiter} />
 
                     ))}
                 </CardContent>

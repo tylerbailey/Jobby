@@ -76,6 +76,7 @@ export function KanbanBoard({stages, setStages, onUpdate, searchValue } : Kanban
 
     function handleScrollLeft() {
         scrollRef.current?.scrollBy({ left: -300, behavior: "smooth" });
+       
     }
 
     function handleScrollRight() {
@@ -88,8 +89,7 @@ export function KanbanBoard({stages, setStages, onUpdate, searchValue } : Kanban
                 <Button
                     size="icon"
                     onClick={handleScrollLeft}
-                    className="absolute left-2 top-1/2 z-50 shadow-md opacity-50 hover:opacity-100"
-                >
+                    className="absolute left-5 top-1/2 z-50 shadow-md opacity-25 hover:opacity-75" >
                     <ChevronLeft />
                 </Button>
 
@@ -110,7 +110,7 @@ export function KanbanBoard({stages, setStages, onUpdate, searchValue } : Kanban
                 <Button
                     size="icon"
                     onMouseDown={handleScrollRight}
-                    className="absolute right-2 top-1/2 z-50 shadow-md opacity-50 hover:opacity-100"
+                    className="absolute right-5 top-1/2 z-50 shadow-md opacity-25 hover:opacity-75"
                 >
                     <ChevronRight />
                 </Button>
