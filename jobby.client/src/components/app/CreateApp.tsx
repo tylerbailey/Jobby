@@ -1,4 +1,4 @@
-import AppForm, { type ApplicationFormData } from "@/components/app/AppForm";
+import AppForm from "@/components/app/AppForm";
 import { createNewApp } from "@/services/appService";
 import type { Application } from "@/types";
 import { useState, type Dispatch, type SetStateAction } from "react";
@@ -13,10 +13,9 @@ export type AppCreateProps = {
 }
 
 export default function CreateApp({ stage, onUpdate, sheetOpen, setSheetOpen }: AppCreateProps) {
-    const [form, setForm] = useState<ApplicationFormData>({
+    const [item, setItem] = useState<Application>({
         id: 0,
-        formTitle: "Create Application",
-        formDesc: "Create a new application here. Click save when you're done.",
+        userId: "",
         companyName: "",
         jobTitle: "",
         jobPostingUrl: "",
@@ -35,29 +34,13 @@ export default function CreateApp({ stage, onUpdate, sheetOpen, setSheetOpen }: 
 
     async function saveApp() {
         try {
-            const payload: Application = {
-                id: form.id,
-                userId: "",                
-                companyName: form.companyName,
-                jobTitle: form.jobTitle,
-                jobPostingUrl: form.jobPostingUrl,
-                locationTypeId: form.locationTypeId,
-                locationType: form.locationType,
-                address: form.address,
-                salary: form.salary,
-                contactName: form.contactName,
-                stageId: stage,
-                notes: form.notes,
-                appliedDate: form.appliedDate,
-                status: form.status,
-                isArchived: form.isArchived,
-                events : form.events
-            };
-            await createNewApp(payload);
+
+            await createNewApp(item);
             onUpdate();
             setSheetOpen(false);
-            setForm({
-                ...form,
+            setItem({
+                id: 0,
+                userId: "",
                 companyName: "",
                 jobTitle: "",
                 jobPostingUrl: "",
@@ -68,17 +51,19 @@ export default function CreateApp({ stage, onUpdate, sheetOpen, setSheetOpen }: 
                 contactName: "",
                 stageId: stage,
                 notes: "",
+                status: Status.InProgress,
+                isArchived: false,
                 appliedDate: undefined,
-              events: []
+                events: []
             });
 
         }
         catch {
-            toast.error("An error occured creating the application.")        
+            toast.error("An error occured creating the application.")
         }
     };
 
     return (
-        <AppForm form={form} setForm={setForm} sheetOpen={sheetOpen} setSheetOpen={setSheetOpen} action={saveApp} />
+        <AppForm title="Create Application" item={item} setItem={setItem} sheetOpen={sheetOpen} setSheetOpen={setSheetOpen} action={saveApp} />
     );
 }

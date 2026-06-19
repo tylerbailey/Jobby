@@ -3,35 +3,21 @@ import { DateTimePicker } from "@/components/ui/date-time";
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Sheet, SheetClose, SheetContent, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
 import { getAllAppLocations } from "@/services/appService";
-import type { AppLocationType, EventItem } from "@/types";
-import { useEffect, useState } from "react";
-import type { AppFormProps } from "@/components/app/AppInfo";
+import type { Application, AppLocationType } from "@/types";
+import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 
-export type ApplicationFormData = {
-    id: number;
-    formTitle: string;
-    formDesc: string;
-    companyName: string;
-    jobTitle: string;
-    jobPostingUrl: string;
-    locationTypeId: number;
-    locationType: string;
-    address: string;
-    salary: number;
-    contactName: string;
-    stageId: number;
-    notes: string;
-    status: number;
-    isArchived: boolean;
-    appliedDate?: Date;
-    appliedTime?: Date;
-    events: EventItem[];
+export type AppFormProps = {
+    title: string;
+    item: Application;
+    setItem: Dispatch<SetStateAction<Application>>;
+    sheetOpen: boolean;
+    setSheetOpen: Dispatch<SetStateAction<boolean>>;
+    action: () => void;
 }
-
-export default function AppForm({ form, setForm, sheetOpen, setSheetOpen, action }: AppFormProps) {
+export default function AppForm({ title, item, setItem, sheetOpen, setSheetOpen, action }: AppFormProps) {
     const [locationTypes, setLocationTypes] = useState<AppLocationType[]>([]);
     const [datePickerOpen, setDatePickerOpen] = useState<boolean>();
 
@@ -48,10 +34,7 @@ export default function AppForm({ form, setForm, sheetOpen, setSheetOpen, action
 
             <SheetContent>
                 <SheetHeader>
-                    <SheetTitle>{form.formTitle}</SheetTitle>
-                    <SheetDescription>
-                        {form.formDesc}
-                    </SheetDescription>
+                    <SheetTitle>{title}</SheetTitle>                    
                 </SheetHeader>
                 <div className="px-4 overflow-y-auto">
                     <Field className="py-3">
@@ -63,8 +46,8 @@ export default function AppForm({ form, setForm, sheetOpen, setSheetOpen, action
                             id="input-field-companyname"
                             type="text"
                             placeholder="Enter the company name"
-                            value={form.companyName}
-                            onChange={(e) => setForm({ ...form, companyName: e.target.value })} >
+                            value={item.companyName}
+                            onChange={(e) => setItem({ ...item, companyName: e.target.value })} >
                         </Input>
                     </Field>
                     <Field className="py-3">
@@ -76,8 +59,8 @@ export default function AppForm({ form, setForm, sheetOpen, setSheetOpen, action
                             id="input-field-jobtitle"
                             type="text"
                             placeholder="Enter the job title"
-                            value={form.jobTitle}
-                            onChange={(e) => setForm({ ...form, jobTitle: e.target.value })}
+                            value={item.jobTitle}
+                            onChange={(e) => setItem({ ...item, jobTitle: e.target.value })}
                         />
 
                     </Field>
@@ -90,8 +73,8 @@ export default function AppForm({ form, setForm, sheetOpen, setSheetOpen, action
                             id="input-field-jobpostingurl"
                             type="text"
                             placeholder="Enter the job posting URL"
-                            value={form.jobPostingUrl}
-                            onChange={(e) => setForm({ ...form, jobPostingUrl: e.target.value })} />
+                            value={item.jobPostingUrl}
+                            onChange={(e) => setItem({ ...item, jobPostingUrl: e.target.value })} />
                     </Field>
                     <Field>
                         <FieldLabel className="py-3">
@@ -100,7 +83,7 @@ export default function AppForm({ form, setForm, sheetOpen, setSheetOpen, action
                         <FieldDescription>
                             The location where you will you work.
                         </FieldDescription>
-                        <Select value={form.locationTypeId.toString()} onValueChange={(e) => setForm({ ...form, locationTypeId: Number.parseInt(e) })}>
+                        <Select value={item.locationTypeId.toString()} onValueChange={(e) => setItem({ ...item, locationTypeId: Number.parseInt(e) })}>
                             <SelectTrigger>
                                 <SelectValue placeholder="Select color" />
                             </SelectTrigger>
@@ -125,8 +108,8 @@ export default function AppForm({ form, setForm, sheetOpen, setSheetOpen, action
                             id="input-field-jobaddress"
                             type="text"
                             placeholder="Enter the job posting address"
-                            value={form.address}
-                            onChange={(e) => setForm({ ...form, address: e.target.value })} />
+                            value={item.address}
+                            onChange={(e) => setItem({ ...item, address: e.target.value })} />
                     </Field>
                     <Field className="py-3">
                         <FieldLabel htmlFor="input-field-jobsalary">Target Salary</FieldLabel>
@@ -137,8 +120,8 @@ export default function AppForm({ form, setForm, sheetOpen, setSheetOpen, action
                             id="input-field-jobsalary"
                             type="number"
                             placeholder="Enter the target salary"
-                            value={form.salary}
-                            onChange={(e) => setForm({ ...form, salary: Number.parseInt(e.target.value) })} />
+                            value={item.salary}
+                            onChange={(e) => setItem({ ...item, salary: Number.parseInt(e.target.value) })} />
                     </Field>
                     <Field className="py-3">
                         <FieldLabel>
@@ -147,7 +130,7 @@ export default function AppForm({ form, setForm, sheetOpen, setSheetOpen, action
                         <FieldDescription>
                             The date you applied, if applicable.
                         </FieldDescription>
-                        <DateTimePicker dateTime={form.appliedDate} isOpen={datePickerOpen} setIsOpen={setDatePickerOpen} action={(e) => setForm({ ...form, appliedDate: e })} />
+                        <DateTimePicker dateTime={item.appliedDate} isOpen={datePickerOpen} setIsOpen={setDatePickerOpen} action={(e) => setItem({ ...item, appliedDate: e })} />
 
                     </Field>
 
@@ -160,8 +143,8 @@ export default function AppForm({ form, setForm, sheetOpen, setSheetOpen, action
                             id="input-field-jobcontact"
                             type="text"
                             placeholder="Enter the contact name"
-                            value={form.contactName}
-                            onChange={(e) => setForm({ ...form, contactName: e.target.value })} />
+                            value={item.contactName}
+                            onChange={(e) => setItem({ ...item, contactName: e.target.value })} />
                     </Field>
                     <Field className="py-3">
                         <FieldLabel htmlFor="input-field-jobnotes">Notes</FieldLabel>
@@ -169,8 +152,8 @@ export default function AppForm({ form, setForm, sheetOpen, setSheetOpen, action
                             Notes for the job.
                         </FieldDescription>
                         <Textarea placeholder="Enter your notes here."
-                            value={form.notes}
-                            onChange={(e) => setForm({ ...form, notes: e.target.value })} />
+                            value={item.notes}
+                            onChange={(e) => setItem({ ...item, notes: e.target.value })} />
                     </Field>
                 </div>
                 <SheetFooter>

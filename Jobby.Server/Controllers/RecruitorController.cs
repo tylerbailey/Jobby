@@ -45,7 +45,7 @@ namespace Jobby.Server.Controllers
             return Ok();
         }
 
-        [HttpDelete("{recruitorId}")]
+        [HttpDelete("{recruiterId}")]
         public async Task<IActionResult> DeleteRecruiter(int recruiterId)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;

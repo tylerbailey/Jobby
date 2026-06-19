@@ -12,7 +12,4 @@
     <None Remove="src\components\recruiter - Copy\**" />
     <TypeScriptConfiguration Remove="src\components\recruiter - Copy\**" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="src\components\recruiters\" />
-  </ItemGroup>
 </Project>

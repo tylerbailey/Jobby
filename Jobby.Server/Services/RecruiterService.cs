@@ -27,10 +27,15 @@ namespace Jobby.Server.Services
             var recruiters = await db.Recruiters.Where(r => r.UserId == userId && !r.Disabled).Select(r =>
             new Recruiter
             {
+                Id = r.Id,
                 Agency = r.Agency,
                 Name = r.Name,
                 PhoneNumber = r.PhoneNumber,
                 Applications = r.Applications,
+                LastContact = r.LastContact,
+                NextContact = r.NextContact,
+                Email = r.Email,
+                Notes = r.Notes,
             }).ToListAsync() ?? [];
             return recruiters;
         }
@@ -44,6 +49,10 @@ namespace Jobby.Server.Services
                 Agency = r.Agency,
                 Name = r.Name,
                 PhoneNumber = r.PhoneNumber,
+                LastContact = r.LastContact,
+                NextContact = r.NextContact,
+                Email = r.Email,
+                Notes = r.Notes,
                 ApplicationIds = r.Applications.Select(a => a.Id).ToList(),
             }).FirstOrDefaultAsync() ?? new RecruiterModel();
             return recruiter;
@@ -58,6 +67,10 @@ namespace Jobby.Server.Services
                 recruiter.Agency = recruiterModel.Agency;
                 recruiter.Name = recruiterModel.Name;
                 recruiter.PhoneNumber = recruiterModel.PhoneNumber;
+                recruiter.LastContact = recruiterModel.LastContact;
+                recruiter.NextContact = recruiterModel.NextContact;
+                recruiter.Email = recruiterModel.Email;
+                recruiter.Notes = recruiterModel.Notes;
                 await db.SaveChangesAsync();
             }
         }

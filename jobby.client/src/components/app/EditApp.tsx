@@ -1,56 +1,21 @@
+import AppForm from "@/components/app/AppForm";
 import { updateApp } from "@/services/appService";
-import { useState, type Dispatch, type SetStateAction } from "react";
-import AppForm, { type ApplicationFormData } from "@/components/app/AppForm";
-import { toast } from "sonner";
 import type { Application } from "@/types/application";
+import { useState, type Dispatch, type SetStateAction } from "react";
+import { toast } from "sonner";
 
 export type AppEditProps = {
-    item: Application
+    cardItem: Application
     sheetOpen: boolean;
     setSheetOpen: Dispatch<SetStateAction<boolean>>
     onUpdate: () => void;
 }
-export function EditAppSheet({ item, onUpdate, sheetOpen, setSheetOpen }: AppEditProps) { 
-    const [form, setForm] = useState<ApplicationFormData>({
-        id: item.id,
-        formTitle: "Edit Application",
-        formDesc: "Make changes to the application here. Click save when you're done.",
-        companyName: item.companyName,
-        jobTitle: item.jobTitle,
-        jobPostingUrl: item.jobPostingUrl,
-        locationTypeId: item.locationTypeId,
-        locationType: item.locationType,
-        address: item.address,
-        salary: item.salary,
-        contactName: item.contactName,
-        stageId: item.stageId,
-        notes: item.notes,
-        status: item.status,
-        isArchived: item.isArchived,
-        appliedDate: item.appliedDate,
-        events: item.events ?? []
-    });
+export function EditAppSheet({ cardItem, onUpdate, sheetOpen, setSheetOpen }: AppEditProps) { 
+    const [item, setItem] = useState<Application>(cardItem);
    
     async function saveApp() {
         try {
-            await updateApp({
-                id: form.id,
-                userId: item.userId,
-                companyName: form.companyName,
-                jobTitle: form.jobTitle,
-                jobPostingUrl: form.jobPostingUrl,
-                locationTypeId: form.locationTypeId,
-                locationType: form.locationType,
-                address: form.address,
-                salary: form.salary,
-                contactName: form.contactName,
-                stageId: item.stageId,
-                notes: form.notes,
-                appliedDate: form.appliedDate,
-                status: form.status,
-                isArchived: form.isArchived,
-                events: form.events
-            });
+            await updateApp(item);
             onUpdate();
             setSheetOpen(false);
         }
@@ -60,6 +25,6 @@ export function EditAppSheet({ item, onUpdate, sheetOpen, setSheetOpen }: AppEdi
     }
 
     return (
-        <AppForm form={form} setForm={setForm} sheetOpen={sheetOpen} setSheetOpen={ setSheetOpen } action={saveApp} />
+        <AppForm title="Edit Application" item={item} setItem={setItem} sheetOpen={sheetOpen} setSheetOpen={setSheetOpen} action={saveApp} />
     );
 }

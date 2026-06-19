@@ -83,33 +83,38 @@ export function KanbanBoard({stages, setStages, onUpdate, searchValue } : Kanban
     }
 
     return (
-            <DragDropProvider onDragEnd={handleDragEnd}>
-              
-                    <Button
-                        size="icon"
-                        onMouseDown={handleScrollLeft}
-                        className="relative left-0 top-1/2 opacity-50 hover:opacity-100 z-50 shadow-md">
-                        <ChevronLeft />
-                    </Button>
-                    <div
-                        ref={scrollRef}
-                        className="flex flex-row gap-4 overflow-x-hidden overflow-y-auto w-screen h-[calc(100vh-220px)]">
-                        {stages.map((stage) => (
-                            <KanbanColumn
-                                key={stage.id!}
-                                stage={stage}
-                                searchValue={searchValue}
-                                onUpdate={onUpdate} />
-                        ))}
-                    </div>
-                    <Button
-                        size="icon"
-                        onMouseDown={handleScrollRight}
-                        className="relative xl:right-20 opacity-50 hover:opacity-100 top-1/2 z-50 shadow-md">
-                        <ChevronRight />
-                    </Button>
-              
-            </DragDropProvider>
-  
+        <DragDropProvider onDragEnd={handleDragEnd}>
+            <div className="relative flex-1 min-w-0">
+                <Button
+                    size="icon"
+                    onClick={handleScrollLeft}
+                    className="absolute left-2 top-1/2 z-50 shadow-md opacity-50 hover:opacity-100"
+                >
+                    <ChevronLeft />
+                </Button>
+
+                <div
+                    ref={scrollRef}
+                    className="flex flex-row gap-4 overflow-x-hidden overflow-y-auto h-[calc(100vh-220px)]"
+                >
+                    {stages.map((stage) => (
+                        <KanbanColumn
+                            key={stage.id!}
+                            stage={stage}
+                            searchValue={searchValue}
+                            onUpdate={onUpdate}
+                        />
+                    ))}
+                </div>
+
+                <Button
+                    size="icon"
+                    onMouseDown={handleScrollRight}
+                    className="absolute right-2 top-1/2 z-50 shadow-md opacity-50 hover:opacity-100"
+                >
+                    <ChevronRight />
+                </Button>
+            </div>
+        </DragDropProvider>
     );
 }

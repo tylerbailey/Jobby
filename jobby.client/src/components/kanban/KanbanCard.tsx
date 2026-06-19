@@ -156,7 +156,7 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
                                         onClick={handleEdit}
                                         variant="ghost"
                                         className="flex h-9 w-full items-center justify-between px-2">
-                                        <span>Edit Application</span>
+                                        <span>Edit</span>
                                         <Pencil className="h-4 w-4" />
                                     </Button>
                                     <Button
@@ -260,7 +260,7 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
                     )}
                 </CardContent>
             </Card>
-            <EditAppSheet sheetOpen={editOpen} setSheetOpen={setEditOpen} item={item} onUpdate={onUpdate} />
+            <EditAppSheet sheetOpen={editOpen} setSheetOpen={setEditOpen} cardItem={item} onUpdate={onUpdate} />
             <AppInfo item={item} infoOpen={infoOpen} setInfoOpen={setInfoOpen} />
             <JobHistory sheetOpen={historyOpen} setSheetOpen={setHistoryOpen} items={histories} />
             <Dialog open={dialogueOpen} onOpenChange={setDialogueOpen}>

@@ -16,13 +16,6 @@ export type AppInfoProps = {
     infoOpen: boolean;
     setInfoOpen: Dispatch<SetStateAction<boolean>>
 }
-export type AppFormProps = {
-    form: ApplicationFormData;
-    setForm: Dispatch<SetStateAction<ApplicationFormData>>;
-    sheetOpen: boolean;
-    setSheetOpen: Dispatch<SetStateAction<boolean>>
-    action: () => void;
-}
 
 export default function AppInfo({ item, infoOpen, setInfoOpen }: AppInfoProps) {
     return (
