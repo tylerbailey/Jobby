@@ -5,11 +5,12 @@ import { Card } from "@/components/ui/card";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { deleteStage } from "@/services/stageService";
 import { useDroppable } from '@dnd-kit/react';
-import { MoreVertical, Plus, Trash2 } from "lucide-react";
+import { MoreVertical, Pencil, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { ElementColors, HoverColors } from "@/consts/consts";
 import type { Stage } from "@/types";
+import EditStage from "../stage/EditStage";
 
 export type KanbanColumnProps = {
 
@@ -21,6 +22,7 @@ export type KanbanColumnProps = {
 export function KanbanColumn({ stage, onUpdate, searchValue }: KanbanColumnProps) {
     const [menuOpen, setMenuOpen] = useState<boolean>(false);
     const [sheetOpen, setSheetOpen] = useState<boolean>(false);
+    const [dialogOpen, setDialogOpen] = useState<boolean>(false);
     const { ref } = useDroppable({
         id: stage.id.toString()
     });
@@ -66,6 +68,13 @@ export function KanbanColumn({ stage, onUpdate, searchValue }: KanbanColumnProps
                             </PopoverTrigger>
                             <PopoverContent className="w-48 p-1">
                                 <Button
+                                    onClick={() => setDialogOpen(true)}
+                                    variant="ghost"
+                                    className="flex h-9 w-full items-center justify-between px-2">
+                                    <span>Edit</span>
+                                    <Pencil className="h-4 w-4" />
+                                </Button>
+                                <Button
                                     onClick={handleNew}
                                     variant="ghost"
                                     className="flex h-9 w-full items-center justify-between px-2">
@@ -92,6 +101,7 @@ export function KanbanColumn({ stage, onUpdate, searchValue }: KanbanColumnProps
 
             </Card>
             <CreateApp sheetOpen={sheetOpen} setSheetOpen={setSheetOpen} stage={stage.id} onUpdate={onUpdate}></CreateApp>
+            <EditStage stage={stage} dialogOpen={dialogOpen} setDialogOpen={setDialogOpen} onUpdate={onUpdate } />
         </section>
     );
 

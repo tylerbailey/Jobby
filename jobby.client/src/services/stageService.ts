@@ -5,6 +5,10 @@ export async function createStage(stage: Stage) {
     return await api.post<Stage>("/stage/new", stage);
 }
 
+export async function updateStage(stage: Stage) {
+    return await api.post<Stage>("/stage/update", stage);
+}
+
 export async function getAllStages() {
     return await api.get<Stage[]>("/stage/pipeline");
 }

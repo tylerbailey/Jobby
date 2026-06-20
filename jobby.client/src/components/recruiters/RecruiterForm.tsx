@@ -2,7 +2,7 @@ import type { Recruiter } from "@/types";
 import { useState, type Dispatch, type SetStateAction } from "react";
 import { Button } from "../ui/button";
 import { DateTimePicker } from "../ui/date-time";
-import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Field, FieldDescription, FieldLabel } from "../ui/field";
 import { Input } from "../ui/input";
 

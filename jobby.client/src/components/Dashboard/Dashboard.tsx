@@ -13,15 +13,12 @@ import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import CreateStage from "../stage/CreateStage";
 
 export default function Dashboard() {
     const [dialogOpen, setDialogOpen] = useState<boolean>(false);
-    const [popoverOpen, setPopoverOpen] = useState<boolean>(false);
     const [stages, setStages] = useState<Stage[]>([]);
     const [refresh, setRefresh] = useState(0);
-    const [name, setName] = useState("");
-    const [order, setOrder] = useState("");
-    const [color, setColor] = useState(Colors.Gray);
     const [searchValue, setSearchValue] = useState("");
     const [totalApps, setTotalApps] = useState(0);
     const [totalRejected, setTotalRejected] = useState(0)
@@ -52,18 +49,6 @@ export default function Dashboard() {
         setRefresh(prev => prev + 1);
     }
 
-    function handleColorChange(color: string) {
-        setColor(color)
-        setPopoverOpen(false);
-    }
-
-    async function handleCreate() {
-        await createStage({ name, order: parseInt(order), color });
-        setDialogOpen(false);
-        handleRefresh();
-        toast.info("The stage was successfully created.");
-    }
-
     return (
         <div className="space-y-6">
             <div className="flex flex-row items-center justify-between gap-8">
@@ -72,77 +57,9 @@ export default function Dashboard() {
                         <h1 className="text-4xl font-bold tracking-tight">
                             Job Application Pipeline
                         </h1>
-                        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-                            <DialogTrigger asChild>
-                                <Button size="icon">
-                                    <Plus />
-                                </Button>
-                            </DialogTrigger>
-
-                            <DialogContent>
-                                <DialogHeader>
-                                    <DialogTitle>New Pipeline Stage</DialogTitle>
-                                    <DialogDescription>
-                                        Create a new stage for your pipeline.
-                                    </DialogDescription>
-                                </DialogHeader>
-
-                                <Field className="py-3">
-                                    <FieldLabel htmlFor="input-stage-name">Name</FieldLabel>
-                                    <FieldDescription>
-                                        The name of the pipeline stage.
-                                    </FieldDescription>
-                                    <Input
-                                        id="input-stage-name"
-                                        type="text"
-                                        placeholder="Enter the stage name"
-                                        value={name}
-                                        onChange={(e) => setName(e.target.value)} />
-                                </Field>
-
-                                <Field className="py-3">
-                                    <FieldLabel htmlFor="input-stage-order">Order</FieldLabel>
-                                    <FieldDescription>
-                                        The position of the stage in the pipeline.
-                                    </FieldDescription>
-                                    <Input
-                                        id="input-stage-order"
-                                        type="number"
-                                        placeholder="Enter the display order"
-                                        value={order}
-                                        onChange={(e) => setOrder(e.target.value)} />
-                                </Field>
-
-                                <Field className="py-3">
-                                    <FieldLabel>Color</FieldLabel>
-                                    <FieldDescription>
-                                        The color used to display the stage.
-                                    </FieldDescription>
-                                    <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
-                                        <PopoverTrigger asChild>
-                                            <span className="">  <Button variant="outline" className={`w-full ${FocusColors[color]} ${HoverColors[color]} ${ElementColors[color]}`}>{color}</Button></span>
-                                        </PopoverTrigger>
-                                        <PopoverContent className="w-80" align="center" side="top">
-                                            <div className="grid grid-cols-3 gap-4">
-                                                {Object.entries(ElementColors).map(([label]) => (
-                                                    <Button onClick={() => handleColorChange(label)} variant="outline" className={`max-w-25 ${HoverColors[label]} ${ElementColors[label]}`}>
-                                                        {label}
-                                                    </Button>
-                                                ))}
-                                            </div>
-                                        </PopoverContent>
-                                    </Popover>
-
-
-                                </Field>
-
-                                <DialogFooter>
-                                    <Button className="w-full" onClick={handleCreate}>
-                                        Save
-                                    </Button>
-                                </DialogFooter>
-                            </DialogContent>
-                        </Dialog>
+                        <Button size="icon" onClick={() => setDialogOpen(true)}>
+                            <Plus />
+                        </Button>
                     </div>
                     <div className="w-96">
                         <Input
@@ -158,11 +75,10 @@ export default function Dashboard() {
                     rejected={totalRejected} />
             </div>
             <div className="flex flex-row items-stretch gap-8">
-
                 <RecruiterColumn recruiters={recruiters} onUpdate={handleRefresh} />
                 <KanbanBoard stages={stages} setStages={setStages} onUpdate={handleRefresh} searchValue={searchValue} />
             </div>
-
+            <CreateStage dialogOpen={dialogOpen} setDialogOpen={setDialogOpen} onUpdate={handleRefresh } />
         </div>
     );
 }
