@@ -4,8 +4,9 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger, } from "@/components/ui/popover";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, X } from "lucide-react";
 import { useState, type Dispatch, type SetStateAction } from "react";
+import { PopoverClose } from "@radix-ui/react-popover";
 
 export type DateTimePickerProps = {
     dateTime: Date;
@@ -14,7 +15,7 @@ export type DateTimePickerProps = {
     action: (e) => void;
 }
 
-export function DateTimePicker({ dateTime, isOpen, setIsOpen, action}: DateTimePickerProps) {
+export function DateTimePicker({ dateTime, isOpen, setIsOpen, action }: DateTimePickerProps) {
     const [date, setDate] = useState<Date>(dateTime != undefined ? new Date(dateTime) : dateTime); //Having to do this is dumb and I hate javascript
 
     const hours = Array.from({ length: 12 }, (_, i) => i + 1);
@@ -52,11 +53,11 @@ export function DateTimePicker({ dateTime, isOpen, setIsOpen, action}: DateTimeP
             <PopoverTrigger asChild>
                 <Button
                     variant="outline"
-                    className={cn(
-                        "w-full justify-start text-left font-normal",
-                        !date && "text-muted-foreground"
-                    )}
-                >
+                    className={
+                        cn(
+                            "w-full justify-start text-left font-normal",
+                            !date && "text-muted-foreground"
+                        )} >
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {date ? (
                         format(date, "MM/dd/yyyy hh:mm aa")
@@ -66,7 +67,10 @@ export function DateTimePicker({ dateTime, isOpen, setIsOpen, action}: DateTimeP
                 </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
-                <div className="sm:flex">
+                <div className="p-1 flex justify-end">
+                    <Button variant="ghost" onClick={() => setIsOpen(false)}><X></X> </Button>
+                </div>
+                <div className="sm:flex py-0">
                     <Calendar
                         mode="single"
                         selected={date}
@@ -138,6 +142,10 @@ export function DateTimePicker({ dateTime, isOpen, setIsOpen, action}: DateTimeP
                         </ScrollArea>
                     </div>
                 </div>
+                <div className="p-4">
+                    <Button className="w-full" onClick={() => setDate(undefined)}>Clear</Button>
+                </div>
+
             </PopoverContent>
         </Popover>
     );

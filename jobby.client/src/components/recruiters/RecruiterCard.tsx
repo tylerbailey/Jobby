@@ -94,9 +94,9 @@ export default function RecruiterCard({ recruiter, onUpdate}: RecruiterCardProps
                                 <span>Last: {formatDate(recruiter.lastContact)}</span>
                             </div>
                         )}
-                        <div className="flex items-center gap-1 text-small">
+                        <div className="flex items-center gap-1 text-small text-green-600">
                             <Clock className="h-3 w-3 shrink-0" />
-                            <span className="text-green-900 rounded bg-green-100 p-1">Next: {formatDate(recruiter.nextContact)}</span>
+                            Next: {formatDate(recruiter.nextContact)}
                         </div>
                         {(recruiter.notes && (
                             <div className="flex items-center gap-1">

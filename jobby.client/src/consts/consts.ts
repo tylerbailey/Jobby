@@ -5,6 +5,19 @@ export const Status = {
 }
 
 export const Colors = {
+    "Purple": "Purple",
+    "Blue": "Blue",
+    "Amber": "Amber",
+    "Teal": "Teal",
+    "Yellow": "Yellow",
+    "Green": "Green",
+    "Red": "Red",
+    "Gray": "Gray",
+    "Olive": "Olive",
+}
+
+
+export const ElementColors = {
     "Purple": "bg-purple-50 border-purple-200 text-purple-700",
     "Blue": "bg-blue-50 border-blue-200 text-blue-700",
     "Amber": "bg-amber-50 border-amber-200 text-amber-700",
@@ -40,17 +53,6 @@ export const FocusColors = {
     "Olive": "focus:bg-olive-100 focus:border-olive-300 focus:text-olive-800",
 }
 
-export const DataStateColors = {
-    "Purple": "data-[state=open]:bg-purple-100 data-[state=open]:border-purple-300 data-[state=open]:text-purple-800",
-    "Blue": "data-[state=open]:bg-blue-100 data-[state=open]:border-blue-300 data-[state=open]:text-blue-800",
-    "Amber": "data-[state=open]:bg-amber-100 data-[state=open]:border-amber-300 data-[state=open]:text-amber-800",
-    "Teal": "data-[state=open]:bg-teal-100 data-[state=open]:border-teal-300 data-[state=open]:text-teal-800",
-    "Yellow": "data-[state=open]:bg-yellow-100 data-[state=open]:border-yellow-300 data-[state=open]:text-yellow-800",
-    "Green": "data-[state=open]:bg-green-100 data-[state=open]:border-green-300 data-[state=open]:text-green-800",
-    "Red": "data-[state=open]:bg-red-100 data-[state=open]:border-red-300 data-[state=open]:text-red-800",
-    "Gray": "data-[state=open]:bg-gray-100 data-[state=open]:border-gray-300 data-[state=open]:text-gray-800",
-    "Olive": "data-[state=open]:bg-olive-100 data-[state=open]:border-olive-300 data-[state=open]:text-olive-800",
-}
 
 export const IconColors = {
     "Purple": "stroke-purple-50 fill-purple-700",

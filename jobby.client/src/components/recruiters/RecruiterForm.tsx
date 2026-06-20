@@ -104,10 +104,8 @@ export default function RecruiterForm({ title, item, setItem, dialogOpen, setDia
                     />
                 </Field>
                 <DialogFooter>
-                    <Button onClick={action} type="submit">Save changes</Button>
-                    <DialogClose asChild>
-                        <Button variant="outline">Cancel</Button>
-                    </DialogClose>
+                    <Button className="w-full" onClick={action} type="submit">Save</Button>
+                    
                 </DialogFooter>
             </DialogContent>
         </Dialog>

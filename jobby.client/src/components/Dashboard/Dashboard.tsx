@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Colors, FocusColors, HoverColors, Status } from "@/consts/consts";
+import { Colors, ElementColors, FocusColors, HoverColors, Status } from "@/consts/consts";
 import { getAllRecruiters } from "@/services/recruiterService";
 import { createStage, getAllStages } from "@/services/stageService";
 import type { Recruiter, Stage } from "@/types";
@@ -15,12 +15,13 @@ import { toast } from "sonner";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
 export default function Dashboard() {
-    const [stages, setStages] = useState<Stage[]>([]);
     const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+    const [popoverOpen, setPopoverOpen] = useState<boolean>(false);
+    const [stages, setStages] = useState<Stage[]>([]);
     const [refresh, setRefresh] = useState(0);
     const [name, setName] = useState("");
     const [order, setOrder] = useState("");
-    const [color, setColor] = useState("Gray");
+    const [color, setColor] = useState(Colors.Gray);
     const [searchValue, setSearchValue] = useState("");
     const [totalApps, setTotalApps] = useState(0);
     const [totalRejected, setTotalRejected] = useState(0)
@@ -49,6 +50,11 @@ export default function Dashboard() {
 
     function handleRefresh() {
         setRefresh(prev => prev + 1);
+    }
+
+    function handleColorChange(color: string) {
+        setColor(color)
+        setPopoverOpen(false);
     }
 
     async function handleCreate() {
@@ -112,14 +118,14 @@ export default function Dashboard() {
                                     <FieldDescription>
                                         The color used to display the stage.
                                     </FieldDescription>
-                                    <Popover>
+                                    <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
                                         <PopoverTrigger asChild>
-                                            <Button variant="ghost" className={`w-[100px] ${FocusColors[color]} ${HoverColors[color]} ${Colors[color]}`}>{color}</Button>
+                                            <span className="">  <Button variant="outline" className={`w-full ${FocusColors[color]} ${HoverColors[color]} ${ElementColors[color]}`}>{color}</Button></span>
                                         </PopoverTrigger>
                                         <PopoverContent className="w-80" align="center" side="top">
                                             <div className="grid grid-cols-3 gap-4">
-                                                {Object.entries(Colors).map(([label]) => (
-                                                    <Button onClick={() => setColor(label)} variant="outline" className={`max-w-25 ${HoverColors[label]} ${Colors[label]}`}>
+                                                {Object.entries(ElementColors).map(([label]) => (
+                                                    <Button onClick={() => handleColorChange(label)} variant="outline" className={`max-w-25 ${HoverColors[label]} ${ElementColors[label]}`}>
                                                         {label}
                                                     </Button>
                                                 ))}
@@ -132,7 +138,7 @@ export default function Dashboard() {
 
                                 <DialogFooter>
                                     <Button className="w-full" onClick={handleCreate}>
-                                        Create
+                                        Save
                                     </Button>
                                 </DialogFooter>
                             </DialogContent>

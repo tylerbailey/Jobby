@@ -157,10 +157,7 @@ export default function AppForm({ title, item, setItem, sheetOpen, setSheetOpen,
                     </Field>
                 </div>
                 <SheetFooter>
-                    <Button onClick={() => action()}>Save</Button>
-                    <SheetClose asChild>
-                        <Button onClick={() => setSheetOpen(false) } variant="outline">Close</Button>
-                    </SheetClose>
+                    <Button onClick={() => action()}>Save</Button>                  
                 </SheetFooter>
             </SheetContent>
         </Sheet>
