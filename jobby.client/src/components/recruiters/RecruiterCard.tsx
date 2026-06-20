@@ -38,7 +38,7 @@ export default function RecruiterCard({ recruiter, onUpdate}: RecruiterCardProps
 
     return (
         <div className="py-3">
-            <Card className="flex bg-stone-100 justify-center border-none shadow-none ring-0">
+            <Card className="flex bg-stone-100 justify-center border-none shadow-none ring-0 w-full cursor-pointer transition hover:-translate-y-0.5 hover:shadow-md">
                 <CardHeader>
                     {
                         <div className="flex min-w-0 items-start justify-between gap-2">

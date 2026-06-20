@@ -1,6 +1,7 @@
 ﻿using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 using Google.GenAI;
+using Jobby.Server.Consts;
 using Jobby.Server.Data;
 using Jobby.Server.Domain;
 using Jobby.Server.Entities;
@@ -90,7 +91,7 @@ namespace Jobby.Server.Services
             await db.JobHistories.AddAsync(new JobHistory
             {
                 AppId = newJobApp.Id,
-                Color = "green",
+                Color = Colors.Purple,
                 EventTitle = "Creation",
                 EventDescription = "Application was created.",
                 Created = DateTime.UtcNow
@@ -142,7 +143,7 @@ namespace Jobby.Server.Services
                 await db.JobHistories.AddAsync(new JobHistory
                 {
                     AppId = jobApp.Id,
-                    Color = "green",
+                    Color = Colors.Green,
                     EventTitle = "Application Updated.",
                     EventDescription = "Application was updated.",
                     Created = DateTime.UtcNow,
@@ -163,7 +164,7 @@ namespace Jobby.Server.Services
                 db.JobHistories.Add(new JobHistory
                 {
                     AppId = applicationId,
-                    Color = "blue",
+                    Color = Colors.Blue,
                     EventTitle = "Moved Stage",
                     EventDescription = $"Application moved from stage {stage?.Name ?? "unknown"} to stage {newStage?.Name ?? "unknown"}.",
                     Created = DateTime.UtcNow,
@@ -240,7 +241,7 @@ namespace Jobby.Server.Services
                 await db.JobHistories.AddAsync(new JobHistory
                 {
                     AppId = jobApp.Id,
-                    Color = isArchived ? "gray" : "green",
+                    Color = isArchived ? Colors.Gray : Colors.Olive,
                     EventTitle = isArchived ? "Application archived" : "Application removed from archive",
                     EventDescription = isArchived ? "Application marked as archived" : "Application was unarchived",
                     Created = DateTime.UtcNow,

@@ -1,4 +1,3 @@
-import type { ApplicationFormData } from "@/components/app/AppForm";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";

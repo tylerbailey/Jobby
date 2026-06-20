@@ -1,5 +1,4 @@
 import type { Recruiter } from "@/types";
-import { Plus } from "lucide-react";
 import { useState, type Dispatch, type SetStateAction } from "react";
 import { Button } from "../ui/button";
 import { DateTimePicker } from "../ui/date-time";

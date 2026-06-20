@@ -7,7 +7,7 @@ import type { Application } from "@/types";
 import { ArchiveRestore, Search, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getBadgeVariant } from "@/helpers/componentHelpers";
-import { Status } from "@/enums/enums";
+import { Status } from "@/consts/consts";
 import { deleteApp, getArchivedApps, updateApp } from "@/services/appService";
 import { toast } from "sonner";
 

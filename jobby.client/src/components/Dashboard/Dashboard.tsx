@@ -1,18 +1,18 @@
 import InfoCards from "@/components/kanban/InfoCards";
 import { KanbanBoard } from "@/components/kanban/Kanban";
+import RecruiterColumn from "@/components/recruiters/RecruiterColumn";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Colors, Status } from "@/enums/enums";
+import { Colors, FocusColors, HoverColors, Status } from "@/consts/consts";
 import { getAllRecruiters } from "@/services/recruiterService";
 import { createStage, getAllStages } from "@/services/stageService";
 import type { Recruiter, Stage } from "@/types";
 import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import RecruiterColumn from "@/components/recruiters/RecruiterColumn";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
 export default function Dashboard() {
     const [stages, setStages] = useState<Stage[]>([]);
@@ -20,7 +20,7 @@ export default function Dashboard() {
     const [refresh, setRefresh] = useState(0);
     const [name, setName] = useState("");
     const [order, setOrder] = useState("");
-    const [color, setColor] = useState("");
+    const [color, setColor] = useState("Gray");
     const [searchValue, setSearchValue] = useState("");
     const [totalApps, setTotalApps] = useState(0);
     const [totalRejected, setTotalRejected] = useState(0)
@@ -112,21 +112,22 @@ export default function Dashboard() {
                                     <FieldDescription>
                                         The color used to display the stage.
                                     </FieldDescription>
-                                    <Select value={color} onValueChange={setColor}>
-                                        <SelectTrigger className="w-full">
-                                            <SelectValue placeholder="Select a color" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectGroup>
-                                                <SelectLabel>Colors</SelectLabel>
+                                    <Popover>
+                                        <PopoverTrigger asChild>
+                                            <Button variant="ghost" className={`w-[100px] ${FocusColors[color]} ${HoverColors[color]} ${Colors[color]}`}>{color}</Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-80" align="center" side="top">
+                                            <div className="grid grid-cols-3 gap-4">
                                                 {Object.entries(Colors).map(([label]) => (
-                                                    <SelectItem key={label} value={label}>
+                                                    <Button onClick={() => setColor(label)} variant="outline" className={`max-w-25 ${HoverColors[label]} ${Colors[label]}`}>
                                                         {label}
-                                                    </SelectItem>
+                                                    </Button>
                                                 ))}
-                                            </SelectGroup>
-                                        </SelectContent>
-                                    </Select>
+                                            </div>
+                                        </PopoverContent>
+                                    </Popover>
+
+
                                 </Field>
 
                                 <DialogFooter>
@@ -151,8 +152,8 @@ export default function Dashboard() {
                     rejected={totalRejected} />
             </div>
             <div className="flex flex-row items-stretch gap-8">
-               
-                <RecruiterColumn recruiters={recruiters} onUpdate={ handleRefresh} />
+
+                <RecruiterColumn recruiters={recruiters} onUpdate={handleRefresh} />
                 <KanbanBoard stages={stages} setStages={setStages} onUpdate={handleRefresh} searchValue={searchValue} />
             </div>
 
