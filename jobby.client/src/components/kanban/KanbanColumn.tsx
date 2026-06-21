@@ -92,13 +92,9 @@ export function KanbanColumn({ stage, onUpdate, searchValue }: KanbanColumnProps
                         </Popover>
                     </span>
                 </div>
-
                 {stage.items && stage.items.map((item) => (
-
                     <KanbanCard key={item.id} item={item} onUpdate={onUpdate} isMatch={searchObject(item, searchValue)} />
-
                 ))}
-
             </Card>
             <CreateApp sheetOpen={sheetOpen} setSheetOpen={setSheetOpen} stage={stage.id} onUpdate={onUpdate}></CreateApp>
             <EditStage stage={stage} dialogOpen={dialogOpen} setDialogOpen={setDialogOpen} onUpdate={onUpdate } />
