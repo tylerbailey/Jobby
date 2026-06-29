@@ -35,7 +35,7 @@ export async function generateApp(file: File, posting: string) {
     formData.append("file", file);
     formData.append("posting", posting)
     const response = await api.post(
-        `/app/gen/${appId}`,
+        `/app/gen/`,
         formData,
         {
             responseType: "blob"

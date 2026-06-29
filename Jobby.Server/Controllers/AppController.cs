@@ -59,7 +59,7 @@ namespace Jobby.Server.Controllers
             return Ok();
         }
 
-        [HttpPost("gen/{applicationId}")]
+        [HttpPost("gen")]
         public async Task<IActionResult> GenerateResumeAsync([FromForm] IFormFile file,[FromForm] string posting)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;

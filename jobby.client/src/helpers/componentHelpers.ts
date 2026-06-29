@@ -34,15 +34,15 @@ export function calculateScoreColor(score: number) {
         return atsColors.excellent
 }
 
-export function calculateRiskColors(riskLevel: string) {
+export function calculateRiskColors(riskLevel: number) {
     switch (riskLevel) {
-        case "Low":
+        case 0:
             return "text-green-500";
 
-        case "Medium":
+        case 1:
             return "text-yellow-500";
 
-        case "High":
+        case 2:
             return "text-red-500";
 
         default:

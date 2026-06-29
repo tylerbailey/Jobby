@@ -13,42 +13,15 @@ export interface ResumeAnalysisResponse {
     actionPlan: ActionPlan;
 }
 
-export type RecommendationLevel =
-    | "Poor"
-    | "Fair"
-    | "Good"
-    | "Strong"
-    | "Excellent";
+/* =========================================================
+   Numeric enum values returned from the API
+========================================================= */
 
-export type RiskLevel =
-    | "Low"
-    | "Medium"
-    | "High";
-
-export type SeverityLevel =
-    | "Low"
-    | "Medium"
-    | "High";
-
-export type ImportanceLevel =
-    | "Low"
-    | "Medium"
-    | "High";
-
-export type ScoreType =
-    | "AtsCompatibility"
-    | "KeywordOptimization"
-    | "FormattingStructure"
-    | "Grammar"
-    | "Spelling"
-    | "SyntaxReadability"
-    | "ProfessionalTone"
-    | "FlowOrganization"
-    | "AccomplishmentsImpact"
-    | "SkillsPresentation"
-    | "WorkExperienceQuality"
-    | "EducationCertifications";
-
+export type RecommendationLevel = number;
+export type RiskLevel = number;
+export type SeverityLevel = number;
+export type ImportanceLevel = number;
+export type ScoreType = number;
 
 export interface ScoreBreakdown {
     scoreType: ScoreType;
@@ -115,60 +88,66 @@ export interface ActionPlan {
     lowPriority: string[];
 }
 
+/* =========================================================
+   Label Maps
+========================================================= */
 
-export const RecommendationLevelLabels: Record<RecommendationLevel, string> = {
-    Poor: "Poor",
-    Fair: "Fair",
-    Good: "Good",
-    Strong: "Strong",
-    Excellent: "Excellent",
+export const RecommendationLevelLabels: Record<number, string> = {
+    0: "Poor",
+    1: "Fair",
+    2: "Good",
+    3: "Strong",
+    4: "Excellent",
 };
 
-export const RiskLevelLabels: Record<RiskLevel, string> = {
-    Low: "Low Risk",
-    Medium: "Medium Risk",
-    High: "High Risk",
+export const RiskLevelLabels: Record<number, string> = {
+    0: "Low Risk",
+    1: "Medium Risk",
+    2: "High Risk",
 };
 
-export const SeverityLevelLabels: Record<SeverityLevel, string> = {
-    Low: "Low",
-    Medium: "Medium",
-    High: "High",
+export const SeverityLevelLabels: Record<number, string> = {
+    0: "Low",
+    1: "Medium",
+    2: "High",
 };
 
-export const ImportanceLevelLabels: Record<ImportanceLevel, string> = {
-    Low: "Low Importance",
-    Medium: "Medium Importance",
-    High: "High Importance",
+export const ImportanceLevelLabels: Record<number, string> = {
+    0: "Low Importance",
+    1: "Medium Importance",
+    2: "High Importance",
 };
 
-export const ScoreTypeLabels: Record<ScoreType, string> = {
-    AtsCompatibility: "ATS Compatibility",
-    KeywordOptimization: "Keyword Optimization",
-    FormattingStructure: "Formatting & Structure",
-    Grammar: "Grammar",
-    Spelling: "Spelling",
-    SyntaxReadability: "Syntax & Readability",
-    ProfessionalTone: "Professional Tone",
-    FlowOrganization: "Flow & Organization",
-    AccomplishmentsImpact: "Accomplishments & Impact",
-    SkillsPresentation: "Skills Presentation",
-    WorkExperienceQuality: "Work Experience Quality",
-    EducationCertifications: "Education & Certifications",
+export const ScoreTypeLabels: Record<number, string> = {
+    0: "ATS Compatibility",
+    1: "Keyword Optimization",
+    2: "Formatting & Structure",
+    3: "Grammar",
+    4: "Spelling",
+    5: "Syntax & Readability",
+    6: "Professional Tone",
+    7: "Flow & Organization",
+    8: "Accomplishments & Impact",
+    9: "Skills Presentation",
+    10: "Work Experience Quality",
+    11: "Education & Certifications",
 };
 
 /* =========================================================
-   OPTIONAL HELPERS (very useful in UI)
+   Helpers
 ========================================================= */
 
-export function getRecommendationLabel(value: RecommendationLevel) {
-    return RecommendationLevelLabels[value];
-}
+export const getRecommendationLabel = (value: RecommendationLevel) =>
+    RecommendationLevelLabels[value] ?? "Unknown";
 
-export function getRiskLabel(value: RiskLevel) {
-    return RiskLevelLabels[value];
-}
+export const getRiskLabel = (value: RiskLevel) =>
+    RiskLevelLabels[value] ?? "Unknown";
 
-export function getScoreTypeLabel(value: ScoreType) {
-    return ScoreTypeLabels[value];
-}
+export const getSeverityLabel = (value: SeverityLevel) =>
+    SeverityLevelLabels[value] ?? "Unknown";
+
+export const getImportanceLabel = (value: ImportanceLevel) =>
+    ImportanceLevelLabels[value] ?? "Unknown";
+
+export const getScoreTypeLabel = (value: ScoreType) =>
+    ScoreTypeLabels[value] ?? "Unknown";
