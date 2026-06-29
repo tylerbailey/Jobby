@@ -186,7 +186,7 @@ namespace Jobby.Server.Services
             return locations;
         }
 
-        public async Task<MemoryStream> EditDocxAsync(IFormFile file, string jobPostingUrl)
+        public async Task<MemoryStream> EditDocxAsync(IFormFile file, string posting)
         {
             using var memoryStream = new MemoryStream();
             await file.CopyToAsync(memoryStream);
@@ -194,6 +194,7 @@ namespace Jobby.Server.Services
 
             using (var wordDoc = WordprocessingDocument.Open(memoryStream, true))
             {
+                
                 var data = wordDoc.MainDocumentPart!.Document!.Body;
                 var paragraphs = data!.Descendants<Paragraph>().ToList();
                 var blocks = DocxHelper.GetResumeBlocks(wordDoc);
@@ -201,8 +202,7 @@ namespace Jobby.Server.Services
 
                 using var htmlClient = new HttpClient();
 
-                var scrapedHtml = await htmlClient.GetStringAsync(jobPostingUrl);
-                var jobPostingPrompt = ResumePrompts.JobPosting(scrapedHtml);
+                var jobPostingPrompt = ResumePrompts.JobPosting(posting);
                 var geminiResponse = await geminiClient.Models.GenerateContentAsync(model: "gemini-3.5-flash", contents: jobPostingPrompt);
                 var jobPostingData = geminiResponse.Text ?? string.Empty;
 

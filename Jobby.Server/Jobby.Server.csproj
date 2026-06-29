@@ -27,7 +27,10 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="MiniPdf" Version="0.32.0" />
+    <PackageReference Include="NJsonSchema" Version="11.6.1" />
     <PackageReference Include="OllamaSharp" Version="5.4.25" />
+    <PackageReference Include="OpenXmlPowerTools" Version="4.5.3.2" />
   </ItemGroup>
 
   <ItemGroup>

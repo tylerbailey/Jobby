@@ -94,8 +94,8 @@ export default function LandingPage() {
                     </div>
                 </div>
                 <h1 className="text-4xl font-bold tracking-tight max-w-xl mb-4 leading-tight">
-                    Your job search,{" "}
-                    <span className="text-primary">finally organized</span>
+                    I wanted to track my job search,{" "}
+                    <span className="text-primary">so baw gawd I made a way.</span>
                 </h1>
                 <p className="text-muted-foreground text-base max-w-md mb-8 leading-relaxed">
                     Track every application, never miss a follow-up, and land your next role faster with a visual pipeline built for job seekers.

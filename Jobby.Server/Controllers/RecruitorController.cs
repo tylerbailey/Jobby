@@ -1,5 +1,4 @@
 ﻿using Jobby.Server.Domain;
-using Jobby.Server.Entities;
 using Jobby.Server.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

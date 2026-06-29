@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
+import { Field, FieldLabel } from "@/components/ui/field";
 import InfoField from "@/components/ui/info-field";
 import { Label } from "@/components/ui/label";
 import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -57,9 +57,9 @@ export default function AppInfo({ item, infoOpen, setInfoOpen }: AppInfoProps) {
                     {item.notes && (
                         <Field className="py-3">
                             <FieldLabel>Notes</FieldLabel>
-                            <FieldDescription className="whitespace-pre-wrap">
+                            <div className="h-40 resize-none overflow-y-auto">
                                 {item.notes}
-                            </FieldDescription>
+                            </div>
                         </Field>
                     )}
                     <div className="pt-3">

@@ -2,17 +2,13 @@ import InfoCards from "@/components/kanban/InfoCards";
 import { KanbanBoard } from "@/components/kanban/Kanban";
 import RecruiterColumn from "@/components/recruiters/RecruiterColumn";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Colors, ElementColors, FocusColors, HoverColors, Status } from "@/consts/consts";
+import { Status } from "@/consts/consts";
 import { getAllRecruiters } from "@/services/recruiterService";
-import { createStage, getAllStages } from "@/services/stageService";
+import { getAllStages } from "@/services/stageService";
 import type { Recruiter, Stage } from "@/types";
 import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import CreateStage from "../stage/CreateStage";
 
 export default function Dashboard() {

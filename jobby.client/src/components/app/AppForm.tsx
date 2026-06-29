@@ -151,7 +151,7 @@ export default function AppForm({ title, item, setItem, sheetOpen, setSheetOpen,
                         <FieldDescription>
                             Notes for the job.
                         </FieldDescription>
-                        <Textarea placeholder="Enter your notes here."
+                        <Textarea className="h-40 resize-none overflow-y-auto" placeholder="Enter your notes here."
                             value={item.notes}
                             onChange={(e) => setItem({ ...item, notes: e.target.value })} />
                     </Field>

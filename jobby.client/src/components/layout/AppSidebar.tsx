@@ -14,6 +14,15 @@ const data = {
                     url: "/dashboard",
                 },
                 {
+                    title: "Resume Tailoring",
+                    url: "/resumegenerate",
+                    
+                },
+                {
+                    title: "Resume Rating",
+                    url: "/resumerating",
+                },
+                {
                     title: "Calendar",
                     url: "/calendar",
                 },
@@ -21,7 +30,7 @@ const data = {
                     title: "Archives",
                     url: "/archive",
                 },
-                
+               
             ],
         }
     ]

@@ -15,7 +15,7 @@ export async function getAllAppLocations() {
 
 export async function getArchivedApps() {
     return await api.get<Application[]>("/app/archive")
-} 
+}
 
 export async function updateApp(application: Application) {
     return await api.post<Application>("/app/update", application)
@@ -29,14 +29,11 @@ export async function deleteApp(appId: number) {
     return await api.delete(`/app/${appId}`);
 }
 
-export async function generateApp(
-    file: File,
-    appId: number
-) {
+export async function generateApp(file: File, posting: string) {
     const formData = new FormData();
 
     formData.append("file", file);
-
+    formData.append("posting", posting)
     const response = await api.post(
         `/app/gen/${appId}`,
         formData,

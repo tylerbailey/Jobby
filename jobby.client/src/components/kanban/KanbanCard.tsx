@@ -4,19 +4,17 @@ import JobHistory from "@/components/timeline/JobHistory";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
-import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Status } from "@/consts/consts";
 import { getBadgeVariant, getCardColor } from "@/helpers/componentHelpers";
 import { formatCurrency, formatDate } from "@/helpers/formatHelpers";
-import { deleteApp, generateApp, updateApp } from "@/services/appService";
+import { deleteApp, updateApp } from "@/services/appService";
 import { getHistory } from "@/services/historyService";
 import type { Application, EventItem, HistoryItem } from "@/types";
 import { useDraggable } from "@dnd-kit/react";
 import { Archive, CalendarDays, Check, Clock3, File, MapPin, MoreVertical, Pencil, Timeline, Trash2, X } from "lucide-react";
-import { type ChangeEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 export type KanbanCardProps = {
@@ -26,60 +24,22 @@ export type KanbanCardProps = {
 }
 export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
     const { ref: dragRef } = useDraggable({ id: item.id.toString() });
-    const [resumeFile, setResumeFile] = useState<File | null>(null);
-    const [histories, setHistories] = useState<HistoryItem[]>([])
-    const [dialogueOpen, setDialogueOpen] = useState<boolean>(false);
+    const [histories, setHistories] = useState<HistoryItem[]>([]);
     const [infoOpen, setInfoOpen] = useState<boolean>(false);
     const [menuOpen, setMenuOpen] = useState<boolean>(false);
     const [editOpen, setEditOpen] = useState<boolean>(false);
     const [historyOpen, setHistoryOpen] = useState<boolean>(false);
 
-    async function handleFileChange(e: ChangeEvent<HTMLInputElement>) {
-        const file = e.target.files?.[0];
-        setResumeFile(file ?? null);
-    }
 
-    async function handleResumeDialogue() {
-        setMenuOpen(false);
-        setDialogueOpen(true)
-    }
+
+
 
     function handleHistory() {
         setMenuOpen(false);
         setHistoryOpen(true);
     }
 
-    async function handleResumeGeneration() {
-        if (!item.id) {
-            toast.warning("This application must be saved before generating a resume.");
-            return;
-        }
-
-        if (resumeFile != null) {
-            setDialogueOpen(false);
-            const promise = generateApp(resumeFile, item.id)
-
-            toast.promise(promise, {
-                loading: "Generating resume. Your file will automatically download when complete.",
-                success: () => "Your resume has been created",
-                error: "Error",
-            })
-
-            const blob = await promise
-
-            const url = window.URL.createObjectURL(new Blob([blob]))
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = "TailoredResume.docx";
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-            window.URL.revokeObjectURL(url);
-        }
-        else {
-            toast.warning("You must select a docx file.")
-        }
-    }
+    
 
     async function handleDelete() {
         if (!item.id) {
@@ -165,14 +125,7 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
                                         className="flex h-9 w-full items-center justify-between px-2">
                                         <span>History</span>
                                         <Timeline className="h-4 w-4" />
-                                    </Button>
-                                    <Button
-                                        onClick={handleResumeDialogue}
-                                        variant="ghost"
-                                        className="flex h-9 w-full items-center justify-between px-2">
-                                        <span>Generate Resume</span>
-                                        <File className="h-4 w-4" />
-                                    </Button>
+                                    </Button>                                   
                                     {item.status != Status.InProgress && (<Button
                                         onClick={() => handleStatus(Status.InProgress)}
                                         variant="ghost"
@@ -263,18 +216,7 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
             <EditAppSheet sheetOpen={editOpen} setSheetOpen={setEditOpen} cardItem={item} onUpdate={onUpdate} />
             <AppInfo item={item} infoOpen={infoOpen} setInfoOpen={setInfoOpen} />
             <JobHistory sheetOpen={historyOpen} setSheetOpen={setHistoryOpen} items={histories} />
-            <Dialog open={dialogueOpen} onOpenChange={setDialogueOpen}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>Generate Resume</DialogTitle>
-                        <DialogDescription>
-                            Generate a tailored resume for this job.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <Input type="file" accept=".docx" onChange={(e) => handleFileChange(e)}></Input>
-                    <Button onClick={handleResumeGeneration}>Generate</Button>
-                </DialogContent>
-            </Dialog>
+           
         </div >
     );
 }
