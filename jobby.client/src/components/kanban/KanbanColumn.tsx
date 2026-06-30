@@ -24,12 +24,12 @@ export function KanbanColumn({ stage, onUpdate, searchValue }: KanbanColumnProps
     const [sheetOpen, setSheetOpen] = useState<boolean>(false);
     const [dialogOpen, setDialogOpen] = useState<boolean>(false);
     const { ref } = useDroppable({
-        id: stage.id.toString()
+        id: (stage.id?.toString() || "")
     });
     async function handleDelete() {
         try {
-            if (stage.items.length == 0) {
-                await deleteStage(stage.id);
+            if (stage.items?.length == 0) {
+                await deleteStage(stage.id || 0);
                 setMenuOpen(false);
                 onUpdate();
                 toast.info("The pipeline stage has been deleted.")
@@ -51,7 +51,7 @@ export function KanbanColumn({ stage, onUpdate, searchValue }: KanbanColumnProps
     return (
         <section className="w-full shrink-0 sm:w-fit sm:min-w-80" ref={ref}>
             <Card className="min-h-[600px] w-full border bg-muted/30 p-3 sm:w-fit sm:min-w-80">
-                <div className={`mb-3 flex items-center justify-between rounded-lg border px-3 py-2 ${ElementColors[stage.color]} ${HoverColors[stage.color]}`}>
+                <div className={`mb-3 flex items-center justify-between rounded-lg border px-3 py-2 ${ElementColors[stage.color as keyof typeof ElementColors]} ${HoverColors[stage.color as keyof typeof HoverColors]}`}>
                     <div className="flex items-center gap-2">
                         <h2 className="font-semibold">{stage.name}</h2>
                         <span className="rounded-full bg-background/80 px-2 py-0.5 text-xs font-medium">
@@ -96,7 +96,7 @@ export function KanbanColumn({ stage, onUpdate, searchValue }: KanbanColumnProps
                     <KanbanCard key={item.id} item={item} onUpdate={onUpdate} isMatch={searchObject(item, searchValue)} />
                 ))}
             </Card>
-            <CreateApp sheetOpen={sheetOpen} setSheetOpen={setSheetOpen} stage={stage.id} onUpdate={onUpdate}></CreateApp>
+            <CreateApp sheetOpen={sheetOpen} setSheetOpen={setSheetOpen} stage={stage.id || 0} onUpdate={onUpdate}></CreateApp>
             <EditStage stage={stage} dialogOpen={dialogOpen} setDialogOpen={setDialogOpen} onUpdate={onUpdate } />
         </section>
     );

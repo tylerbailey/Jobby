@@ -81,14 +81,24 @@ export default function RecruiterForm({ title, item, setItem, dialogOpen, setDia
                     <FieldDescription>
                         The last date of contact with the recruiter.
                     </FieldDescription>
-                    <DateTimePicker dateTime={item.lastContact} isOpen={lastOpen} setIsOpen={setLastOpen} action={(e) => setItem(e)} />
+                    <DateTimePicker dateTime={item.lastContact} isOpen={lastOpen} setIsOpen={setLastOpen} action={(date) =>
+                        setItem({
+                            ...item,
+                            lastContact: date,
+                        })
+                    } />
                 </Field>
                 <Field className="py-3">
                     <FieldLabel htmlFor="input-recruiter-next">Next Contact Date</FieldLabel>
                     <FieldDescription>
                         The next date of contact with the recruiter.
                     </FieldDescription>
-                    <DateTimePicker dateTime={item.nextContact} isOpen={nextOpen} setIsOpen={setNextOpen} action={(e) => setItem(e)} />
+                    <DateTimePicker dateTime={item.nextContact} isOpen={nextOpen} setIsOpen={setNextOpen} action={(date) =>
+                        setItem({
+                            ...item,
+                            nextContact: date,
+                        })
+                    } />
                 </Field>
                 <Field className="py-3">
                     <FieldLabel htmlFor="input-recruiter-notes">Notes</FieldLabel>

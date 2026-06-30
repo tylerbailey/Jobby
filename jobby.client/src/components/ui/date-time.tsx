@@ -1,36 +1,43 @@
-import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger, } from "@/components/ui/popover";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
+import { format } from "date-fns";
 import { CalendarIcon, X } from "lucide-react";
-import { useState, type Dispatch, type SetStateAction } from "react";
-import { PopoverClose } from "@radix-ui/react-popover";
+import { type Dispatch, type SetStateAction } from "react";
 
 export type DateTimePickerProps = {
-    dateTime: Date;
+    dateTime: Date | undefined;
     isOpen: boolean;
-    setIsOpen: Dispatch<SetStateAction<boolean>>
-    action: (e) => void;
+    setIsOpen: Dispatch<SetStateAction<boolean>>;
+    action: (date: Date | undefined) => void;
 }
 
 export function DateTimePicker({ dateTime, isOpen, setIsOpen, action }: DateTimePickerProps) {
-    const [date, setDate] = useState<Date>(dateTime != undefined ? new Date(dateTime) : dateTime); //Having to do this is dumb and I hate javascript
+   
 
     const hours = Array.from({ length: 12 }, (_, i) => i + 1);
     const handleDateSelect = (selectedDate: Date | undefined) => {
-        if (selectedDate) {
-            setDate(selectedDate);
+        if (!selectedDate) {
+            action(undefined);
+            return;
         }
+
+        if (dateTime) {
+            selectedDate.setHours(dateTime.getHours());
+            selectedDate.setMinutes(dateTime.getMinutes());
+        }
+
+        action(selectedDate);
     };
 
     const handleTimeChange = (
         type: "hour" | "minute" | "ampm",
         value: string
     ) => {
-        if (date) {
-            const newDate = new Date(date);
+        if (dateTime) {
+            const newDate = new Date(dateTime);
             if (type === "hour") {
                 newDate.setHours(
                     (parseInt(value) % 12) + (newDate.getHours() >= 12 ? 12 : 0)
@@ -43,7 +50,6 @@ export function DateTimePicker({ dateTime, isOpen, setIsOpen, action }: DateTime
                     value === "PM" ? currentHours + 12 : currentHours - 12
                 );
             }
-            setDate(newDate);
             action(newDate);
         }
     };
@@ -56,11 +62,11 @@ export function DateTimePicker({ dateTime, isOpen, setIsOpen, action }: DateTime
                     className={
                         cn(
                             "w-full justify-start text-left font-normal",
-                            !date && "text-muted-foreground"
+                            !dateTime && "text-muted-foreground"
                         )} >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {date ? (
-                        format(date, "MM/dd/yyyy hh:mm aa")
+                    {dateTime ? (
+                        format(dateTime, "MM/dd/yyyy hh:mm aa")
                     ) : (
                         <span>MM/DD/YYYY hh:mm aa</span>
                     )}
@@ -73,7 +79,7 @@ export function DateTimePicker({ dateTime, isOpen, setIsOpen, action }: DateTime
                 <div className="sm:flex py-0">
                     <Calendar
                         mode="single"
-                        selected={date}
+                        selected={dateTime}
                         onSelect={handleDateSelect}
                     />
                     <div className="flex flex-col sm:flex-row sm:h-[300px] divide-y sm:divide-y-0 sm:divide-x">
@@ -84,7 +90,7 @@ export function DateTimePicker({ dateTime, isOpen, setIsOpen, action }: DateTime
                                         key={hour}
                                         size="icon"
                                         variant={
-                                            date && date.getHours() % 12 === hour % 12
+                                            dateTime && dateTime.getHours() % 12 === hour % 12
                                                 ? "default"
                                                 : "ghost"
                                         }
@@ -104,7 +110,7 @@ export function DateTimePicker({ dateTime, isOpen, setIsOpen, action }: DateTime
                                         key={minute}
                                         size="icon"
                                         variant={
-                                            date && date.getMinutes() === minute
+                                            dateTime && dateTime.getMinutes() === minute
                                                 ? "default"
                                                 : "ghost"
                                         }
@@ -126,9 +132,9 @@ export function DateTimePicker({ dateTime, isOpen, setIsOpen, action }: DateTime
                                         key={ampm}
                                         size="icon"
                                         variant={
-                                            date &&
-                                                ((ampm === "AM" && date.getHours() < 12) ||
-                                                    (ampm === "PM" && date.getHours() >= 12))
+                                            dateTime &&
+                                                ((ampm === "AM" && dateTime.getHours() < 12) ||
+                                                (ampm === "PM" && dateTime.getHours() >= 12))
                                                 ? "default"
                                                 : "ghost"
                                         }
@@ -143,7 +149,7 @@ export function DateTimePicker({ dateTime, isOpen, setIsOpen, action }: DateTime
                     </div>
                 </div>
                 <div className="p-4">
-                    <Button className="w-full" onClick={() => setDate(undefined)}>Clear</Button>
+                    <Button className="w-full" onClick={() => action(undefined)}>Clear</Button>
                 </div>
 
             </PopoverContent>

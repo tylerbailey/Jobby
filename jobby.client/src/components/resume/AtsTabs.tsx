@@ -156,7 +156,7 @@ function AtsTabs({ report }: {report: ResumeAnalysisResponse }) {
                           <div className="flex flex-wrap gap-2 mt-1">
                               {report.keywordSuggestions.map((k, i) => (
                                   <div key={i} className="flex items-center gap-2 rounded-md border px-3 py-2">
-                                      <Badge variant={k.importance === "Medium" ? "default" : "secondary"}>
+                                      <Badge variant={k.importance === 0 ? "default" : "secondary"}>
                                           {k.keyword}
                                       </Badge>
                                       <span className="text-xs">{k.reason}</span>

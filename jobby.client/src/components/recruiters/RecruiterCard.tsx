@@ -30,7 +30,7 @@ export default function RecruiterCard({ recruiter, onUpdate}: RecruiterCardProps
     }
 
     async function handleDelete() {
-        await deleteRecruiter(recruiter.id)
+        await deleteRecruiter((recruiter.id || 0))
         setMenuOpen(false);
         onUpdate();
         toast.info("Recruiter has been deleted.")

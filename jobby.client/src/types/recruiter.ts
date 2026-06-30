@@ -5,6 +5,6 @@ export type Recruiter = {
     notes: string;
     email: string;
     phoneNumber: string;
-    lastContact: Date;
-    nextContact: Date;
+    lastContact?: Date;
+    nextContact?: Date;
 }

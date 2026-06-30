@@ -1,10 +1,9 @@
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import type { Stage } from "@/types";
-import { Plus } from "lucide-react";
 import { useState, type Dispatch, type SetStateAction } from "react";
 import { Colors, ElementColors, FocusColors, HoverColors } from "../../consts/consts";
 
@@ -62,12 +61,12 @@ function StageForm({ title, stage, setStage, dialogOpen, setDialogOpen, action }
                     </FieldDescription>
                     <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
                         <PopoverTrigger asChild>
-                            <span className=""> <Button variant="outline" className={`w-full ${FocusColors[color]} ${HoverColors[color]} ${ElementColors[color]}`}>{color}</Button></span>
+                            <span className=""> <Button variant="outline" className={`w-full ${FocusColors[color as keyof typeof FocusColors]} ${HoverColors[color as keyof typeof HoverColors]} ${ElementColors[color as keyof typeof ElementColors]}`}>{color}</Button></span>
                         </PopoverTrigger>
                         <PopoverContent className="w-80" align="center" side="top">
                             <div className="grid grid-cols-3 gap-4">
                                 {Object.entries(Colors).map(([label]) => (
-                                    <Button onClick={() => handleColorChange(label)} variant="outline" className={`max-w-25 ${HoverColors[label]} ${ElementColors[label]}`}>
+                                    <Button onClick={() => handleColorChange(label)} variant="outline" className={`max-w-25 ${HoverColors[label as keyof typeof HoverColors]} ${ElementColors[label as keyof typeof  ElementColors]}`}>
                                         {label}
                                     </Button>
                                 ))}

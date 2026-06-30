@@ -3,7 +3,7 @@ import { DateTimePicker } from "@/components/ui/date-time";
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Sheet, SheetClose, SheetContent, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
 import { getAllAppLocations } from "@/services/appService";
 import type { Application, AppLocationType } from "@/types";
@@ -19,7 +19,7 @@ export type AppFormProps = {
 }
 export default function AppForm({ title, item, setItem, sheetOpen, setSheetOpen, action }: AppFormProps) {
     const [locationTypes, setLocationTypes] = useState<AppLocationType[]>([]);
-    const [datePickerOpen, setDatePickerOpen] = useState<boolean>();
+    const [datePickerOpen, setDatePickerOpen] = useState<boolean>(false);
 
     useEffect(() => {
         async function GetLocations() {

@@ -13,7 +13,7 @@ import { deleteApp, updateApp } from "@/services/appService";
 import { getHistory } from "@/services/historyService";
 import type { Application, EventItem, HistoryItem } from "@/types";
 import { useDraggable } from "@dnd-kit/react";
-import { Archive, CalendarDays, Check, Clock3, File, MapPin, MoreVertical, Pencil, Timeline, Trash2, X } from "lucide-react";
+import { Archive, CalendarDays, Check, Clock3, MapPin, MoreVertical, Pencil, Timeline, Trash2, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
