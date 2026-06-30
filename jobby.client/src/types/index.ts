@@ -5,3 +5,4 @@ export * from "./auth";
 export * from "./historyItem"
 export * from "./eventItem"
 export * from "./recruiter"
+export * from "./resume"

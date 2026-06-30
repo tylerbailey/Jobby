@@ -186,23 +186,31 @@ namespace Jobby.Server.Services
             return locations;
         }
 
-        public async Task<MemoryStream> EditDocxAsync(IFormFile file, string jobPostingUrl)
+        public async Task<ResumeGenerationResponse> EditDocxAsync(IFormFile file, string posting)
         {
             using var memoryStream = new MemoryStream();
             await file.CopyToAsync(memoryStream);
             memoryStream.Position = 0;
 
+            var blockMap = new Dictionary<int, string>();
+            var changes = new List<ResumeChange>();
+
             using (var wordDoc = WordprocessingDocument.Open(memoryStream, true))
             {
+                
                 var data = wordDoc.MainDocumentPart!.Document!.Body;
                 var paragraphs = data!.Descendants<Paragraph>().ToList();
                 var blocks = DocxHelper.GetResumeBlocks(wordDoc);
+                foreach (var block in blocks)
+                {
+                    blockMap[block.Id] = block.Text;
+                }
+
                 var geminiClient = new Client(apiKey: _options.Gemini);
 
                 using var htmlClient = new HttpClient();
 
-                var scrapedHtml = await htmlClient.GetStringAsync(jobPostingUrl);
-                var jobPostingPrompt = ResumePrompts.JobPosting(scrapedHtml);
+                var jobPostingPrompt = ResumePrompts.JobPosting(posting);
                 var geminiResponse = await geminiClient.Models.GenerateContentAsync(model: "gemini-3.5-flash", contents: jobPostingPrompt);
                 var jobPostingData = geminiResponse.Text ?? string.Empty;
 
@@ -221,13 +229,25 @@ namespace Jobby.Server.Services
                 {
                     if (!paragraphMap.TryGetValue(edit.Id, out var paragraph))
                         continue;
+
+                    var originalText = blockMap.GetValueOrDefault(edit.Id, string.Empty);
                     DocxHelper.ReplaceParagraphText(paragraph, edit.NewText);
+                    changes.Add(new ResumeChange
+                    {
+                        Id = edit.Id,
+                        OriginalText = originalText,
+                        NewText = edit.NewText
+                    });
                 }
                 wordDoc.MainDocumentPart!.Document.Save();
             }
             memoryStream.Position = 0;
 
-            return memoryStream;
+            return new ResumeGenerationResponse
+            {
+                DocumentBase64 = Convert.ToBase64String(memoryStream.ToArray()),
+                Changes = changes
+            };
         }
 
         public async Task ArchiveAppAsync(int appId, bool isArchived, string userId)

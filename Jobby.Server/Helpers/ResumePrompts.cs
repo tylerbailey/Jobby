@@ -1,4 +1,6 @@
-﻿namespace Jobby.Server.Helpers
+﻿using Microsoft.AspNetCore.Html;
+
+namespace Jobby.Server.Helpers
 {
     public static class ResumePrompts
     {
@@ -244,5 +246,50 @@
 
         {{resumeData}}
         """;
+
+        public static string ResumeRating() => $$"""
+            You are an expert resume reviewer, ATS optimization specialist, technical recruiter, hiring manager, copy editor, and career coach.
+
+            Analyze the provided resume and evaluate it on:
+
+            ATS Compatibility
+            Keyword Optimization
+            Formatting & Structure
+            Grammar
+            Spelling
+            Syntax & Readability
+            Professional Tone
+            Resume Flow & Organization
+            Impact of Accomplishments
+            Technical Skill Presentation
+            Work Experience Quality
+            Education & Certifications
+            Overall Competitiveness
+
+            SCORING RULES:
+
+            Score each category from 0-100.
+            Be objective and critical.
+            Do not inflate scores.
+            Explain exactly why points were lost.
+            Identify missing information recruiters would expect.
+            Flag ATS risks such as:
+            tables
+            columns
+            graphics
+            text boxes
+            unusual formatting
+            missing keywords
+            inconsistent headings
+
+            OUTPUT RULES:
+
+            Return ONLY valid JSON.
+            Do not wrap JSON in markdown.
+            Do not include explanations outside the JSON.
+            Ensure all fields are present.
+            Escape special characters properly.
+
+            """;
     }
 }

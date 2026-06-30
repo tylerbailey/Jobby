@@ -65,3 +65,11 @@ export const IconColors = {
     "Gray": "stroke-gray-50 fill-gray-700",
     "Olive": "stroke-olive-50 fill-olive-700"
 }
+
+export const atsColors = {
+    excellent: "#22c55e", // green-500
+    good: "#3b82f6",      // blue-500
+    poor: "#f59e0b",   // amber-500
+    terrible: "#ef4444",      // red-500
+};
+

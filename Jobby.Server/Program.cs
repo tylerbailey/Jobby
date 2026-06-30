@@ -65,6 +65,7 @@ builder.Services.AddScoped<IStageService, StageService>();
 builder.Services.AddScoped<IHistoryService, HistoryService>();
 builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<IRecruiterService, RecruiterService>();
+builder.Services.AddScoped<IResumeService, ResumeService>();
 
 builder.Services.AddAuthorization();
 

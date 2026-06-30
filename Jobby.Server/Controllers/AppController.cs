@@ -59,16 +59,12 @@ namespace Jobby.Server.Controllers
             return Ok();
         }
 
-        [HttpPost("gen/{applicationId}")]
-        public async Task<IActionResult> GenerateResumeAsync([FromForm] IFormFile file, int applicationId)
+        [HttpPost("gen")]
+        public async Task<IActionResult> GenerateResumeAsync([FromForm] IFormFile file,[FromForm] string posting)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
-            var app = await _appService.GetAppAsync(userId, applicationId);
-            var memoryStream = await _appService.EditDocxAsync(file, app.JobPostingUrl);
-            return File(
-                memoryStream.ToArray(),
-                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                "TailoredResume.docx");
+            var result = await _appService.EditDocxAsync(file, posting);
+            return Ok(result);
         }
 
         [HttpGet("archive")]
