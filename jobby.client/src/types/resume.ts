@@ -88,6 +88,17 @@ export interface ActionPlan {
     lowPriority: string[];
 }
 
+export interface ResumeChange {
+    id: number;
+    originalText: string;
+    newText: string;
+}
+
+export interface ResumeGenerationResponse {
+    documentBase64: string;
+    changes: ResumeChange[];
+}
+
 /* =========================================================
    Label Maps
 ========================================================= */

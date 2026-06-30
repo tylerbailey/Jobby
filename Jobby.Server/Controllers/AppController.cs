@@ -63,11 +63,8 @@ namespace Jobby.Server.Controllers
         public async Task<IActionResult> GenerateResumeAsync([FromForm] IFormFile file,[FromForm] string posting)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
-            var memoryStream = await _appService.EditDocxAsync(file, posting);
-            return File(
-                memoryStream.ToArray(),
-                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                "TailoredResume.docx");
+            var result = await _appService.EditDocxAsync(file, posting);
+            return Ok(result);
         }
 
         [HttpGet("archive")]

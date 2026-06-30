@@ -186,11 +186,14 @@ namespace Jobby.Server.Services
             return locations;
         }
 
-        public async Task<MemoryStream> EditDocxAsync(IFormFile file, string posting)
+        public async Task<ResumeGenerationResponse> EditDocxAsync(IFormFile file, string posting)
         {
             using var memoryStream = new MemoryStream();
             await file.CopyToAsync(memoryStream);
             memoryStream.Position = 0;
+
+            var blockMap = new Dictionary<int, string>();
+            var changes = new List<ResumeChange>();
 
             using (var wordDoc = WordprocessingDocument.Open(memoryStream, true))
             {
@@ -198,6 +201,11 @@ namespace Jobby.Server.Services
                 var data = wordDoc.MainDocumentPart!.Document!.Body;
                 var paragraphs = data!.Descendants<Paragraph>().ToList();
                 var blocks = DocxHelper.GetResumeBlocks(wordDoc);
+                foreach (var block in blocks)
+                {
+                    blockMap[block.Id] = block.Text;
+                }
+
                 var geminiClient = new Client(apiKey: _options.Gemini);
 
                 using var htmlClient = new HttpClient();
@@ -221,13 +229,25 @@ namespace Jobby.Server.Services
                 {
                     if (!paragraphMap.TryGetValue(edit.Id, out var paragraph))
                         continue;
+
+                    var originalText = blockMap.GetValueOrDefault(edit.Id, string.Empty);
                     DocxHelper.ReplaceParagraphText(paragraph, edit.NewText);
+                    changes.Add(new ResumeChange
+                    {
+                        Id = edit.Id,
+                        OriginalText = originalText,
+                        NewText = edit.NewText
+                    });
                 }
                 wordDoc.MainDocumentPart!.Document.Save();
             }
             memoryStream.Position = 0;
 
-            return memoryStream;
+            return new ResumeGenerationResponse
+            {
+                DocumentBase64 = Convert.ToBase64String(memoryStream.ToArray()),
+                Changes = changes
+            };
         }
 
         public async Task ArchiveAppAsync(int appId, bool isArchived, string userId)

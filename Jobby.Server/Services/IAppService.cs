@@ -6,7 +6,7 @@ namespace Jobby.Server.Services
     {
         Task CreateNewAppAsync(UserJobApplicationModel application, string userId);
         Task DeleteAppAsync(int appId, string userId);
-        Task<MemoryStream> EditDocxAsync(IFormFile file, string posting);
+        Task<ResumeGenerationResponse> EditDocxAsync(IFormFile file, string posting);
         Task<UserJobApplicationModel> GetAppAsync(string userId, int applicationId);
         Task<List<UserJobApplicationModel>> GetAppsAsync(string userId);
         Task<List<LocationTypeModel>> GetAppLocationsAsync();
