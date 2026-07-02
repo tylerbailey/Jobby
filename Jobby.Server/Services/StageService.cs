@@ -7,7 +7,7 @@ namespace Jobby.Server.Services
 {
     public class StageService(IDbContextFactory<AppDbContext> dbContextFactory) : ServiceBase(dbContextFactory), IStageService
     {
-        public async Task CreateStage(AppStageModel appStage, string userId)
+        public async Task CreateStageAsync(AppStageModel appStage, string userId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
 
@@ -43,7 +43,7 @@ namespace Jobby.Server.Services
             await db.SaveChangesAsync();
         }
 
-        public async Task UpdateStage(AppStageModel appStage, string userId)
+        public async Task UpdateStageAsync(AppStageModel appStage, string userId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
             var stage = await db.AppStages.Where(s => s.Id == appStage.Id && s.UserId == userId).FirstOrDefaultAsync();
@@ -56,7 +56,7 @@ namespace Jobby.Server.Services
             }
         }
 
-        public async Task DeleteStage(int stageId, string userId)
+        public async Task DeleteStageAsync(int stageId, string userId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
             var stage = await db.AppStages.Where(s => s.Id == stageId && s.UserId == userId).FirstOrDefaultAsync();
@@ -67,7 +67,7 @@ namespace Jobby.Server.Services
             }
         }
 
-        public async Task<List<AppStageModel>> GetUserPipeline(string userId)
+        public async Task<List<AppStageModel>> GetUserPipelineAsync(string userId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
             var stages = await db.AppStages

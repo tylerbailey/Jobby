@@ -25,7 +25,7 @@ namespace Jobby.Server.Controllers
         public async Task<IActionResult> GetEvents()
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
-            var events = await _eventService.GetUserEvents(userId);
+            var events = await _eventService.GetUserEventsAsync(userId);
             return Ok(events);
         }
 
@@ -33,7 +33,7 @@ namespace Jobby.Server.Controllers
         public async Task<IActionResult> DeleteEvent(int eventId)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
-            await _eventService.DeleteEvent(eventId, userId);
+            await _eventService.DeleteEventAsync(eventId, userId);
             return Ok();
         }
 

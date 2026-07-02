@@ -17,14 +17,14 @@ namespace Jobby.Server.Controllers
         public async Task<IActionResult> CreateStage(AppStageModel appStage)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
-            await _stageService.CreateStage(appStage, userId);
+            await _stageService.CreateStageAsync(appStage, userId);
             return Ok();
         }
         [HttpPost("update")]
         public async Task<IActionResult> UpdateStage(AppStageModel appStage)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
-            await _stageService.UpdateStage(appStage, userId);
+            await _stageService.UpdateStageAsync(appStage, userId);
             return Ok();
         }
 
@@ -32,7 +32,7 @@ namespace Jobby.Server.Controllers
         public async Task<IActionResult> DeleteStage(int stageId)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
-            await _stageService.DeleteStage(stageId, userId);
+            await _stageService.DeleteStageAsync(stageId, userId);
             return Ok();
         }
 
@@ -40,7 +40,7 @@ namespace Jobby.Server.Controllers
         public async Task<IActionResult> GetUserPipeline()
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
-            var stages = await _stageService.GetUserPipeline(userId);
+            var stages = await _stageService.GetUserPipelineAsync(userId);
             return Ok(stages);
         }
     }

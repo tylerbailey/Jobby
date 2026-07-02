@@ -64,7 +64,7 @@ namespace Jobby.Server.Services
             return jobEvents;
         }
 
-        public async Task<List<JobEventModel>> GetUserEvents(string userId)
+        public async Task<List<JobEventModel>> GetUserEventsAsync(string userId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
             var events = await db.JobApps.Where(j => j.UserId == userId && j.JobEvents.Count > 0 && !j.Disabled).SelectMany(j => j.JobEvents.Where(e => !e.Disabled)).Select(e => new JobEventModel()
@@ -96,7 +96,7 @@ namespace Jobby.Server.Services
             return events;
         }
 
-        public async Task DeleteEvent(int eventId, string userId)
+        public async Task DeleteEventAsync(int eventId, string userId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
             var foundEvent = await db.JobEvents.Where(e => e.Id == eventId && e.JobApp!.UserId == userId).FirstOrDefaultAsync();

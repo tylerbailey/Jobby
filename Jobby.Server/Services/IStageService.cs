@@ -1,12 +1,11 @@
 ﻿using Jobby.Server.Domain;
 
-namespace Jobby.Server.Services
+namespace Jobby.Server.Services;
+
+public interface IStageService
 {
-    public interface IStageService
-    {
-        Task CreateStage(AppStageModel appStage, string userId);
-        Task DeleteStage(int stageId, string userId);
-        Task UpdateStage(AppStageModel appStage, string userId);
-        Task<List<AppStageModel>> GetUserPipeline(string userId);
-    }
+    Task CreateStageAsync(AppStageModel appStage, string userId);
+    Task DeleteStageAsync(int stageId, string userId);
+    Task UpdateStageAsync(AppStageModel appStage, string userId);
+    Task<List<AppStageModel>> GetUserPipelineAsync(string userId);
 }
