@@ -15,13 +15,11 @@ export type DateTimePickerProps = {
 }
 
 export function DateTimePicker({ dateTime, isOpen, setIsOpen, action }: DateTimePickerProps) {
-    const [date, setDate] = useState<Date>(dateTime != undefined ? new Date(dateTime) : dateTime); //Having to do this is dumb and I hate javascript
+    const [date, setDate] = useState<Date>(dateTime != undefined ? new Date(dateTime) : dateTime); 
 
     const hours = Array.from({ length: 12 }, (_, i) => i + 1);
     const handleDateSelect = (selectedDate: Date | undefined) => {
         if (selectedDate) {
-            // Preserve whatever time was already selected instead of
-            // wiping it out, since the calendar only controls the date part.
             const newDate = new Date(selectedDate);
             if (date) {
                 newDate.setHours(date.getHours(), date.getMinutes());
@@ -148,8 +146,9 @@ export function DateTimePicker({ dateTime, isOpen, setIsOpen, action }: DateTime
                         </ScrollArea>
                     </div>
                 </div>
-                <div className="p-4">
-                    <Button className="w-full" onClick={() => { setDate(undefined); action(undefined); }}>Clear</Button>
+                <div className="p-4 flex flex-row justify-between">
+                    <Button className="" onClick={() => { setIsOpen(false); }}>Done</Button>
+                    <Button className="" onClick={() => { setDate(undefined); action(undefined); }}>Clear</Button>
                 </div>
 
             </PopoverContent>

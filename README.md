@@ -141,17 +141,6 @@ npm test
 - Protected routes via `ProtectedRoute`; admin routes via `AdminRoute`
 - `AuthProvider` wraps the app once in `App.tsx`
 
-## Recent Cleanup (summary)
-
-- Fixed duplicate `AuthProvider` nesting
-- Renamed `RecruitorController` → `RecruiterController` and standardized recruiter service method names
-- Added user ownership checks on app update, archive, history, and recruiter update
-- Fixed `ArchiveAppAsync` missing `SaveChangesAsync`
-- Scoped kanban pipeline stages to the current user
-- Fixed `gap-2te` CSS typo and missing React keys in kanban cards
-- Renamed `JsonSerializerExtentions.cs` → `JsonHelpers.cs`
-- Removed unused SQL Server package reference
-- Added initial test projects and this documentation
 
 ## License
 
