@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
-import { Progress } from "../ui/progress";
-import { calculateRiskColors, calculateScoreColor } from "../../helpers/componentHelpers";
-import { Separator } from "../ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { calculateRiskColors, calculateScoreColor } from "@/helpers/componentHelpers";
+import { Separator } from "@/components/ui/separator";
 import { ArrowRight, Check, CheckSquare, Square } from "lucide-react";
-import type { ResumeAnalysisResponse } from "../../types/resume";
-import { Badge } from "../ui/badge";
+import type { ResumeAnalysisResponse } from "@/types";
+import { Badge } from "@/components/ui/badge";
 
 function AtsTabs({ report }: {report: ResumeAnalysisResponse }) {
     const [checked, setChecked] = useState<Record<string, boolean>>({});
@@ -156,7 +156,7 @@ function AtsTabs({ report }: {report: ResumeAnalysisResponse }) {
                           <div className="flex flex-wrap gap-2 mt-1">
                               {report.keywordSuggestions.map((k, i) => (
                                   <div key={i} className="flex items-center gap-2 rounded-md border px-3 py-2">
-                                      <Badge variant={k.importance === 0 ? "default" : "secondary"}>
+                                      <Badge variant={k.importance === 1 ? "default" : "secondary"}>
                                           {k.keyword}
                                       </Badge>
                                       <span className="text-xs">{k.reason}</span>

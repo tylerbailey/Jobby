@@ -1,11 +1,14 @@
 import { api } from "@/api";
 import type { AuthResponse } from "@/types";
 
+export type RegisterResponse = {
+    message: string;
+};
 
 export async function loginUser(email: string, password: string) {
     const response = await api.post<AuthResponse>("/auth/login", {
         email,
-        password
+        password,
     });
     return response.data;
 }
@@ -15,13 +18,10 @@ export async function registerUser(
     password: string,
     displayName?: string
 ) {
-    const response = await api.post<AuthResponse>("/auth/register", {
+    const response = await api.post<RegisterResponse>("/auth/register", {
         email,
         password,
-        displayName
+        displayName,
     });
     return response.data;
 }
-
-
-

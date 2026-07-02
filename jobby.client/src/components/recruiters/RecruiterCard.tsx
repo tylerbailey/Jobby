@@ -4,9 +4,9 @@ import { formatDate } from "@/helpers/formatHelpers";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Badge } from "@/components/ui/badge";
 import type { Recruiter } from "@/types";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { Button } from "../ui/button";
-import { deleteRecruiter } from "../../services/recruiterService";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+import { deleteRecruiter } from "@/services/recruiterService";
 import { useState } from "react";
 import { toast } from "sonner";
 import EditRecruiter from "./EditRecruiter";
@@ -17,7 +17,7 @@ export type RecruiterCardProps = {
     onUpdate: () => void;
 }
 
-export default function RecruiterCard({ recruiter, onUpdate}: RecruiterCardProps) {
+export default function RecruiterCard({ recruiter, onUpdate }: RecruiterCardProps) {
     const [menuOpen, setMenuOpen] = useState<boolean>(false);
     const [dialogOpen, setDialogOpen] = useState<boolean>(false);
     function getInitials(name: string) {
@@ -30,7 +30,7 @@ export default function RecruiterCard({ recruiter, onUpdate}: RecruiterCardProps
     }
 
     async function handleDelete() {
-        await deleteRecruiter((recruiter.id || 0))
+        await deleteRecruiter(recruiter.id)
         setMenuOpen(false);
         onUpdate();
         toast.info("Recruiter has been deleted.")
@@ -55,13 +55,13 @@ export default function RecruiterCard({ recruiter, onUpdate}: RecruiterCardProps
                                 </div>
                             </div>
                             <div className="shrink-0" onClick={(event) => event.stopPropagation()}>
-                                <Popover open={menuOpen} onOpenChange={setMenuOpen }>
+                                <Popover open={menuOpen} onOpenChange={setMenuOpen}>
                                     <PopoverTrigger asChild>
                                         <Button variant="ghost" size="icon" className="h-7 w-7">
                                             <MoreVertical className="h-4 w-4" />
                                         </Button>
                                     </PopoverTrigger>
-                                    <PopoverContent className="w-48 p-1">   
+                                    <PopoverContent className="w-48 p-1">
                                         <Button
                                             onClick={handleEdit}
                                             variant="ghost"
@@ -83,21 +83,24 @@ export default function RecruiterCard({ recruiter, onUpdate}: RecruiterCardProps
                     }
                 </CardHeader>
                 <CardContent>
+
                     <div className="space-y-1">
-                        <div className="flex items-center gap-1 text-small">
-                            <Phone className="h-3 w-3 shrink-0" />
-                            <span>{recruiter.phoneNumber}</span>
-                        </div>
+                        {recruiter.phoneNumber &&
+                            (<div className="flex items-center gap-1 text-small">
+                                <Phone className="h-3 w-3 shrink-0" />
+                                <span>{recruiter.phoneNumber}</span>
+                            </div>)}
                         {recruiter.lastContact && (
                             <div className="flex items-center gap-1 text-small">
                                 <Clock className="h-3 w-3 shrink-0" />
                                 <span>Last: {formatDate(recruiter.lastContact)}</span>
                             </div>
                         )}
-                        <div className="flex items-center gap-1 text-small text-green-600">
-                            <Clock className="h-3 w-3 shrink-0" />
-                            Next: {formatDate(recruiter.nextContact)}
-                        </div>
+                        {recruiter.nextContact && (
+                            <div className="flex items-center gap-1 text-small text-green-600">
+                                <Clock className="h-3 w-3 shrink-0" />
+                                Next: {formatDate(recruiter.nextContact)}
+                            </div>)}
                         {(recruiter.notes && (
                             <div className="flex items-center gap-1">
                                 <HoverCard>
@@ -113,6 +116,6 @@ export default function RecruiterCard({ recruiter, onUpdate}: RecruiterCardProps
 
             </Card>
             <EditRecruiter formItem={recruiter} onUpdate={onUpdate} dialogOpen={dialogOpen} setDialogOpen={setDialogOpen} />
-            </div>
+        </div>
     );
 }

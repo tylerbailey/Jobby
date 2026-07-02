@@ -1,10 +1,10 @@
 import { useState, type ChangeEvent } from "react";
 import { toast } from "sonner";
-import { rateResume } from "../../services/resumeService";
-import type { ResumeAnalysisResponse } from "../../types";
-import { Button } from "../ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
-import { Input } from "../ui/input";
+import { rateResume } from "@/services/resumeService";
+import type { ResumeAnalysisResponse } from "@/types";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import AtsScoreReport from "./AtsScoreReport";
 
 export default function ResumeRating() {

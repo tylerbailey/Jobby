@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import type { Recruiter } from "@/types";
 import RecruiterCard from "./RecruiterCard";
 import CreateRecruiter from "./CreateRecruiter";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { useState } from "react";
 

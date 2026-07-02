@@ -1,8 +1,8 @@
 import { Bar, BarChart, Cell, XAxis, YAxis } from "recharts";
-import { calculateScoreColor } from "../../helpers/componentHelpers";
-import { ScoreTypeLabels, type ScoreBreakdown } from "../../types";
-import { Card, CardContent } from "../ui/card";
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "../ui/chart";
+import { calculateScoreColor } from "@/helpers/componentHelpers";
+import { ScoreTypeLabels, type ScoreBreakdown } from "@/types";
+import { Card, CardContent } from "@/components/ui/card";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 
 export type AtsScoreBreakdownProps = {
     scores: ScoreBreakdown[];

@@ -1,4 +1,4 @@
-import type { ResumeAnalysisResponse } from "../../types/resume";
+import type { ResumeAnalysisResponse } from "@/types";
 import AtsScore from "./AtsScore";
 import AtsScoreBreakdown from "./AtsScoreBreakdown";
 import AtsTabs from "./AtsTabs";

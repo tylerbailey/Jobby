@@ -7,21 +7,21 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrig
 import { getAllApps } from "@/services/appService";
 import { createEvent } from "@/services/eventService";
 import type { Application } from "@/types";
-import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
+import { useEffect, useState } from "react";
 
 export type AddEventProps = {
     isOpen: boolean;
-    setIsOpen: Dispatch<SetStateAction<boolean>>;
+    setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
     onUpdate: () => void;
 }
 
 export default function AddEvent({ onUpdate, isOpen, setIsOpen }: AddEventProps) {
     const [eventTitle, setEventTitle] = useState("");
     const [eventDescription, setEventDescription] = useState("");
-    const [eventDate, setEventDate] = useState<Date | undefined>(undefined);
+    const [eventDate, setEventDate] = useState<Date>();
     const [applications, setApplications] = useState<Application[]>();
     const [selectedApp, setSelectedApp] = useState("");
-    const [datePickerOpen, setDatePickerOpen] = useState<boolean>(false);
+    const [datePickerOpen, setDatePickerOpen] = useState<boolean>();
 
     useEffect(() => {
         async function getApplications() {
@@ -32,17 +32,12 @@ export default function AddEvent({ onUpdate, isOpen, setIsOpen }: AddEventProps)
     }, [])
 
     async function handleCreate() {
-        if (!eventDate) {
-            // Show a validation message
-            alert("Please select an event date.");
-            return;
-        }
-
+        const date = new Date(eventDate);
         await createEvent({
             appId: Number.parseInt(selectedApp),
             eventTitle: eventTitle,
             eventDescription: eventDescription,
-            eventDate: eventDate,
+            eventDate: date,
         })
         onUpdate();
         setIsOpen(false);

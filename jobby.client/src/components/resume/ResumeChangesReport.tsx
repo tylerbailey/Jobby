@@ -1,8 +1,8 @@
 import { ArrowDown, Download } from "lucide-react";
-import type { ResumeGenerationResponse } from "../../types/resume";
-import { downloadTailoredResume } from "../../services/appService";
-import { Button } from "../ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
+import type { ResumeGenerationResponse } from "@/types/resume";
+import { downloadTailoredResume } from "@/services/appService";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export type ResumeChangesReportProps = {
     result: ResumeGenerationResponse;

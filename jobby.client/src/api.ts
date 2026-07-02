@@ -2,31 +2,34 @@ import axios from "axios";
 import { toast } from "sonner";
 
 export const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL
-}); 
+    baseURL: import.meta.env.VITE_API_URL ?? "/api",
+});
 
 api.interceptors.response.use(
     response => response,
     error => {
-     const status=  error.response?.status
-        if (status === 401) {
+        const status = error.response?.status;
+        const url = error.config?.url ?? "";
+        const isAuthAttempt =
+            url.includes("/auth/login") || url.includes("/auth/register");
+
+        if (status === 401 && !isAuthAttempt) {
             localStorage.removeItem("token");
             localStorage.removeItem("user");
             window.location.href = "/login";
-        }
-        else {
+        } else if (!isAuthAttempt) {
             const safeMessages: Record<number, string> = {
-                400: error.response?.data?.message ?? 'Invalid request.',
-                403: 'You do not have permission to do that.',
-                404: 'The requested resource was not found.',
-                409: error.response?.data?.message ?? 'A conflict occurred.',
-                422: error.response?.data?.message ?? 'Validation failed.',
-            }
+                400: error.response?.data?.message ?? "Invalid request.",
+                403: error.response?.data?.message ?? "You do not have permission to do that.",
+                404: "The requested resource was not found.",
+                409: error.response?.data?.message ?? "A conflict occurred.",
+                422: error.response?.data?.message ?? "Validation failed.",
+            };
 
             const message = safeMessages[status]
-                ?? 'Something went wrong. Please try again.'
+                ?? "Something went wrong. Please try again.";
 
-            toast.error(message)
+            toast.error(message);
         }
         return Promise.reject(error);
     }
@@ -37,6 +40,10 @@ api.interceptors.request.use(config => {
 
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
+    }
+
+    if (config.data instanceof FormData) {
+        delete config.headers["Content-Type"];
     }
 
     return config;

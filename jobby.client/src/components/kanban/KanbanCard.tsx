@@ -13,7 +13,7 @@ import { deleteApp, updateApp } from "@/services/appService";
 import { getHistory } from "@/services/historyService";
 import type { Application, EventItem, HistoryItem } from "@/types";
 import { useDraggable } from "@dnd-kit/react";
-import { Archive, CalendarDays, Check, Clock3, MapPin, MoreVertical, Pencil, Timeline, Trash2, X } from "lucide-react";
+import { Archive, CalendarDays, Check, Clock3, File, MapPin, MoreVertical, Pencil, Timeline, Trash2, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -30,16 +30,10 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
     const [editOpen, setEditOpen] = useState<boolean>(false);
     const [historyOpen, setHistoryOpen] = useState<boolean>(false);
 
-
-
-
-
     function handleHistory() {
         setMenuOpen(false);
         setHistoryOpen(true);
     }
-
-    
 
     async function handleDelete() {
         if (!item.id) {
@@ -49,7 +43,7 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
         setMenuOpen(false);
         await deleteApp(item.id);
         onUpdate();
-        toast.info("The application has been deleted.")
+        toast.info("The application has been deleted.");
     }
 
     function handleEdit() {
@@ -64,31 +58,31 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
             isArchived: true
         });
         onUpdate();
-        toast.info("The application has been archived.")
+        toast.info("The application has been archived.");
     }
 
     async function handleStatus(newStatus: number) {
         setMenuOpen(false);
         await updateApp({
             ...item,
-            status: newStatus
-
+            status: newStatus,
         });
         onUpdate();
     }
 
     useEffect(() => {
-        async function GetItemHistory() {
-            const response = await getHistory(item.id)
-            setHistories(response.data)
+        async function loadItemHistory() {
+            const response = await getHistory(item.id);
+            setHistories(response.data);
         }
-        GetItemHistory();
+
+        loadItemHistory();
     }, [item.id]);
 
     return (
         <div ref={dragRef} className={isMatch ? "w-full" : "hidden"}>
-            <Card className={`w-full cursor-pointer transition hover:-translate-y-0.5 hover:shadow-md  ${getCardColor(item)}`}
-                onClick={() => setInfoOpen(true)} >
+            <Card className={`w-full cursor-pointer transition hover:-translate-y-0.5 hover:shadow-md ${getCardColor(item)}`}
+                onClick={() => setInfoOpen(true)}>
                 <CardHeader className="px-2">
                     <div className="flex min-w-0 items-start justify-between gap-2">
                         <div className="flex min-w-0 flex-1 items-start gap-1">
@@ -125,29 +119,36 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
                                         className="flex h-9 w-full items-center justify-between px-2">
                                         <span>History</span>
                                         <Timeline className="h-4 w-4" />
-                                    </Button>                                   
-                                    {item.status != Status.InProgress && (<Button
-                                        onClick={() => handleStatus(Status.InProgress)}
-                                        variant="ghost"
-                                        className="flex h-9 w-full items-center justify-between px-2">
-                                        <span>In Progress</span>
-                                        <Clock3 className="h-4 w-4" />
-                                    </Button>)}
+                                    </Button>
+                                    {item.status != Status.InProgress && (
+                                        <Button
+                                            onClick={() => handleStatus(Status.InProgress)}
+                                            variant="ghost"
+                                            className="flex h-9 w-full items-center justify-between px-2">
+                                            <span>In Progress</span>
+                                            <Clock3 className="h-4 w-4" />
+                                        </Button>
+                                    )}
 
-                                    {item.status != Status.Accepted && (<Button
-                                        onClick={() => handleStatus(Status.Accepted)}
-                                        variant="ghost"
-                                        className="flex h-9 w-full items-center justify-between px-2">
-                                        <span>Accepted</span>
-                                        <Check className="h-4 w-4" />
-                                    </Button>)}
-                                    {item.status != Status.Rejected && (<Button
-                                        onClick={() => handleStatus(Status.Rejected)}
-                                        variant="ghost"
-                                        className="flex h-9 w-full items-center justify-between px-2">
-                                        <span>Rejected</span>
-                                        <X className="h-4 w-4" />
-                                    </Button>)}
+                                    {item.status != Status.Accepted && (
+                                        <Button
+                                            onClick={() => handleStatus(Status.Accepted)}
+                                            variant="ghost"
+                                            className="flex h-9 w-full items-center justify-between px-2">
+                                            <span>Accepted</span>
+                                            <Check className="h-4 w-4" />
+                                        </Button>
+                                    )}
+
+                                    {item.status != Status.Rejected && (
+                                        <Button
+                                            onClick={() => handleStatus(Status.Rejected)}
+                                            variant="ghost"
+                                            className="flex h-9 w-full items-center justify-between px-2">
+                                            <span>Rejected</span>
+                                            <X className="h-4 w-4" />
+                                        </Button>
+                                    )}
                                     <Button
                                         onClick={handleArchive}
                                         variant="ghost"
@@ -184,21 +185,21 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
                             <div className="font-medium text-foreground">{formatCurrency(item.salary)}</div>
                         )}
                         {item.appliedDate && (
-                            <div className="flex items-center gap-2te border-t pt-2">
+                            <div className="flex items-center gap-2 border-t pt-2">
                                 <CalendarDays className="h-4 w-4" />
                                 <span>{formatDate(item.appliedDate)}</span>
                             </div>
                         )}
                     </div>
-                    {item.events.length > 0 && (
+                    {item.events.length > 0 &&
                         item.events.map((event) => (
-                            <div className={`flex items-center gap-2te border-t pt-2 ${eventColor(event)}`}>
-                                <CalendarDays className={`h-4 w-4`} />
-                                <span >{formatDate(event.eventDate)}</span>
+                            <div
+                                key={event.id}
+                                className={`flex items-center gap-2 border-t pt-2 ${eventColor(event)}`}>
+                                <CalendarDays className="h-4 w-4" />
+                                <span>{formatDate(event.eventDate)}</span>
                             </div>
-                        ))
-
-                    )}
+                        ))}
                     {item.notes && (
                         <div className="mt-3 flex items-center gap-2">
                             <Badge variant={"outline"}>
@@ -216,8 +217,7 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
             <EditAppSheet sheetOpen={editOpen} setSheetOpen={setEditOpen} cardItem={item} onUpdate={onUpdate} />
             <AppInfo item={item} infoOpen={infoOpen} setInfoOpen={setInfoOpen} />
             <JobHistory sheetOpen={historyOpen} setSheetOpen={setHistoryOpen} items={histories} />
-           
-        </div >
+        </div>
     );
 }
 

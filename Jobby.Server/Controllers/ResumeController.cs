@@ -12,11 +12,13 @@ namespace Jobby.Server.Controllers
     {
         private readonly IResumeService _resumeService = resumeService;
 
-
         [HttpPost("review")]
+        [Consumes("multipart/form-data")]
         public async Task<IActionResult> RateResume([FromForm] IFormFile file)
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
+            if (file is null || file.Length == 0)
+                return BadRequest(new { message = "A docx file is required." });
+
             var response = await _resumeService.RateResumeAsync(file);
             return Ok(response);
         }

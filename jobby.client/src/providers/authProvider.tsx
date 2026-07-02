@@ -19,23 +19,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     async function login(email: string, password: string) {
         const response = await loginUser(email, password);
-
-        if (!response.displayName) {
-            throw new Error("Invalid auth response: missing displayName");
-        }
-
         const user: User = {
             id: response.id,
+            displayName: response.displayName ?? "",
             email: response.email,
-            displayName: response.displayName,
+            roles: response.roles ?? [],
         };
-
         setToken(response.token);
-        setUser(user);
-
+        setUser(user)
         localStorage.setItem("token", response.token);
-        localStorage.setItem("user", JSON.stringify(user));
-    }
+        localStorage.setItem("user", JSON.stringify(user))
+    };
 
     async function register(email: string, password: string, displayName: string) {
         await registerUser(email, password, displayName)

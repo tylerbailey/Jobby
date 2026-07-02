@@ -23,10 +23,10 @@ namespace Jobby.Server.Domain
         public string PhoneNumber { get; set; } = string.Empty;
 
         [JsonPropertyName("lastContact")]
-        public DateTime LastContact { get; set; }
+        public DateTime? LastContact { get; set; }
 
         [JsonPropertyName("nextContact")]
-        public DateTime NextContact { get; set; }
+        public DateTime? NextContact { get; set; }
 
         [JsonPropertyName("applicationIds")]
         public List<int> ApplicationIds { get; set; } = [];

@@ -14,5 +14,5 @@ export async function getAllStages() {
 }
 
 export async function deleteStage(stageId: number) {
-    await api.delete("/stage/delete/" + stageId)
+    await api.delete(`/stage/delete/${stageId}`);
 }

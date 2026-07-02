@@ -1,7 +1,7 @@
 import type { Recruiter } from "@/types";
 import { useState, type Dispatch, type SetStateAction } from "react";
 import { toast } from "sonner";
-import { createRecruiter } from "../../services/recruiterService";
+import { createRecruiter } from "@/services/recruiterService";
 import RecruiterForm from "./RecruiterForm";
 
 export type AddRecruiterProps = {
@@ -21,6 +21,7 @@ export default function CreateRecruiter({onUpdate, dialogOpen, setDialogOpen }: 
     })
 
     async function handleSave() {
+        console.log(item)
         await createRecruiter(item);
         setDialogOpen(false);
         onUpdate();

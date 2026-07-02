@@ -1,4 +1,4 @@
-using Jobby.Server;
+using Jobby.Server.Constants;
 using Jobby.Server.Data;
 using Jobby.Server.Entities;
 using Jobby.Server.Services;
@@ -10,15 +10,13 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// -------------------- SERVICES --------------------
 
 builder.Services.AddControllers();
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")),
-    ServiceLifetime.Scoped);
+
 builder.Services.AddDbContextFactory<AppDbContext>(options =>
-options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")),
-    ServiceLifetime.Scoped);
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+// Identity
 builder.Services
     .AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>()
@@ -32,12 +30,16 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.Password.RequireNonAlphanumeric = false;
 });
 
-builder.Services.Configure<ApiKeys>(
-    builder.Configuration.GetSection("ApiKeys")
-);
+// App settings
+builder.Services.AddOllama(builder.Configuration);
+
+// -------------------- JWT --------------------
 
 var jwt = builder.Configuration.GetSection("Jwt");
-var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt["Key"]!));
+
+var key = new SymmetricSecurityKey(
+    Encoding.UTF8.GetBytes(jwt["Key"]!)
+);
 
 builder.Services
     .AddAuthentication(options =>
@@ -60,43 +62,67 @@ builder.Services
         };
     });
 
+// -------------------- CUSTOM SERVICES --------------------
+
 builder.Services.AddScoped<IAppService, AppService>();
 builder.Services.AddScoped<IStageService, StageService>();
 builder.Services.AddScoped<IHistoryService, HistoryService>();
 builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<IRecruiterService, RecruiterService>();
 builder.Services.AddScoped<IResumeService, ResumeService>();
+builder.Services.AddScoped<IAdminUserService, AdminUserService>();
 
 builder.Services.AddAuthorization();
+
+// -------------------- CORS (FIXED) --------------------
+var origins = builder.Configuration
+    .GetSection("Cors:AllowedOrigins")
+    .Get<string[]>() ?? [];
 
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("ReactClient", policy =>
     {
-        policy
-            .WithOrigins("https://localhost:60922")
-            .AllowAnyHeader()
-            .AllowAnyMethod();
+        policy.WithOrigins(origins)
+              .AllowAnyHeader()
+              .AllowAnyMethod();
     });
 });
 
+// -------------------- OPENAPI --------------------
 
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
+// -------------------- BUILD APP --------------------
+
 var app = builder.Build();
+
+using var scope = app.Services.CreateScope();
+var factory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<AppDbContext>>();
+using var db = factory.CreateDbContext();
+db.Database.Migrate();
+
+var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+foreach (var roleName in Roles.All)
+{
+    if (!await roleManager.RoleExistsAsync(roleName))
+        await roleManager.CreateAsync(new IdentityRole(roleName));
+}
+
 app.UseStaticFiles();
 app.UseDefaultFiles();
 app.MapStaticAssets();
 
-// Configure the HTTP request pipeline.
+// OpenAPI dev only
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
 
 app.UseHttpsRedirection();
+
 app.UseRouting();
+
 app.UseCors("ReactClient");
 
 app.UseAuthentication();

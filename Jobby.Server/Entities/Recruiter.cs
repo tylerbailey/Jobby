@@ -22,9 +22,9 @@ namespace Jobby.Server.Entities
         [Column(TypeName = "varchar(1024)")]
         public string Notes { get;set;  }  = string.Empty;
 
-        public DateTime LastContact { get; set; }
+        public DateTime? LastContact { get; set; }
 
-        public DateTime NextContact { get; set; }
+        public DateTime? NextContact { get; set; }
 
         public ICollection<JobApp> Applications { get; set; } = [];
     }

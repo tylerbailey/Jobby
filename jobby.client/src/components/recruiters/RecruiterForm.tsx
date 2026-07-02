@@ -1,10 +1,10 @@
 import type { Recruiter } from "@/types";
 import { useState, type Dispatch, type SetStateAction } from "react";
-import { Button } from "../ui/button";
-import { DateTimePicker } from "../ui/date-time";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog";
-import { Field, FieldDescription, FieldLabel } from "../ui/field";
-import { Input } from "../ui/input";
+import { Button } from "@/components/ui/button";
+import { DateTimePicker } from "@/components/ui/date-time";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 
 export type RecruiterCreateProps = {
     title: string;
@@ -81,24 +81,14 @@ export default function RecruiterForm({ title, item, setItem, dialogOpen, setDia
                     <FieldDescription>
                         The last date of contact with the recruiter.
                     </FieldDescription>
-                    <DateTimePicker dateTime={item.lastContact} isOpen={lastOpen} setIsOpen={setLastOpen} action={(date) =>
-                        setItem({
-                            ...item,
-                            lastContact: date,
-                        })
-                    } />
+                    <DateTimePicker dateTime={item.lastContact} isOpen={lastOpen} setIsOpen={setLastOpen} action={(e:Date) => setItem({ ...item, lastContact: e})} />
                 </Field>
                 <Field className="py-3">
                     <FieldLabel htmlFor="input-recruiter-next">Next Contact Date</FieldLabel>
                     <FieldDescription>
                         The next date of contact with the recruiter.
                     </FieldDescription>
-                    <DateTimePicker dateTime={item.nextContact} isOpen={nextOpen} setIsOpen={setNextOpen} action={(date) =>
-                        setItem({
-                            ...item,
-                            nextContact: date,
-                        })
-                    } />
+                    <DateTimePicker dateTime={item.nextContact} isOpen={nextOpen} setIsOpen={setNextOpen} action={(e:Date) => setItem({ ...item, nextContact: new Date(e) })} />
                 </Field>
                 <Field className="py-3">
                     <FieldLabel htmlFor="input-recruiter-notes">Notes</FieldLabel>

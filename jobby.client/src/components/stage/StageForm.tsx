@@ -3,9 +3,9 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Colors, ElementColors, FocusColors, HoverColors } from "@/consts/consts";
 import type { Stage } from "@/types";
 import { useState, type Dispatch, type SetStateAction } from "react";
-import { Colors, ElementColors, FocusColors, HoverColors } from "../../consts/consts";
 
 export type StageFormProps = {
     title: string;
@@ -17,10 +17,9 @@ export type StageFormProps = {
 }
 function StageForm({ title, stage, setStage, dialogOpen, setDialogOpen, action }: StageFormProps) {
     const [popoverOpen, setPopoverOpen] = useState<boolean>(false);
-    const [color, setColor] = useState(stage.color);
 
-    function handleColorChange(color: string) {
-        setColor(color)
+    function handleColorChange(selectedColor: string) {
+        setStage({ ... stage, color: selectedColor })
         setPopoverOpen(false);
     }
 
@@ -61,12 +60,12 @@ function StageForm({ title, stage, setStage, dialogOpen, setDialogOpen, action }
                     </FieldDescription>
                     <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
                         <PopoverTrigger asChild>
-                            <span className=""> <Button variant="outline" className={`w-full ${FocusColors[color as keyof typeof FocusColors]} ${HoverColors[color as keyof typeof HoverColors]} ${ElementColors[color as keyof typeof ElementColors]}`}>{color}</Button></span>
+                            <span className=""> <Button variant="outline" className={`w-full ${FocusColors[stage.color as keyof typeof FocusColors]} ${HoverColors[stage.color as keyof typeof HoverColors]} ${ElementColors[stage.color as keyof typeof ElementColors]}`}>{stage.color}</Button></span>
                         </PopoverTrigger>
                         <PopoverContent className="w-80" align="center" side="top">
                             <div className="grid grid-cols-3 gap-4">
                                 {Object.entries(Colors).map(([label]) => (
-                                    <Button onClick={() => handleColorChange(label)} variant="outline" className={`max-w-25 ${HoverColors[label as keyof typeof HoverColors]} ${ElementColors[label as keyof typeof  ElementColors]}`}>
+                                    <Button onClick={() => handleColorChange(label)} variant="outline" className={`max-w-25 ${HoverColors[label as keyof typeof HoverColors]} ${ElementColors[label as keyof typeof ElementColors]}`}>
                                         {label}
                                     </Button>
                                 ))}

@@ -1,5 +1,5 @@
 import { api } from "@/api";
-import type { ResumeAnalysisResponse } from "../types";
+import type { ResumeAnalysisResponse } from "@/types";
 
 export async function rateResume(file: File) {
     const formData = new FormData();
@@ -7,8 +7,9 @@ export async function rateResume(file: File) {
     formData.append("file", file);
 
     const response = await api.post<ResumeAnalysisResponse>(
-        `/resume/review/`,
-        formData
+        "/resume/review",
+        formData,
+        { timeout: 600_000 },
     );
 
     return response.data;

@@ -7,7 +7,7 @@ export async function createNewApp(application: Application) {
 }
 
 export async function getAllApps() {
-    return await api.get<Application[]>("/app/all")
+    return await api.get<Application[]>("/app/all");
 }
 
 export async function getAllAppLocations() {
@@ -15,11 +15,11 @@ export async function getAllAppLocations() {
 }
 
 export async function getArchivedApps() {
-    return await api.get<Application[]>("/app/archive")
+    return await api.get<Application[]>("/app/archive");
 }
 
 export async function updateApp(application: Application) {
-    return await api.post<Application>("/app/update", application)
+    return await api.post<Application>("/app/update", application);
 }
 
 export async function moveAppStage(applicationId: number, stageId: number) {
@@ -34,10 +34,11 @@ export async function generateApp(file: File, posting: string) {
     const formData = new FormData();
 
     formData.append("file", file);
-    formData.append("posting", posting)
+    formData.append("posting", posting);
     const response = await api.post<ResumeGenerationResponse>(
-        `/app/gen/`,
+        "/app/gen",
         formData,
+        { timeout: 600_000 },
     );
 
     return response.data;

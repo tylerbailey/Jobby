@@ -1,7 +1,7 @@
 import type { Recruiter } from "@/types";
 import RecruiterForm from "./RecruiterForm";
 import { useState, type Dispatch, type SetStateAction } from "react";
-import { editRecruiter } from "../../services/recruiterService";
+import { editRecruiter } from "@/services/recruiterService";
 
 export type AddRecruiterProps = {
     onUpdate: () => void;

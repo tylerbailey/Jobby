@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader } from "@/components/
 import { formatDate } from "@/helpers/formatHelpers";
 import { deleteEvent } from "@/services/eventService";
 import type { EventItem } from "@/types";
-import InfoField from "../ui/info-field";
+import InfoField from "@/components/ui/info-field";
 
 export type EventInfoProps = {
     isOpen: boolean;
@@ -26,14 +26,14 @@ export default function EventForm({ eventItem, onUpdate, isOpen, setIsOpen }: Ev
               <DialogHeader>
                   <div className="flex min-w-0 flex-1 items-start gap-1">
                       <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-sm font-bold text-primary">
-                          {eventItem.application?.companyName.slice(0, 1)}
+                          {eventItem.application.companyName.slice(0, 1)}
                       </div>
                       <div className="min-w-0 flex-1">
                           <h3 className="truncate font-semibold leading-tight">
-                              {eventItem.application?.jobTitle}
+                              {eventItem.application.jobTitle}
                           </h3>
                           <p className="truncate text-sm text-muted-foreground">
-                              {eventItem.application?.companyName}
+                              {eventItem.application.companyName}
                           </p>
                       </div>
                   </div>
@@ -41,7 +41,7 @@ export default function EventForm({ eventItem, onUpdate, isOpen, setIsOpen }: Ev
               <InfoField label="Date" value={formatDate(eventItem.eventDate)} />
               <InfoField label="Title" value={eventItem.eventTitle} />
               <InfoField label="Description" value={eventItem.eventDescription} />
-              <InfoField label="Contact" value={eventItem.application?.contactName } />
+              <InfoField label="Contact" value={eventItem.application.contactName } />
               <DialogFooter>
                   <Button className="w-full justify-center" variant="destructive" onClick={handleDelete}>Delete</Button>
               </DialogFooter>

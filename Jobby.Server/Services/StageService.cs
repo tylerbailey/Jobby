@@ -71,7 +71,7 @@ namespace Jobby.Server.Services
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
             var stages = await db.AppStages
-                .Where(s => !s.Disabled)
+                .Where(s => !s.Disabled && s.UserId == userId)
                 .Include(s => s.JobApps.Where(a => a.UserId == userId && !a.Disabled))
                 .ThenInclude(a => a.LocationType)
                 .Include(s => s.JobApps)
@@ -105,7 +105,7 @@ namespace Jobby.Server.Services
                     {
                         Id = e.Id,
                         AppId = e.AppId,
-                        EventDate =  DateTime.SpecifyKind(e.EventDate, DateTimeKind.Utc),
+                        EventDate = DateTime.SpecifyKind(e.EventDate, DateTimeKind.Utc),
                         EventTitle = e.EventTitle,
                         EventDescription = e.EventDescription,
                     })]

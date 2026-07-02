@@ -1,20 +1,18 @@
 ﻿using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
-using Google.GenAI;
 using Jobby.Server.Consts;
 using Jobby.Server.Data;
 using Jobby.Server.Domain;
 using Jobby.Server.Entities;
 using Jobby.Server.Helpers;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using System.Text.Json;
 
 namespace Jobby.Server.Services
 {
-    public class AppService(IDbContextFactory<AppDbContext> dbContextFactory, IOptions<ApiKeys> settings) : ServiceBase(dbContextFactory), IAppService
+    public class AppService(IDbContextFactory<AppDbContext> dbContextFactory, IOllamaService ollamaService) : ServiceBase(dbContextFactory), IAppService
     {
-        private readonly ApiKeys _options = settings.Value;
+        private readonly IOllamaService _ollamaService = ollamaService;
 
         public async Task<UserJobApplicationModel> GetAppAsync(string userId, int applicationId)
         {
@@ -32,8 +30,8 @@ namespace Jobby.Server.Services
                 Notes = a.Notes ?? string.Empty,
                 ContactName = a.ContactName ?? string.Empty,
                 AppliedDate = a.Applied.HasValue ? DateTime.SpecifyKind(a.Applied.Value, DateTimeKind.Utc) : null,
-               Status = a.Status,
-               IsArchived = a.IsArchived,
+                Status = a.Status,
+                IsArchived = a.IsArchived,
                 StageId = a.StageId
             }).FirstOrDefaultAsync() ?? new UserJobApplicationModel();
             return application;
@@ -110,7 +108,7 @@ namespace Jobby.Server.Services
                 await db.JobHistories.AddAsync(new JobHistory
                 {
                     AppId = application.Id,
-                    Color = "blue",
+                    Color = Colors.Blue,
                     EventTitle = "Deleted",
                     EventDescription = "Application was deleted.",
                     Created = DateTime.UtcNow
@@ -119,10 +117,10 @@ namespace Jobby.Server.Services
             }
         }
 
-        public async Task UpdateAppAsync(UserJobApplicationModel application)
+        public async Task UpdateAppAsync(UserJobApplicationModel application, string userId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
-            var jobApp = await db.JobApps.FirstOrDefaultAsync(a => a.Id == application.Id);
+            var jobApp = await db.JobApps.FirstOrDefaultAsync(a => a.Id == application.Id && a.UserId == userId);
             if (jobApp != null)
             {
                 jobApp.Company = application.CompanyName;
@@ -197,7 +195,6 @@ namespace Jobby.Server.Services
 
             using (var wordDoc = WordprocessingDocument.Open(memoryStream, true))
             {
-                
                 var data = wordDoc.MainDocumentPart!.Document!.Body;
                 var paragraphs = data!.Descendants<Paragraph>().ToList();
                 var blocks = DocxHelper.GetResumeBlocks(wordDoc);
@@ -206,18 +203,13 @@ namespace Jobby.Server.Services
                     blockMap[block.Id] = block.Text;
                 }
 
-                var geminiClient = new Client(apiKey: _options.Gemini);
-
-                using var htmlClient = new HttpClient();
-
                 var jobPostingPrompt = ResumePrompts.JobPosting(posting);
-                var geminiResponse = await geminiClient.Models.GenerateContentAsync(model: "gemini-3.5-flash", contents: jobPostingPrompt);
-                var jobPostingData = geminiResponse.Text ?? string.Empty;
+                var jobPostingData = await _ollamaService.GenerateTextAsync(jobPostingPrompt);
 
                 var resumeData = JsonSerializer.Serialize(blocks, new JsonSerializerOptions { WriteIndented = true });
                 var resumeEditingPrompt = ResumePrompts.ResumeEditing(jobPostingData, resumeData);
-                geminiResponse = await geminiClient.Models.GenerateContentAsync(model: "gemini-3.5-flash", contents: resumeEditingPrompt);
-                var resumeEdits = JsonSerializer.Deserialize<List<ResumeEdit>>(JsonHelpers.RemoveFence(geminiResponse.Text ?? string.Empty), new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? [];
+                var resumeEditResponse = await _ollamaService.GenerateTextAsync(resumeEditingPrompt);
+                var resumeEdits = JsonSerializer.Deserialize<List<ResumeEdit>>(JsonHelpers.RemoveFence(resumeEditResponse), new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? [];
 
                 var paragraphMap = new Dictionary<int, Paragraph>();
 
@@ -252,24 +244,24 @@ namespace Jobby.Server.Services
 
         public async Task ArchiveAppAsync(int appId, bool isArchived, string userId)
         {
-
             await using var db = await _dbContextFactory.CreateDbContextAsync();
-            var jobApp = await db.JobApps.FirstOrDefaultAsync(a => a.Id == appId);
-            if (jobApp != null)
+            var jobApp = await db.JobApps.FirstOrDefaultAsync(a => a.Id == appId && a.UserId == userId);
+            if (jobApp is null)
+                return;
+
+            jobApp.IsArchived = isArchived;
+            await db.JobHistories.AddAsync(new JobHistory
             {
-                jobApp.IsArchived = isArchived;
-                await db.JobHistories.AddAsync(new JobHistory
-                {
-                    AppId = jobApp.Id,
-                    Color = isArchived ? Colors.Gray : Colors.Olive,
-                    EventTitle = isArchived ? "Application archived" : "Application removed from archive",
-                    EventDescription = isArchived ? "Application marked as archived" : "Application was unarchived",
-                    Created = DateTime.UtcNow,
-                });
-            }
+                AppId = jobApp.Id,
+                Color = isArchived ? Colors.Gray : Colors.Olive,
+                EventTitle = isArchived ? "Application archived" : "Application removed from archive",
+                EventDescription = isArchived ? "Application marked as archived" : "Application was unarchived",
+                Created = DateTime.UtcNow,
+            });
+            await db.SaveChangesAsync();
         }
 
-        public async Task<List<UserJobApplicationModel>> GetArchivedApps(string userId)
+        public async Task<List<UserJobApplicationModel>> GetArchivedAppsAsync(string userId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
             var applications = await db.JobApps.Where(j => j.UserId == userId && !j.Disabled && j.IsArchived).Select(j =>

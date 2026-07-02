@@ -32,7 +32,8 @@ namespace Jobby.Server.Controllers
         [HttpPost("update")]
         public async Task<ActionResult> UpdateApplication(UserJobApplicationModel application)
         {
-            await _appService.UpdateAppAsync(application);
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
+            await _appService.UpdateAppAsync(application, userId);
             return Ok();
         }
 
@@ -60,9 +61,15 @@ namespace Jobby.Server.Controllers
         }
 
         [HttpPost("gen")]
-        public async Task<IActionResult> GenerateResumeAsync([FromForm] IFormFile file,[FromForm] string posting)
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> GenerateResumeAsync([FromForm] IFormFile file, [FromForm] string posting)
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
+            if (file is null || file.Length == 0)
+                return BadRequest(new { message = "A docx file is required." });
+
+            if (string.IsNullOrWhiteSpace(posting))
+                return BadRequest(new { message = "Job posting text is required." });
+
             var result = await _appService.EditDocxAsync(file, posting);
             return Ok(result);
         }
@@ -71,8 +78,8 @@ namespace Jobby.Server.Controllers
         public async Task<IActionResult> GetArchivedApplications()
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
-            var archives = await _appService.GetArchivedApps(userId);
+            var archives = await _appService.GetArchivedAppsAsync(userId);
             return Ok(archives);
         }
-       }
+    }
 }

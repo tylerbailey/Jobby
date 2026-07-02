@@ -9,7 +9,7 @@ import '@fullcalendar/react/themes/monarch/palettes/purple.css'
 import themePlugin from "@fullcalendar/react/themes/monarch";
 import { Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { Button } from '../ui/button';
+import { Button } from '@/components/ui/button';
 import AddEvent from './AddEvent';
 import EventInfo from './EventInfo';
 

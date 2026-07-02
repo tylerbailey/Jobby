@@ -4,4 +4,5 @@
     <Deploy />
   </Project>
   <Project Path="Jobby.Server/Jobby.Server.csproj" />
+  <Project Path="Jobby.Server.Tests/Jobby.Server.Tests.csproj" />
 </Solution>

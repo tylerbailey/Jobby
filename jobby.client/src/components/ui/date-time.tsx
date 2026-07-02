@@ -5,39 +5,38 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { CalendarIcon, X } from "lucide-react";
-import { type Dispatch, type SetStateAction } from "react";
+import { useState, type Dispatch, type SetStateAction } from "react";
 
 export type DateTimePickerProps = {
-    dateTime: Date | undefined;
+    dateTime: Date;
     isOpen: boolean;
-    setIsOpen: Dispatch<SetStateAction<boolean>>;
-    action: (date: Date | undefined) => void;
+    setIsOpen: Dispatch<SetStateAction<boolean>>
+    action: (e) => void;
 }
 
 export function DateTimePicker({ dateTime, isOpen, setIsOpen, action }: DateTimePickerProps) {
-   
+    const [date, setDate] = useState<Date>(dateTime != undefined ? new Date(dateTime) : dateTime); //Having to do this is dumb and I hate javascript
 
     const hours = Array.from({ length: 12 }, (_, i) => i + 1);
     const handleDateSelect = (selectedDate: Date | undefined) => {
-        if (!selectedDate) {
-            action(undefined);
-            return;
+        if (selectedDate) {
+            // Preserve whatever time was already selected instead of
+            // wiping it out, since the calendar only controls the date part.
+            const newDate = new Date(selectedDate);
+            if (date) {
+                newDate.setHours(date.getHours(), date.getMinutes());
+            }
+            setDate(newDate);
+            action(newDate);
         }
-
-        if (dateTime) {
-            selectedDate.setHours(dateTime.getHours());
-            selectedDate.setMinutes(dateTime.getMinutes());
-        }
-
-        action(selectedDate);
     };
 
     const handleTimeChange = (
         type: "hour" | "minute" | "ampm",
         value: string
     ) => {
-        if (dateTime) {
-            const newDate = new Date(dateTime);
+        if (date) {
+            const newDate = new Date(date);
             if (type === "hour") {
                 newDate.setHours(
                     (parseInt(value) % 12) + (newDate.getHours() >= 12 ? 12 : 0)
@@ -50,6 +49,7 @@ export function DateTimePicker({ dateTime, isOpen, setIsOpen, action }: DateTime
                     value === "PM" ? currentHours + 12 : currentHours - 12
                 );
             }
+            setDate(newDate);
             action(newDate);
         }
     };
@@ -62,11 +62,11 @@ export function DateTimePicker({ dateTime, isOpen, setIsOpen, action }: DateTime
                     className={
                         cn(
                             "w-full justify-start text-left font-normal",
-                            !dateTime && "text-muted-foreground"
+                            !date && "text-muted-foreground"
                         )} >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {dateTime ? (
-                        format(dateTime, "MM/dd/yyyy hh:mm aa")
+                    {date ? (
+                        format(date, "MM/dd/yyyy hh:mm aa")
                     ) : (
                         <span>MM/DD/YYYY hh:mm aa</span>
                     )}
@@ -79,7 +79,7 @@ export function DateTimePicker({ dateTime, isOpen, setIsOpen, action }: DateTime
                 <div className="sm:flex py-0">
                     <Calendar
                         mode="single"
-                        selected={dateTime}
+                        selected={date}
                         onSelect={handleDateSelect}
                     />
                     <div className="flex flex-col sm:flex-row sm:h-[300px] divide-y sm:divide-y-0 sm:divide-x">
@@ -90,7 +90,7 @@ export function DateTimePicker({ dateTime, isOpen, setIsOpen, action }: DateTime
                                         key={hour}
                                         size="icon"
                                         variant={
-                                            dateTime && dateTime.getHours() % 12 === hour % 12
+                                            date && date.getHours() % 12 === hour % 12
                                                 ? "default"
                                                 : "ghost"
                                         }
@@ -110,7 +110,7 @@ export function DateTimePicker({ dateTime, isOpen, setIsOpen, action }: DateTime
                                         key={minute}
                                         size="icon"
                                         variant={
-                                            dateTime && dateTime.getMinutes() === minute
+                                            date && date.getMinutes() === minute
                                                 ? "default"
                                                 : "ghost"
                                         }
@@ -132,9 +132,9 @@ export function DateTimePicker({ dateTime, isOpen, setIsOpen, action }: DateTime
                                         key={ampm}
                                         size="icon"
                                         variant={
-                                            dateTime &&
-                                                ((ampm === "AM" && dateTime.getHours() < 12) ||
-                                                (ampm === "PM" && dateTime.getHours() >= 12))
+                                            date &&
+                                                ((ampm === "AM" && date.getHours() < 12) ||
+                                                    (ampm === "PM" && date.getHours() >= 12))
                                                 ? "default"
                                                 : "ghost"
                                         }
@@ -149,7 +149,7 @@ export function DateTimePicker({ dateTime, isOpen, setIsOpen, action }: DateTime
                     </div>
                 </div>
                 <div className="p-4">
-                    <Button className="w-full" onClick={() => action(undefined)}>Clear</Button>
+                    <Button className="w-full" onClick={() => { setDate(undefined); action(undefined); }}>Clear</Button>
                 </div>
 
             </PopoverContent>

@@ -2,9 +2,29 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Bell, Calendar, CalendarDays, FileText, LayoutDashboard, MapPin } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getBadgeVariant } from "@/helpers/componentHelpers";
 import { formatCurrency } from "@/helpers/formatHelpers";
+
+const TAGLINE_FADE_MS = 2000;
+const TAGLINE_HOLD_MS = 3000;
+const TAGLINE_INTERVAL_MS = TAGLINE_FADE_MS + TAGLINE_FADE_MS + TAGLINE_HOLD_MS;
+
+const taglines = [
+    "I wanted to track my job search, so baw gawd I made a way.",
+    "\"We'll be in touch\" is not a pipeline stage.",
+    "My therapist said stop doom-scrolling LinkedIn. I built this instead.",
+    "LinkedIn says Applied. Your spreadsheet says ???",
+    "Finally, a home for every ghosted recruiter.",
+    "Every application deserves a next step.",
+    "Your job search, organized from first apply to final offer.",
+    "Turn fifty open tabs into one clear pipeline.",
+    "Know exactly where every opportunity stands.",
+    "Never let a follow-up slip through the cracks again.",
+    "Built for people who take the process seriously.",
+    "Ghosted by a recruiter? At least you'll remember their name.",
+];
 
 const features = [
     {
@@ -76,6 +96,36 @@ const previewColumns = [
 
 
 export default function LandingPage() {
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [visible, setVisible] = useState(true);
+
+    useEffect(() => {
+        let fadeOutTimeout: number | undefined;
+        let fadeInFrame: number | undefined;
+
+        const interval = window.setInterval(() => {
+            setVisible(false);
+
+            fadeOutTimeout = window.setTimeout(() => {
+                setCurrentIndex((current) => (current + 1) % taglines.length);
+
+                fadeInFrame = window.requestAnimationFrame(() => {
+                    fadeInFrame = window.requestAnimationFrame(() => {
+                        setVisible(true);
+                    });
+                });
+            }, TAGLINE_FADE_MS);
+        }, TAGLINE_INTERVAL_MS);
+
+        return () => {
+            clearInterval(interval);
+            if (fadeOutTimeout !== undefined)
+                clearTimeout(fadeOutTimeout);
+            if (fadeInFrame !== undefined)
+                cancelAnimationFrame(fadeInFrame);
+        };
+    }, []);
+
     return (
         <div className="min-h-screen bg-background">
             {/* Hero */}
@@ -93,9 +143,17 @@ export default function LandingPage() {
                         </p>
                     </div>
                 </div>
-                <h1 className="text-4xl font-bold tracking-tight max-w-xl mb-4 leading-tight">
-                    I wanted to track my job search,{" "}
-                    <span className="text-primary">so baw gawd I made a way.</span>
+                <h1 className="mb-4 h-35 max-w-xl overflow-hidden text-4xl leading-tight font-bold tracking-tight">
+                    <span
+                        aria-live="polite"
+                        style={{
+                            opacity: visible ? 1 : 0,
+                            transition: `opacity ${TAGLINE_FADE_MS}ms ease-in-out`,
+                        }}
+                        className="block text-primary"
+                    >
+                        {taglines[currentIndex]}
+                    </span>
                 </h1>
                 <p className="text-muted-foreground text-base max-w-md mb-8 leading-relaxed">
                     Track every application, never miss a follow-up, and land your next role faster with a visual pipeline built for job seekers.

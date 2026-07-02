@@ -14,5 +14,5 @@ export async function editRecruiter(recruiter: Recruiter) {
 }
 
 export async function deleteRecruiter(recruiterId: number) {
-   await api.delete(`/recruiter/${recruiterId}`)
+    await api.delete(`/recruiter/${recruiterId}`);
 }

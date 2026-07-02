@@ -1,38 +1,53 @@
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, } from "@/components/ui/card"
 import { Field, FieldDescription, FieldGroup, FieldLabel, } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import { getAuthErrorMessage } from "@/helpers/authHelpers"
 import { cn } from "@/lib/utils"
-import axios from "axios"
+import { CircleAlert, CircleCheck } from "lucide-react"
 import { useState } from "react"
-import { useNavigate } from "react-router-dom"
-import { useAuth } from "../../context/authContext"
-import { toast } from "sonner"
+import { Link, useLocation, useNavigate } from "react-router-dom"
+import { useAuth } from "@/context/authContext"
 
 export function LoginPage({
     className,
     ...props
 }: React.ComponentProps<"div">) {
     const navigate = useNavigate();
+    const location = useLocation();
+    const registered = (location.state as { registered?: boolean } | null)?.registered;
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [formError, setFormError] = useState<string | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const context = useAuth();
+
+    function clearError() {
+        if (formError)
+            setFormError(null);
+    }
 
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
+        setFormError(null);
+
+        if (!email.trim() || !password) {
+            setFormError("Email and password are required.");
+            return;
+        }
+
+        setIsSubmitting(true);
         try {
-            await context.login(email, password);
+            await context.login(email.trim(), password);
             navigate("/dashboard");
         } catch (err) {
-            if (axios.isAxiosError(err)) {
-                const message = err.response?.data?.message;
-
-                toast.error(message ?? "Login failed. Please try again.");
-                return;
-            }
-            toast.error("Login failed. Please try again.");
+            setFormError(getAuthErrorMessage(err, "Login failed. Please try again."));
+        } finally {
+            setIsSubmitting(false);
         }
     }
+
     return (
         <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
             <div className="w-full max-w-sm">
@@ -57,9 +72,25 @@ export function LoginPage({
                                 Enter your email below to login to your account
                             </CardDescription>
                         </CardHeader>
-                        <CardContent>                            
+                        <CardContent>
                             <form onSubmit={handleSubmit}>
                                 <FieldGroup>
+                                    {registered && (
+                                        <Alert>
+                                            <CircleCheck />
+                                            <AlertTitle>Account created</AlertTitle>
+                                            <AlertDescription>
+                                                Your account is awaiting admin approval. You can sign in once it has been approved.
+                                            </AlertDescription>
+                                        </Alert>
+                                    )}
+                                    {formError && (
+                                        <Alert variant="destructive">
+                                            <CircleAlert />
+                                            <AlertTitle>Sign in failed</AlertTitle>
+                                            <AlertDescription>{formError}</AlertDescription>
+                                        </Alert>
+                                    )}
                                     <Field>
                                         <FieldLabel htmlFor="email">Email</FieldLabel>
                                         <Input
@@ -67,8 +98,14 @@ export function LoginPage({
                                             type="email"
                                             placeholder="m@example.com"
                                             value={email}
-                                            onChange={(e) => setEmail(e.target.value)}
-                                            required />
+                                            onChange={(e) => {
+                                                setEmail(e.target.value);
+                                                clearError();
+                                            }}
+                                            autoComplete="email"
+                                            required
+                                            disabled={isSubmitting}
+                                        />
                                     </Field>
                                     <Field>
                                         <div className="flex items-center">
@@ -77,16 +114,25 @@ export function LoginPage({
                                                 Forgot your password?
                                             </a>
                                         </div>
-                                        <Input id="password"
+                                        <Input
+                                            id="password"
                                             type="password"
                                             value={password}
-                                            onChange={(e) => setPassword(e.target.value)}
-                                            required />
+                                            onChange={(e) => {
+                                                setPassword(e.target.value);
+                                                clearError();
+                                            }}
+                                            autoComplete="current-password"
+                                            required
+                                            disabled={isSubmitting}
+                                        />
                                     </Field>
                                     <Field>
-                                        <Button type="submit">Login</Button>
+                                        <Button type="submit" disabled={isSubmitting}>
+                                            {isSubmitting ? "Signing in..." : "Login"}
+                                        </Button>
                                         <FieldDescription className="text-center">
-                                            Don't have an account? <a href="/register">Sign up</a>
+                                            Don't have an account? <Link to="/register">Sign up</Link>
                                         </FieldDescription>
                                     </Field>
                                 </FieldGroup>

@@ -1,18 +1,19 @@
 import { useState, type ChangeEvent } from "react";
 import { toast } from "sonner";
-import { generateApp } from "../../services/appService";
-import type { ResumeGenerationResponse } from "../../types/resume";
-import { Button } from "../ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
-import { Field, FieldDescription, FieldLabel } from "../ui/field";
-import { Input } from "../ui/input";
-import { Textarea } from "../ui/textarea";
+import { generateApp } from "@/services/appService";
+import type { ResumeGenerationResponse } from "@/types";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import ResumeChangesReport from "./ResumeChangesReport";
 
 export default function ResumeGenerate() {
     const [jobPosting, setJobPosting] = useState<string>("");
     const [resumeFile, setResumeFile] = useState<File | null>(null);
     const [result, setResult] = useState<ResumeGenerationResponse | null>(null);
+    const [isGenerating, setIsGenerating] = useState(false);
 
     async function handleFileChange(e: ChangeEvent<HTMLInputElement>) {
         const file = e.target.files?.[0];
@@ -26,20 +27,30 @@ export default function ResumeGenerate() {
     }
 
     async function handleResumeGeneration() {
-        if (resumeFile != null) {
-            const promise = generateApp(resumeFile, jobPosting)
+        if (!resumeFile) {
+            toast.warning("You must select a docx file.");
+            return;
+        }
 
-            toast.promise(promise, {
-                loading: "Generating tailored resume...",
-                success: () => "Your tailored resume is ready to review.",
-                error: "Error",
-            })
+        if (!jobPosting.trim()) {
+            toast.warning("Paste the job posting before generating.");
+            return;
+        }
 
+        setIsGenerating(true);
+        const promise = generateApp(resumeFile, jobPosting);
+
+        toast.promise(promise, {
+            loading: "Generating tailored resume...",
+            success: () => "Your tailored resume is ready to review.",
+            error: "Could not generate the tailored resume.",
+        });
+
+        try {
             const response = await promise;
             setResult(response);
-        }
-        else {
-            toast.warning("You must select a docx file.")
+        } finally {
+            setIsGenerating(false);
         }
     }
 
@@ -68,7 +79,9 @@ export default function ResumeGenerate() {
                                 <Input className="md:w-80 sm:w-full" type="file" accept=".docx" onChange={(e) => handleFileChange(e)}></Input>
                             </div>
                             <div>
-                                <Button onClick={handleResumeGeneration}>Generate</Button>
+                                <Button type="button" disabled={isGenerating} onClick={handleResumeGeneration}>
+                                    {isGenerating ? "Generating..." : "Generate"}
+                                </Button>
                             </div>
 
                         </div>

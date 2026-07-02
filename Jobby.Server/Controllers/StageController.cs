@@ -43,13 +43,5 @@ namespace Jobby.Server.Controllers
             var stages = await _stageService.GetUserPipeline(userId);
             return Ok(stages);
         }
-
-        [HttpGet("stages/{userId}")]
-        public async Task<IActionResult> GetApplicationStages()
-        {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
-            var stages = await _stageService.GetUserPipeline(userId);
-            return Ok(stages);
-        }
     }
 }

@@ -1,11 +1,17 @@
-
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { toast } from "sonner";
+import {
+    getAuthErrorMessage,
+    hasFieldErrors,
+    validateRegisterForm,
+    type RegisterFieldErrors,
+} from "@/helpers/authHelpers";
+import { CircleAlert } from "lucide-react";
 import { useAuth } from "@/context/authContext";
 
 export function RegisterPage() {
@@ -14,14 +20,36 @@ export function RegisterPage() {
     const [displayName, setDisplayName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [fieldErrors, setFieldErrors] = useState<RegisterFieldErrors>({});
+    const [formError, setFormError] = useState<string | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-    async function handleSubmit() {
+    function clearFieldError(field: keyof RegisterFieldErrors) {
+        if (fieldErrors[field] || formError) {
+            setFieldErrors((current) => ({ ...current, [field]: undefined }));
+            setFormError(null);
+        }
+    }
+
+    async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+        e.preventDefault();
+        setFormError(null);
+
+        const validationErrors = validateRegisterForm(displayName, email, password);
+        setFieldErrors(validationErrors);
+
+        if (hasFieldErrors(validationErrors))
+            return;
+
+        setIsSubmitting(true);
         try {
-            await context.register(email, password, displayName);
-            navigate("/login");
-        } catch {
-            toast.error("Could not create account. Check your email and password.");
-        } 
+            await context.register(email.trim(), password, displayName.trim());
+            navigate("/login", { state: { registered: true } });
+        } catch (err) {
+            setFormError(getAuthErrorMessage(err, "Could not create account. Please try again."));
+        } finally {
+            setIsSubmitting(false);
+        }
     }
 
     return (
@@ -48,46 +76,73 @@ export function RegisterPage() {
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <div className="flex flex-col gap-6">
-                            <div className="grid gap-2">
-                                <Label htmlFor="email">Display Name</Label>
-                                <Input
-                                    value={displayName}
-                                    onChange={(e) => setDisplayName(e.target.value)}
-                                    type="text"
-                                    required
-                                />
-                            </div>
-                            <div className="grid gap-2">
-                                <Label htmlFor="email">Email</Label>
-                                <Input
-                                    id="email"
-                                    type="email"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value) }
-                                    placeholder="m@example.com"
-                                    required
-                                />
-                            </div>
-                            <div className="grid gap-2">
-                                <div className="flex items-center">
-                                    <Label htmlFor="password">Password</Label>
-                                    <a href="#" className="ml-auto inline-block text-sm underline-offset-4 hover:underline" >
-                                        Forgot your password?
-                                    </a>
-                                </div>
-                                <Input id="password"
-                                    type="password"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    required
-                                    minLength={8} />
-                            </div>
-                        </div>
+                        <form id="register-form" onSubmit={handleSubmit}>
+                            <FieldGroup>
+                                {formError && (
+                                    <Alert variant="destructive">
+                                        <CircleAlert />
+                                        <AlertTitle>Registration failed</AlertTitle>
+                                        <AlertDescription>{formError}</AlertDescription>
+                                    </Alert>
+                                )}
+                                <Field data-invalid={!!fieldErrors.displayName}>
+                                    <FieldLabel htmlFor="displayName">Display Name</FieldLabel>
+                                    <Input
+                                        id="displayName"
+                                        value={displayName}
+                                        onChange={(e) => {
+                                            setDisplayName(e.target.value);
+                                            clearFieldError("displayName");
+                                        }}
+                                        type="text"
+                                        autoComplete="name"
+                                        disabled={isSubmitting}
+                                        aria-invalid={!!fieldErrors.displayName}
+                                    />
+                                    <FieldError>{fieldErrors.displayName}</FieldError>
+                                </Field>
+                                <Field data-invalid={!!fieldErrors.email}>
+                                    <FieldLabel htmlFor="email">Email</FieldLabel>
+                                    <Input
+                                        id="email"
+                                        type="email"
+                                        value={email}
+                                        onChange={(e) => {
+                                            setEmail(e.target.value);
+                                            clearFieldError("email");
+                                        }}
+                                        placeholder="m@example.com"
+                                        autoComplete="email"
+                                        disabled={isSubmitting}
+                                        aria-invalid={!!fieldErrors.email}
+                                    />
+                                    <FieldError>{fieldErrors.email}</FieldError>
+                                </Field>
+                                <Field data-invalid={!!fieldErrors.password}>
+                                    <FieldLabel htmlFor="password">Password</FieldLabel>
+                                    <Input
+                                        id="password"
+                                        type="password"
+                                        value={password}
+                                        onChange={(e) => {
+                                            setPassword(e.target.value);
+                                            clearFieldError("password");
+                                        }}
+                                        autoComplete="new-password"
+                                        disabled={isSubmitting}
+                                        aria-invalid={!!fieldErrors.password}
+                                    />
+                                    <FieldDescription>
+                                        At least 8 characters with one uppercase letter and one number.
+                                    </FieldDescription>
+                                    <FieldError>{fieldErrors.password}</FieldError>
+                                </Field>
+                            </FieldGroup>
+                        </form>
                     </CardContent>
                     <CardFooter className="flex-col gap-2">
-                        <Button type="button" onClick={handleSubmit} className="w-full">
-                            Create
+                        <Button type="submit" form="register-form" className="w-full" disabled={isSubmitting}>
+                            {isSubmitting ? "Creating account..." : "Create"}
                         </Button>
                         <p>
                             Already have an account? <Link to="/login">Log in</Link>

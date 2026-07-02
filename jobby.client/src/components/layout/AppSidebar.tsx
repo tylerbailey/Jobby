@@ -1,43 +1,43 @@
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarRail, } from "@/components/ui/sidebar";
+import { useAuth } from "@/context/authContext";
 import * as React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { NavUser } from "@/components/layout/NavUser";
 
-const data = {
-    navMain: [
-        {
-            title: "Main",
-            url: "#",
-            items: [
-                {
-                    title: "Dashboard",
-                    url: "/dashboard",
-                },
-                {
-                    title: "Resume Tailoring",
-                    url: "/resumegenerate",
-                    
-                },
-                {
-                    title: "Resume Rating",
-                    url: "/resumerating",
-                },
-                {
-                    title: "Calendar",
-                    url: "/calendar",
-                },
-                {
-                    title: "Archives",
-                    url: "/archive",
-                },
-               
-            ],
-        }
-    ]
-}
+const mainNavItems = [
+    {
+        title: "Dashboard",
+        url: "/dashboard",
+    },
+    {
+        title: "Resume Tailoring",
+        url: "/resumegenerate",
+    },
+    {
+        title: "Resume Rating",
+        url: "/resumerating",
+    },
+    {
+        title: "Calendar",
+        url: "/calendar",
+    },
+    {
+        title: "Archives",
+        url: "/archive",
+    },
+];
+
+const adminNavItems = [
+    {
+        title: "Admin Dashboard",
+        url: "/admin",
+    },
+];
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const location = useLocation();
+    const { user } = useAuth();
+    const isAdmin = user?.roles?.includes("Admin") ?? false;
 
     return (
         <Sidebar {...props}>
@@ -57,12 +57,26 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 </div>
             </SidebarHeader>
             <SidebarContent>
-                {data.navMain.map((item) => (
-                    <SidebarGroup key={item.title}>
-                        <SidebarGroupLabel>{item.title}</SidebarGroupLabel>
+                <SidebarGroup>
+                    <SidebarGroupLabel>Main</SidebarGroupLabel>
+                    <SidebarGroupContent>
+                        <SidebarMenu>
+                            {mainNavItems.map((item) => (
+                                <SidebarMenuItem key={item.title}>
+                                    <SidebarMenuButton asChild isActive={location.pathname === item.url}>
+                                        <Link to={item.url}>{item.title}</Link>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                            ))}
+                        </SidebarMenu>
+                    </SidebarGroupContent>
+                </SidebarGroup>
+                {isAdmin && (
+                    <SidebarGroup>
+                        <SidebarGroupLabel>Administration</SidebarGroupLabel>
                         <SidebarGroupContent>
                             <SidebarMenu>
-                                {item.items.map((item) => (
+                                {adminNavItems.map((item) => (
                                     <SidebarMenuItem key={item.title}>
                                         <SidebarMenuButton asChild isActive={location.pathname === item.url}>
                                             <Link to={item.url}>{item.title}</Link>
@@ -72,7 +86,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                             </SidebarMenu>
                         </SidebarGroupContent>
                     </SidebarGroup>
-                ))}
+                )}
             </SidebarContent>
             <SidebarFooter>
                 <NavUser />

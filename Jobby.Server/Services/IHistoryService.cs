@@ -1,10 +1,9 @@
 ﻿using Jobby.Server.Domain;
 
-namespace Jobby.Server.Services
+namespace Jobby.Server.Services;
+
+public interface IHistoryService
 {
-    public interface IHistoryService
-    {
-        Task CreateHistoryAsync(JobHistoryModel jobHistory);
-        Task<List<JobHistoryModel>> GetHistoryAsync(int appId);
-    }
+    Task CreateHistoryAsync(JobHistoryModel jobHistory);
+    Task<List<JobHistoryModel>> GetHistoryAsync(int appId, string userId);
 }
