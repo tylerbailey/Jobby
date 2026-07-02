@@ -1,5 +1,6 @@
 import { api } from "@/api";
 import type { AuthResponse } from "@/types";
+import type { User } from "@/types";
 
 export type RegisterResponse = {
     message: string;
@@ -23,5 +24,10 @@ export async function registerUser(
         password,
         displayName,
     });
+    return response.data;
+}
+
+export async function getCurrentUser() {
+    const response = await api.get<User>("/auth/user");
     return response.data;
 }

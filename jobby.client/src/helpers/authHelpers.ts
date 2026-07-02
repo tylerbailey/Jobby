@@ -1,4 +1,5 @@
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 
 type IdentityError = {
     description?: string;
@@ -93,4 +94,52 @@ export function validateRegisterForm(
 
 export function hasFieldErrors(errors: RegisterFieldErrors): boolean {
     return Object.values(errors).some(Boolean);
+}
+
+type JwtPayload = {
+    exp?: number;
+};
+
+export function isTokenExpired(token: string, skewSeconds = 30): boolean {
+    try {
+        const { exp } = jwtDecode<JwtPayload>(token);
+        if (!exp)
+            return true;
+
+        return Date.now() >= (exp - skewSeconds) * 1000;
+    } catch {
+        return true;
+    }
+}
+
+export function getStoredToken(): string | null {
+    const token = localStorage.getItem("token");
+    if (!token || isTokenExpired(token)) {
+        clearStoredAuth();
+        return null;
+    }
+
+    return token;
+}
+
+export function getStoredUser<T>(): T | null {
+    const token = localStorage.getItem("token");
+    const storedUser = localStorage.getItem("user");
+
+    if (!token || !storedUser || isTokenExpired(token)) {
+        clearStoredAuth();
+        return null;
+    }
+
+    try {
+        return JSON.parse(storedUser) as T;
+    } catch {
+        clearStoredAuth();
+        return null;
+    }
+}
+
+function clearStoredAuth() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
 }

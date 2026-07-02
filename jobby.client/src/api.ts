@@ -1,3 +1,4 @@
+import { handleUnauthorized } from "@/helpers/authSession";
 import axios from "axios";
 import { toast } from "sonner";
 
@@ -12,12 +13,14 @@ api.interceptors.response.use(
         const url = error.config?.url ?? "";
         const isAuthAttempt =
             url.includes("/auth/login") || url.includes("/auth/register");
+        const tokenExpiredHeader = error.response?.headers?.["token-expired"] === "true";
 
-        if (status === 401 && !isAuthAttempt) {
-            localStorage.removeItem("token");
-            localStorage.removeItem("user");
-            window.location.href = "/login";
-        } else if (!isAuthAttempt) {
+        if (!isAuthAttempt && (status === 401 || tokenExpiredHeader)) {
+            handleUnauthorized();
+            return Promise.reject(error);
+        }
+
+        if (!isAuthAttempt) {
             const safeMessages: Record<number, string> = {
                 400: error.response?.data?.message ?? "Invalid request.",
                 403: error.response?.data?.message ?? "You do not have permission to do that.",
@@ -31,6 +34,7 @@ api.interceptors.response.use(
 
             toast.error(message);
         }
+
         return Promise.reject(error);
     }
 );

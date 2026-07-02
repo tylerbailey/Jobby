@@ -1,7 +1,8 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi, afterEach } from "vitest";
 import {
     getAuthErrorMessage,
     hasFieldErrors,
+    isTokenExpired,
     validateRegisterForm,
 } from "@/helpers/authHelpers";
 
@@ -30,5 +31,31 @@ describe("validateRegisterForm", () => {
 describe("getAuthErrorMessage", () => {
     it("returns fallback for unknown errors", () => {
         expect(getAuthErrorMessage(new Error("boom"), "Fallback")).toBe("Fallback");
+    });
+});
+
+describe("isTokenExpired", () => {
+    afterEach(() => {
+        vi.restoreAllMocks();
+    });
+
+    it("returns true for malformed tokens", () => {
+        expect(isTokenExpired("not-a-jwt")).toBe(true);
+    });
+
+    it("returns false for a valid future token", () => {
+        const futureExp = Math.floor(Date.now() / 1000) + 3600;
+        const payload = btoa(JSON.stringify({ exp: futureExp }));
+        const token = `header.${payload}.signature`;
+
+        expect(isTokenExpired(token)).toBe(false);
+    });
+
+    it("returns true for an expired token", () => {
+        const pastExp = Math.floor(Date.now() / 1000) - 3600;
+        const payload = btoa(JSON.stringify({ exp: pastExp }));
+        const token = `header.${payload}.signature`;
+
+        expect(isTokenExpired(token)).toBe(true);
     });
 });

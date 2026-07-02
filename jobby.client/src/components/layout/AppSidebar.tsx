@@ -4,28 +4,6 @@ import * as React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { NavUser } from "@/components/layout/NavUser";
 
-const mainNavItems = [
-    {
-        title: "Dashboard",
-        url: "/dashboard",
-    },
-    {
-        title: "Resume Tailoring",
-        url: "/resumegenerate",
-    },
-    {
-        title: "Resume Rating",
-        url: "/resumerating",
-    },
-    {
-        title: "Calendar",
-        url: "/calendar",
-    },
-    {
-        title: "Archives",
-        url: "/archive",
-    },
-];
 
 const adminNavItems = [
     {
@@ -61,13 +39,39 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     <SidebarGroupLabel>Main</SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu>
-                            {mainNavItems.map((item) => (
-                                <SidebarMenuItem key={item.title}>
-                                    <SidebarMenuButton asChild isActive={location.pathname === item.url}>
-                                        <Link to={item.url}>{item.title}</Link>
-                                    </SidebarMenuButton>
-                                </SidebarMenuItem>
-                            ))}
+                            <SidebarMenuItem key="Dashboard">
+                                <SidebarMenuButton asChild isActive={location.pathname === "/dashboard"}>
+                                    <Link to="/dashboard">Dashboard</Link>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
+                            <SidebarMenuItem key="Calendar">
+                                <SidebarMenuButton asChild isActive={location.pathname === "/calendar"}>
+                                    <Link to="/calendar">Calendar</Link>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
+                            <SidebarMenuItem key="Archives">
+                                <SidebarMenuButton asChild isActive={location.pathname === "/archive"}>
+                                    <Link to="/archive">Archives</Link>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
+                           
+                        </SidebarMenu>
+                    </SidebarGroupContent>
+                </SidebarGroup>
+                <SidebarGroup>
+                    <SidebarGroupLabel>Experimental</SidebarGroupLabel>
+                    <SidebarGroupContent>
+                        <SidebarMenu>
+                            <SidebarMenuItem key="Resume Tailoring">
+                                <SidebarMenuButton asChild isActive={location.pathname === "/resumegenerate"}>
+                                    <Link to="/resumegenerate">Resume Tailoring</Link>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
+                            <SidebarMenuItem key="Resume Rating">
+                                <SidebarMenuButton asChild isActive={location.pathname === "/resumerating"}>
+                                    <Link to="/resumerating">Resume Rating</Link>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
                         </SidebarMenu>
                     </SidebarGroupContent>
                 </SidebarGroup>
@@ -76,13 +80,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         <SidebarGroupLabel>Administration</SidebarGroupLabel>
                         <SidebarGroupContent>
                             <SidebarMenu>
-                                {adminNavItems.map((item) => (
-                                    <SidebarMenuItem key={item.title}>
-                                        <SidebarMenuButton asChild isActive={location.pathname === item.url}>
-                                            <Link to={item.url}>{item.title}</Link>
-                                        </SidebarMenuButton>
-                                    </SidebarMenuItem>
-                                ))}
+                                <SidebarMenuItem key="Admin Dashboard">
+                                    <SidebarMenuButton asChild isActive={location.pathname === "/admin"}>
+                                        <Link to="/admin">Admin Dashboard</Link>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
                             </SidebarMenu>
                         </SidebarGroupContent>
                     </SidebarGroup>
