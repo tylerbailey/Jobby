@@ -67,7 +67,7 @@ namespace Jobby.Server.Services
         public async Task<List<JobEventModel>> GetUserEventsAsync(string userId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
-            var events = await db.JobApps.Where(j => j.UserId == userId && j.JobEvents.Count > 0 && !j.Disabled).SelectMany(j => j.JobEvents.Where(e => !e.Disabled)).Select(e => new JobEventModel()
+            var events = await db.JobApps.Where(j => j.UserId == userId && j.JobEvents != null && j.JobEvents.Count > 0 && !j.Disabled).SelectMany(j => j.JobEvents.Where(e => !e.Disabled)).Select(e => new JobEventModel()
             {
                 Id = e.Id,
                 AppId = e.AppId,
