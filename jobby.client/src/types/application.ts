@@ -5,6 +5,7 @@ export type Application = {
     userId: string;
     companyName: string;
     jobTitle: string;
+    summary: string;
     jobPostingUrl: string;
     locationTypeId: number;
     locationType: string;
@@ -22,4 +23,21 @@ export type Application = {
 export type AppLocationType = {
     id: number;
     type: string;
+}
+
+export type JobPostingData = {
+    company: string;
+    title: string;
+    summary: string;
+    isRemote: boolean;
+    isHybrid: boolean;
+    isOnsite: boolean;
+    salaryRange: string;
+    requiredSkills: string[];
+    preferredSkills: string[];
+    technologies: string[];
+    responsibilities: string[];
+    leadershipRequirements: string[];
+    experienceRequirements: string[];
+    keywords: string[];
 }

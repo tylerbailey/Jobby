@@ -60,6 +60,29 @@ namespace Jobby.Server.Controllers
             return Ok();
         }
 
+        [HttpPost("scrape-posting")]
+        public async Task<IActionResult> ScrapeJobPostingAsync(
+            ScrapeJobPostingRequest request,
+            CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrWhiteSpace(request.Url))
+                return BadRequest(new { message = "Job posting URL is required." });
+
+            try
+            {
+                var postingData = await _appService.ScrapeJobPostingAsync(request.Url, cancellationToken);
+                return Ok(postingData);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
         [HttpPost("gen")]
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> GenerateResumeAsync([FromForm] IFormFile file, [FromForm] string posting)

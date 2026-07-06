@@ -6,13 +6,15 @@ using Jobby.Server.Domain;
 using Jobby.Server.Entities;
 using Jobby.Server.Helpers;
 using Microsoft.EntityFrameworkCore;
+using NJsonSchema;
 using System.Text.Json;
 
 namespace Jobby.Server.Services
 {
-    public class AppService(IDbContextFactory<AppDbContext> dbContextFactory, IOllamaService ollamaService) : ServiceBase(dbContextFactory), IAppService
+    public class AppService(IDbContextFactory<AppDbContext> dbContextFactory, IOllamaService ollamaService, IJobScrapeService jobScrapeService) : ServiceBase(dbContextFactory), IAppService
     {
         private readonly IOllamaService _ollamaService = ollamaService;
+        private readonly IJobScrapeService _jobScrapeService = jobScrapeService;
 
         public async Task<UserJobApplicationModel> GetAppAsync(string userId, int applicationId)
         {
@@ -22,6 +24,7 @@ namespace Jobby.Server.Services
                 Id = a.Id,
                 CompanyName = a.Company,
                 JobTitle = a.Title,
+                Summary = a.Summary ?? string.Empty,
                 JobPostingUrl = a.JobPostingUrl ?? string.Empty,
                 Address = a.Address ?? string.Empty,
                 Salary = a.Salary,
@@ -46,6 +49,7 @@ namespace Jobby.Server.Services
                     Id = j.Id,
                     CompanyName = j.Company,
                     JobTitle = j.Title,
+                    Summary = j.Summary ?? string.Empty,
                     JobPostingUrl = j.JobPostingUrl ?? string.Empty,
                     Address = j.Address ?? string.Empty,
                     Salary = j.Salary,
@@ -71,6 +75,7 @@ namespace Jobby.Server.Services
                 UserId = userId,
                 Company = application.CompanyName,
                 Title = application.JobTitle,
+                Summary = application.Summary,
                 JobPostingUrl = application.JobPostingUrl,
                 Address = application.Address,
                 Salary = application.Salary,
@@ -125,6 +130,7 @@ namespace Jobby.Server.Services
             {
                 jobApp.Company = application.CompanyName;
                 jobApp.Title = application.JobTitle;
+                jobApp.Summary = application.Summary;
                 jobApp.JobPostingUrl = application.JobPostingUrl;
                 jobApp.StageId = application.StageId ?? jobApp.StageId;
                 jobApp.Salary = application.Salary;
@@ -182,6 +188,38 @@ namespace Jobby.Server.Services
                 Type = l.Type
             }).ToListAsync();
             return locations;
+        }
+
+        public async Task<JobPostingData> ScrapeJobPostingAsync(string url, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(url))
+                throw new ArgumentException("URL is required.", nameof(url));
+
+            if (!Uri.TryCreate(url, UriKind.Absolute, out var uri)
+                || (uri.Scheme != Uri.UriSchemeHttps && uri.Scheme != Uri.UriSchemeHttp))
+            {
+                throw new ArgumentException("A valid http or https URL is required.", nameof(url));
+            }
+
+            var html = await _jobScrapeService.ScrapeHtmlAsync(uri.ToString(), cancellationToken);
+            var schema = JsonSchema.FromType<JobPostingData>();
+            var prompt = $"""
+                {ResumePrompts.JobPosting(html)}
+
+                JSON Schema:
+                {schema.ToJson()}
+                """;
+
+            var response = await _ollamaService.GenerateJsonAsync(
+                prompt,
+                "You extract structured job posting data. Return only valid JSON.",
+                cancellationToken);
+
+            var postingData = JsonSerializer.Deserialize<JobPostingData>(
+                JsonHelpers.RemoveFence(response),
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            return postingData ?? throw new InvalidOperationException("The AI response could not be parsed.");
         }
 
         public async Task<ResumeGenerationResponse> EditDocxAsync(IFormFile file, string posting)
@@ -270,6 +308,7 @@ namespace Jobby.Server.Services
                     Id = j.Id,
                     CompanyName = j.Company,
                     JobTitle = j.Title,
+                    Summary = j.Summary ?? string.Empty,
                     JobPostingUrl = j.JobPostingUrl ?? string.Empty,
                     Address = j.Address ?? string.Empty,
                     Salary = j.Salary,

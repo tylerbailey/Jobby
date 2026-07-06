@@ -33,6 +33,7 @@ builder.Services.Configure<IdentityOptions>(options =>
 
 // App settings
 builder.Services.AddOllama(builder.Configuration);
+builder.Services.AddScraperClient(builder.Configuration);
 
 // -------------------- JWT --------------------
 

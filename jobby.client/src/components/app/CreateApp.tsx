@@ -18,6 +18,7 @@ export default function CreateApp({ stage, onUpdate, sheetOpen, setSheetOpen }: 
         userId: "",
         companyName: "",
         jobTitle: "",
+        summary: "",
         jobPostingUrl: "",
         locationTypeId: 0,
         locationType: "",
@@ -43,6 +44,7 @@ export default function CreateApp({ stage, onUpdate, sheetOpen, setSheetOpen }: 
                 userId: "",
                 companyName: "",
                 jobTitle: "",
+                summary: "",
                 jobPostingUrl: "",
                 locationTypeId: 0,
                 locationType: "",
@@ -64,6 +66,14 @@ export default function CreateApp({ stage, onUpdate, sheetOpen, setSheetOpen }: 
     };
 
     return (
-        <AppForm title="Create Application" item={item} setItem={setItem} sheetOpen={sheetOpen} setSheetOpen={setSheetOpen} action={saveApp} />
+        <AppForm
+            title="Create Application"
+            item={item}
+            setItem={setItem}
+            sheetOpen={sheetOpen}
+            setSheetOpen={setSheetOpen}
+            action={saveApp}
+            allowScrape
+        />
     );
 }

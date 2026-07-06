@@ -1,5 +1,5 @@
 import { api } from "@/api";
-import type { Application, AppLocationType } from "@/types";
+import type { Application, AppLocationType, JobPostingData } from "@/types";
 import type { ResumeGenerationResponse } from "@/types/resume";
 
 export async function createNewApp(application: Application) {
@@ -28,6 +28,15 @@ export async function moveAppStage(applicationId: number, stageId: number) {
 
 export async function deleteApp(appId: number) {
     return await api.delete(`/app/${appId}`);
+}
+
+export async function scrapeJobPosting(url: string) {
+    const response = await api.post<JobPostingData>(
+        "/app/scrape-posting",
+        { url },
+        { timeout: 300_000 },
+    );
+    return response.data;
 }
 
 export async function generateApp(file: File, posting: string) {

@@ -3,11 +3,14 @@ import { DateTimePicker } from "@/components/ui/date-time";
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Sheet, SheetClose, SheetContent, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
-import { getAllAppLocations } from "@/services/appService";
-import type { Application, AppLocationType } from "@/types";
+import { getAllAppLocations, scrapeJobPosting } from "@/services/appService";
+import type { Application, AppLocationType, JobPostingData } from "@/types";
+import axios from "axios";
+import { Loader2 } from "lucide-react";
 import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
+import { toast } from "sonner";
 
 export type AppFormProps = {
     title: string;
@@ -16,10 +19,48 @@ export type AppFormProps = {
     sheetOpen: boolean;
     setSheetOpen: Dispatch<SetStateAction<boolean>>;
     action: () => void;
+    allowScrape?: boolean;
 }
-export default function AppForm({ title, item, setItem, sheetOpen, setSheetOpen, action }: AppFormProps) {
+
+function resolveLocationTypeId(
+    posting: JobPostingData,
+    locations: AppLocationType[],
+): number | undefined {
+    const normalized = locations.map((loc) => ({
+        ...loc,
+        key: loc.type.toLowerCase().replace(/\s+/g, ""),
+    }));
+
+    if (posting.isRemote)
+        return normalized.find((loc) => loc.key.includes("remote"))?.id;
+
+    if (posting.isHybrid)
+        return normalized.find((loc) => loc.key.includes("hybrid"))?.id;
+
+    if (posting.isOnsite) {
+        return normalized.find((loc) =>
+            loc.key.includes("onsite")
+            || loc.key.includes("on-site")
+            || loc.key.includes("inoffice")
+            || loc.key.includes("in-person"),
+        )?.id;
+    }
+
+    return undefined;
+}
+
+export default function AppForm({
+    title,
+    item,
+    setItem,
+    sheetOpen,
+    setSheetOpen,
+    action,
+    allowScrape = false,
+}: AppFormProps) {
     const [locationTypes, setLocationTypes] = useState<AppLocationType[]>([]);
     const [datePickerOpen, setDatePickerOpen] = useState<boolean>();
+    const [isScraping, setIsScraping] = useState(false);
 
     useEffect(() => {
         async function loadLocations() {
@@ -30,12 +71,41 @@ export default function AppForm({ title, item, setItem, sheetOpen, setSheetOpen,
         loadLocations();
     }, []);
 
+    async function handleScrape() {
+        const url = item.jobPostingUrl.trim();
+        if (!url) {
+            toast.error("Enter a job posting URL first.");
+            return;
+        }
+
+        setIsScraping(true);
+        try {
+            const posting = await scrapeJobPosting(url);
+            const locationTypeId = resolveLocationTypeId(posting, locationTypes);
+
+            setItem({
+                ...item,
+                companyName: posting.company || item.companyName,
+                jobTitle: posting.title || item.jobTitle,
+                summary: posting.summary || item.summary,
+                locationTypeId: locationTypeId ?? item.locationTypeId,
+            });
+        } catch (err) {
+            const message = axios.isAxiosError(err)
+                ? err.response?.data?.message ?? "Could not scrape the job posting."
+                : "Could not scrape the job posting.";
+            toast.error(message);
+        } finally {
+            setIsScraping(false);
+        }
+    }
+
     return (
         <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
 
             <SheetContent>
                 <SheetHeader>
-                    <SheetTitle>{title}</SheetTitle>                    
+                    <SheetTitle>{title}</SheetTitle>
                 </SheetHeader>
                 <div className="px-4 overflow-y-auto">
                     <Field className="py-3">
@@ -66,16 +136,44 @@ export default function AppForm({ title, item, setItem, sheetOpen, setSheetOpen,
 
                     </Field>
                     <Field className="py-3">
+                        <FieldLabel htmlFor="input-field-summary">Summary</FieldLabel>
+                        <FieldDescription>
+                            A short summary of the job posting.
+                        </FieldDescription>
+                        <Textarea
+                            id="input-field-summary"
+                            className="h-28 resize-none overflow-y-auto"
+                            placeholder="Enter a job summary"
+                            value={item.summary}
+                            onChange={(e) => setItem({ ...item, summary: e.target.value })}
+                        />
+                    </Field>
+                    <Field className="py-3">
                         <FieldLabel htmlFor="input-field-jobpostingurl">Url</FieldLabel>
                         <FieldDescription>
                             The URL of the job posting.
                         </FieldDescription>
-                        <Input
-                            id="input-field-jobpostingurl"
-                            type="text"
-                            placeholder="Enter the job posting URL"
-                            value={item.jobPostingUrl}
-                            onChange={(e) => setItem({ ...item, jobPostingUrl: e.target.value })} />
+                        <div className="flex gap-2">
+                            <Input
+                                id="input-field-jobpostingurl"
+                                type="text"
+                                placeholder="Enter the job posting URL"
+                                className="flex-1"
+                                value={item.jobPostingUrl}
+                                onChange={(e) => setItem({ ...item, jobPostingUrl: e.target.value })} />
+                            {allowScrape && (
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    disabled={isScraping}
+                                    onClick={handleScrape}
+                                >
+                                    {isScraping
+                                        ? <Loader2 className="h-4 w-4 animate-spin" />
+                                        : "Scrape"}
+                                </Button>
+                            )}
+                        </div>
                     </Field>
                     <Field>
                         <FieldLabel className="py-3">
@@ -89,7 +187,7 @@ export default function AppForm({ title, item, setItem, sheetOpen, setSheetOpen,
                                 <SelectValue placeholder="Select color" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectGroup>                               
+                                <SelectGroup>
                                     <SelectLabel>Locations</SelectLabel>
                                     {locationTypes.map((loc) => (
                                         <SelectItem key={"loc-" + loc.id} value={loc.id.toString()}>
@@ -158,7 +256,7 @@ export default function AppForm({ title, item, setItem, sheetOpen, setSheetOpen,
                     </Field>
                 </div>
                 <SheetFooter>
-                    <Button onClick={() => action()}>Save</Button>                  
+                    <Button onClick={() => action()}>Save</Button>
                 </SheetFooter>
             </SheetContent>
         </Sheet>

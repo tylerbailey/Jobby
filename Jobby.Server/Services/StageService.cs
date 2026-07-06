@@ -90,6 +90,7 @@ namespace Jobby.Server.Services
                     Id = a.Id,
                     CompanyName = a.Company,
                     JobTitle = a.Title,
+                    Summary = a.Summary ?? string.Empty,
                     JobPostingUrl = a.JobPostingUrl ?? string.Empty,
                     Address = a.Address ?? string.Empty,
                     Salary = a.Salary,
