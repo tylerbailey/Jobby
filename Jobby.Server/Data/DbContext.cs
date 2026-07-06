@@ -12,5 +12,27 @@ namespace Jobby.Server.Data
         public DbSet<JobHistory> JobHistories { get; set; }
         public DbSet<JobEvent> JobEvents { get; set; }
         public DbSet<Recruiter> Recruiters { get; set; }
+
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            var now = DateTime.UtcNow;
+
+            foreach (var entry in ChangeTracker.Entries<BaseModel>())
+            {
+                if (entry.State == EntityState.Added)
+                {
+                    if (entry.Entity.Created == default || entry.Entity.Created.Year < 2000)
+                        entry.Entity.Created = now;
+
+                    entry.Entity.Modified = now;
+                }
+                else if (entry.State == EntityState.Modified)
+                {
+                    entry.Entity.Modified = now;
+                }
+            }
+
+            return base.SaveChangesAsync(cancellationToken);
+        }
     }
 }

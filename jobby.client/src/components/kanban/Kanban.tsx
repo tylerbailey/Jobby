@@ -5,10 +5,8 @@ import { reorderStages } from "@/services/stageService";
 import type { Application, Stage } from "@/types/";
 import {
     isColumnDragId,
-    isColumnDropId,
     reorderStagesById,
     stageIdFromColumnDragId,
-    stageIdFromColumnDropId,
 } from "@/helpers/kanbanHelpers";
 import { DragDropProvider, type DragEndEvent } from "@dnd-kit/react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -45,11 +43,8 @@ export function KanbanBoard({ stages, setStages, onUpdate, searchValue }: Kanban
         }));
     }
 
-    async function handleColumnReorder(sourceId: string, targetId: string) {
-        const sourceStageId = stageIdFromColumnDragId(sourceId);
-        const targetStageId = stageIdFromColumnDropId(targetId);
-
-        if (Number.isNaN(sourceStageId) || Number.isNaN(targetStageId) || sourceStageId === targetStageId)
+    async function handleColumnReorder(sourceStageId: number, targetStageId: number) {
+        if (sourceStageId === targetStageId)
             return;
 
         const reordered = withUpdatedOrders(
@@ -113,12 +108,18 @@ export function KanbanBoard({ stages, setStages, onUpdate, searchValue }: Kanban
             const targetId = target.id.toString();
 
             if (isColumnDragId(sourceId)) {
-                if (isColumnDropId(targetId))
-                    await handleColumnReorder(sourceId, targetId);
+                const sourceStageId = stageIdFromColumnDragId(sourceId);
+                const targetStageId = Number(targetId);
+
+                if (Number.isNaN(sourceStageId) || Number.isNaN(targetStageId))
+                    return;
+
+                await handleColumnReorder(sourceStageId, targetStageId);
                 return;
             }
 
             const newStageId = Number(targetId);
+
             if (Number.isNaN(newStageId))
                 return;
 

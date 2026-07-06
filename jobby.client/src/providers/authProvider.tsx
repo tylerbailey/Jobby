@@ -76,12 +76,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         await registerUser(email, password, displayName);
     }
 
+    function updateDisplayName(displayName: string) {
+        setUser((current) => {
+            if (!current)
+                return current;
+
+            const nextUser = { ...current, displayName };
+            localStorage.setItem("user", JSON.stringify(nextUser));
+            return nextUser;
+        });
+    }
+
     const authContextType: AuthContextType = {
         user,
         isInitialized,
         login,
         logout,
         register,
+        updateDisplayName,
         isLoggedIn: user !== null,
     };
 

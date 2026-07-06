@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ElementColors, HoverColors } from "@/consts/consts";
-import { COLUMN_DRAG_PREFIX, COLUMN_DROP_PREFIX, mergeRefs } from "@/helpers/kanbanHelpers";
+import { COLUMN_DRAG_PREFIX, mergeRefs } from "@/helpers/kanbanHelpers";
 import { deleteStage } from "@/services/stageService";
 import type { Stage } from "@/types";
 import EditStage from "@/components/stage/EditStage";
@@ -25,8 +25,7 @@ export function KanbanColumn({ stage, onUpdate, searchValue }: KanbanColumnProps
     const [dialogOpen, setDialogOpen] = useState<boolean>(false);
 
     const stageId = stage.id!.toString();
-    const { ref: cardDropRef } = useDroppable({ id: stageId });
-    const { ref: columnDropRef } = useDroppable({ id: `${COLUMN_DROP_PREFIX}${stageId}` });
+    const { ref: dropRef } = useDroppable({ id: stageId });
     const { ref: columnDragRef, handleRef: columnHandleRef, isDragging } = useDraggable({
         id: `${COLUMN_DRAG_PREFIX}${stageId}`,
     });
@@ -56,11 +55,11 @@ export function KanbanColumn({ stage, onUpdate, searchValue }: KanbanColumnProps
     return (
         <section className="w-full shrink-0 sm:w-fit sm:min-w-80">
             <Card
-                ref={mergeRefs(columnDragRef, columnDropRef)}
-                className={`min-h-[600px] w-full border bg-muted/30 p-3 transition-shadow sm:w-fit sm:min-w-80 ${isDragging ? "opacity-60 shadow-lg ring-2 ring-primary/20" : ""}`}
+                ref={mergeRefs(columnDragRef, dropRef)}
+                className={`flex min-h-[600px] flex-col !gap-3 !py-3 w-full border bg-muted/30 p-3 transition-shadow sm:w-fit sm:min-w-80 ${isDragging ? "opacity-60 shadow-lg ring-2 ring-primary/20" : ""}`}
             >
                 <div
-                    className={`mb-3 flex items-center justify-between gap-2 rounded-lg border px-3 py-2 ${ElementColors[stage.color]} ${HoverColors[stage.color]}`}
+                    className={`flex shrink-0 items-center justify-between gap-2 rounded-lg border px-3 py-2 ${ElementColors[stage.color]} ${HoverColors[stage.color]}`}
                 >
                     <div
                         ref={columnHandleRef}
@@ -103,7 +102,7 @@ export function KanbanColumn({ stage, onUpdate, searchValue }: KanbanColumnProps
                         </PopoverContent>
                     </Popover>
                 </div>
-                <div ref={cardDropRef} className="space-y-2">
+                <div className="flex min-h-[520px] flex-1 flex-col gap-2">
                     {stage.items && stage.items.map((item) => (
                         <KanbanCard key={item.id} item={item} onUpdate={onUpdate} isMatch={searchObject(item, searchValue)} />
                     ))}

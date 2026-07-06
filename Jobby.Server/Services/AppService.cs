@@ -58,6 +58,7 @@ namespace Jobby.Server.Services
                     Notes = j.Notes ?? string.Empty,
                     ContactName = j.ContactName ?? string.Empty,
                     AppliedDate = j.Applied.HasValue ? DateTime.SpecifyKind(j.Applied.Value, DateTimeKind.Utc) : null,
+                    CreatedDate = DateTime.SpecifyKind(j.Created, DateTimeKind.Utc),
                     Status = j.Status,
                     IsArchived = j.IsArchived,
                     StageId = j.StageId
@@ -317,6 +318,7 @@ namespace Jobby.Server.Services
                     Notes = j.Notes ?? string.Empty,
                     ContactName = j.ContactName ?? string.Empty,
                     AppliedDate = j.Applied.HasValue ? DateTime.SpecifyKind(j.Applied.Value, DateTimeKind.Utc) : null,
+                    CreatedDate = DateTime.SpecifyKind(j.Created, DateTimeKind.Utc),
                     Status = j.Status,
                     IsArchived = j.IsArchived,
                     StageId = j.StageId

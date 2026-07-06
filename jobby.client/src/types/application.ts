@@ -14,7 +14,8 @@ export type Application = {
     contactName: string;
     stageId: number;
     notes: string;
-    appliedDate?: Date;
+    appliedDate?: string | Date;
+    createdDate?: string | Date;
     status: number;
     isArchived: boolean;
     events: EventItem[];

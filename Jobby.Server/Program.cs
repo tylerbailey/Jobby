@@ -102,6 +102,7 @@ builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<IRecruiterService, RecruiterService>();
 builder.Services.AddScoped<IResumeService, ResumeService>();
 builder.Services.AddScoped<IAdminUserService, AdminUserService>();
+builder.Services.AddScoped<IProfileService, ProfileService>();
 
 builder.Services.AddAuthorization();
 

@@ -12,6 +12,7 @@ import { AuthProvider } from "@/providers/authProvider";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ResumeRating from "./components/resume/ResumeRating";
 import ResumeGenerate from "./components/resume/ResumeGenerate";
+import ProfilePage from "@/components/profile/ProfilePage";
 
 export default function App() {
     return (
@@ -28,6 +29,7 @@ export default function App() {
                             <Route path="/resumegenerate" element={<ResumeGenerate />} />
                             <Route path="/resumerating" element={<ResumeRating />} />
                             <Route path="/archive" element={<ArchivedApps />} />
+                            <Route path="/profile" element={<ProfilePage />} />
                             <Route element={<AdminRoute />}>
                                 <Route path="/admin" element={<AdminDashboard />} />
                             </Route>

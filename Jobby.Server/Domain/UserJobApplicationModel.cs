@@ -46,6 +46,9 @@ namespace Jobby.Server.Domain
         [JsonPropertyName("appliedDate")]
         public DateTime? AppliedDate { get; set; }
 
+        [JsonPropertyName("createdDate")]
+        public DateTime CreatedDate { get; set; }
+
         [JsonPropertyName("status")]
         public int Status { get; set; }
 
