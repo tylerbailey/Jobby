@@ -19,7 +19,7 @@ namespace Jobby.Server.Entities
         [Column(TypeName = "varchar(12)")]
         public string PhoneNumber { get; set; } = string.Empty;
 
-        [Column(TypeName = "varchar(1024)")]
+        [Column(TypeName = "varchar(2046)")]
         public string Notes { get;set;  }  = string.Empty;
 
         public DateTime? LastContact { get; set; }

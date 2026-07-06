@@ -1,7 +1,6 @@
 export const AUTH_UNAUTHORIZED_EVENT = "auth:unauthorized";
 
 export function clearAuthSession() {
-    localStorage.removeItem("token");
     localStorage.removeItem("user");
 }
 

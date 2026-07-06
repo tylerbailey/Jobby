@@ -27,6 +27,10 @@ export async function registerUser(
     return response.data;
 }
 
+export async function logoutUser() {
+    await api.post("/auth/logout");
+}
+
 export async function getCurrentUser() {
     const response = await api.get<User>("/auth/user");
     return response.data;

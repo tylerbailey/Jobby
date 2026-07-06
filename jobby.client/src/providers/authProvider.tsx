@@ -1,61 +1,33 @@
 import { AuthContext } from "@/context/authContext";
+import { getStoredUser } from "@/helpers/authHelpers";
 import { AUTH_UNAUTHORIZED_EVENT } from "@/helpers/authSession";
-import { getStoredToken, getStoredUser, isTokenExpired } from "@/helpers/authHelpers";
-import { getCurrentUser, loginUser, registerUser } from "@/services/authService";
+import { getCurrentUser, loginUser, logoutUser, registerUser } from "@/services/authService";
 import type { AuthContextType, User } from "@/types";
 import axios from "axios";
-import { useCallback, useEffect, useMemo, useState } from "react";
-
-const SESSION_CHECK_INTERVAL_MS = 30_000;
+import { useCallback, useEffect, useState } from "react";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-    const [token, setToken] = useState<string | null>(() => getStoredToken());
     const [user, setUser] = useState<User | null>(() => getStoredUser<User>());
+    const [isInitialized, setIsInitialized] = useState(false);
 
-    const logout = useCallback(() => {
-        localStorage.removeItem("token");
+    const clearUser = useCallback(() => {
         localStorage.removeItem("user");
         setUser(null);
-        setToken(null);
     }, []);
 
-    useEffect(() => {
-        function onUnauthorized() {
-            setUser(null);
-            setToken(null);
+    const logout = useCallback(async () => {
+        try {
+            await logoutUser();
+        } catch {
+            // cookie may already be gone
         }
-
-        window.addEventListener(AUTH_UNAUTHORIZED_EVENT, onUnauthorized);
-        return () => window.removeEventListener(AUTH_UNAUTHORIZED_EVENT, onUnauthorized);
-    }, []);
+        clearUser();
+    }, [clearUser]);
 
     useEffect(() => {
-        if (!token)
-            return;
-
-        if (isTokenExpired(token)) {
-            logout();
-            return;
-        }
-
-        const intervalId = window.setInterval(() => {
-            const currentToken = localStorage.getItem("token");
-            if (!currentToken || isTokenExpired(currentToken)) {
-                logout();
-                window.location.assign("/login");
-            }
-        }, SESSION_CHECK_INTERVAL_MS);
-
-        return () => window.clearInterval(intervalId);
-    }, [token, logout]);
-
-    useEffect(() => {
-        if (!token)
-            return;
-
         let cancelled = false;
 
-        async function validateSession() {
+        async function initSession() {
             try {
                 const currentUser = await getCurrentUser();
                 if (cancelled)
@@ -65,15 +37,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 localStorage.setItem("user", JSON.stringify(currentUser));
             } catch (error) {
                 if (!cancelled && axios.isAxiosError(error) && error.response?.status === 401)
-                    logout();
+                    clearUser();
+            } finally {
+                if (!cancelled)
+                    setIsInitialized(true);
             }
         }
 
-        validateSession();
+        initSession();
         return () => {
             cancelled = true;
         };
-    }, [token, logout]);
+    }, [clearUser]);
+
+    useEffect(() => {
+        function onUnauthorized() {
+            clearUser();
+            void logoutUser().catch(() => {});
+        }
+
+        window.addEventListener(AUTH_UNAUTHORIZED_EVENT, onUnauthorized);
+        return () => window.removeEventListener(AUTH_UNAUTHORIZED_EVENT, onUnauthorized);
+    }, [clearUser]);
 
     async function login(email: string, password: string) {
         const response = await loginUser(email, password);
@@ -83,9 +68,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             email: response.email,
             roles: response.roles ?? [],
         };
-        setToken(response.token);
         setUser(nextUser);
-        localStorage.setItem("token", response.token);
         localStorage.setItem("user", JSON.stringify(nextUser));
     }
 
@@ -93,18 +76,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         await registerUser(email, password, displayName);
     }
 
-    const isLoggedIn = useMemo(
-        () => token !== null && !isTokenExpired(token),
-        [token],
-    );
-
     const authContextType: AuthContextType = {
         user,
-        token,
+        isInitialized,
         login,
         logout,
         register,
-        isLoggedIn,
+        isLoggedIn: user !== null,
     };
 
     return (

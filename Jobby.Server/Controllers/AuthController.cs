@@ -13,10 +13,17 @@ namespace Jobby.Server.Controllers;
 [Authorize]
 [ApiController]
 [Route("api/auth")]
-public class AuthController(UserManager<ApplicationUser> users, IConfiguration config) : ControllerBase
+public class AuthController(
+    UserManager<ApplicationUser> users,
+    IConfiguration config,
+    IWebHostEnvironment env) : ControllerBase
 {
+    private const string TokenCookieName = "token";
+    private static readonly TimeSpan TokenLifetime = TimeSpan.FromHours(1);
+
     private readonly UserManager<ApplicationUser> _users = users;
     private readonly IConfiguration _config = config;
+    private readonly IWebHostEnvironment _env = env;
 
     [AllowAnonymous]
     [HttpPost("register")]
@@ -76,7 +83,27 @@ public class AuthController(UserManager<ApplicationUser> users, IConfiguration c
                 message = "Your account is pending approval."
             });
 
-        return Ok(await CreateAuthResponseAsync(user));
+        var roles = await _users.GetRolesAsync(user);
+        var token = await CreateTokenAsync(user, roles);
+        var expires = DateTimeOffset.UtcNow.Add(TokenLifetime);
+
+        Response.Cookies.Append(TokenCookieName, token, CreateTokenCookieOptions(expires));
+
+        return Ok(new
+        {
+            id = user.Id,
+            email = user.Email,
+            displayName = user.DisplayName,
+            roles
+        });
+    }
+
+    [AllowAnonymous]
+    [HttpPost("logout")]
+    public IActionResult Logout()
+    {
+        Response.Cookies.Delete(TokenCookieName, CreateTokenCookieOptions(DateTimeOffset.UtcNow));
+        return Ok();
     }
 
     [HttpGet("user")]
@@ -101,13 +128,14 @@ public class AuthController(UserManager<ApplicationUser> users, IConfiguration c
         });
     }
 
-    private async Task<AuthResponse> CreateAuthResponseAsync(ApplicationUser user)
+    private CookieOptions CreateTokenCookieOptions(DateTimeOffset expires) => new()
     {
-        var roles = await _users.GetRolesAsync(user);
-        var token = await CreateTokenAsync(user, roles);
-
-        return new AuthResponse(token, user.Id, user.Email!, user.DisplayName, roles);
-    }
+        HttpOnly = true,
+        Secure = true,
+        SameSite = _env.IsDevelopment() ? SameSiteMode.Lax : SameSiteMode.None,
+        Path = "/",
+        Expires = expires
+    };
 
     private async Task<string> CreateTokenAsync(ApplicationUser user, IList<string>? roles = null)
     {
@@ -130,7 +158,7 @@ public class AuthController(UserManager<ApplicationUser> users, IConfiguration c
             issuer: jwt["Issuer"],
             audience: jwt["Audience"],
             claims: claims,
-            expires: DateTime.UtcNow.AddHours(1),
+            expires: DateTime.UtcNow.Add(TokenLifetime),
             signingCredentials: creds);
 
         return new JwtSecurityTokenHandler().WriteToken(token);
@@ -139,4 +167,3 @@ public class AuthController(UserManager<ApplicationUser> users, IConfiguration c
 
 public record RegisterRequest(string Email, string Password, string? DisplayName);
 public record LoginRequest(string Email, string Password);
-public record AuthResponse(string Token, string Id, string Email, string? DisplayName, IList<string> Roles);

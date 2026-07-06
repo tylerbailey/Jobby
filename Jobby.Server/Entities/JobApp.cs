@@ -7,16 +7,16 @@ namespace Jobby.Server.Entities
         [Column(TypeName = "varchar(450)")]
         public string UserId { get; set; } = string.Empty;
 
-        [Column(TypeName = "varchar(64)")]
+        [Column(TypeName = "varchar(256)")]
         public string Company { get; set; } = string.Empty;
 
-        [Column(TypeName = "varchar(32)")]
+        [Column(TypeName = "varchar(256)")]
         public string Title { get; set; } = string.Empty;
 
-        [Column(TypeName = "varchar(512)")]
+        [Column(TypeName = "varchar(1024)")]
         public string? JobPostingUrl { get; set; }
 
-        [Column(TypeName = "varchar(256)")]
+        [Column(TypeName = "varchar(512)")]
         public string? Address { get; set; }
 
         public int? Salary { get; set; }
@@ -27,7 +27,7 @@ namespace Jobby.Server.Entities
         [ForeignKey("LocationType")]
         public int LocationTypeId { get; set; }
 
-        [Column(TypeName = "varchar(1024)")]
+        [Column(TypeName = "varchar(2046)")]
         public string? Notes { get; set; }
 
         [Column(TypeName = "varchar(256)")]

@@ -6,7 +6,9 @@ namespace Jobby.Server.Entities
     {
         [ForeignKey("JobApp")]
         public int AppId { get; set; }
+        [Column(TypeName = "varchar(256)")]
         public string EventTitle { get; set; } = string.Empty;
+        [Column(TypeName = "varchar(1024)")]
         public string EventDescription { get; set; } = string.Empty;
         public DateTime EventDate { get; set; }
         public virtual JobApp? JobApp { get; set; }

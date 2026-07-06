@@ -112,34 +112,15 @@ export function isTokenExpired(token: string, skewSeconds = 30): boolean {
     }
 }
 
-export function getStoredToken(): string | null {
-    const token = localStorage.getItem("token");
-    if (!token || isTokenExpired(token)) {
-        clearStoredAuth();
-        return null;
-    }
-
-    return token;
-}
-
 export function getStoredUser<T>(): T | null {
-    const token = localStorage.getItem("token");
     const storedUser = localStorage.getItem("user");
-
-    if (!token || !storedUser || isTokenExpired(token)) {
-        clearStoredAuth();
+    if (!storedUser)
         return null;
-    }
 
     try {
         return JSON.parse(storedUser) as T;
     } catch {
-        clearStoredAuth();
+        localStorage.removeItem("user");
         return null;
     }
-}
-
-function clearStoredAuth() {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
 }

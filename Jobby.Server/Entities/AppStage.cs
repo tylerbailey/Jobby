@@ -8,12 +8,12 @@ namespace Jobby.Server.Entities
         [Column(TypeName = "varchar(450)")]
         public string UserId { get; set; } = string.Empty;
 
-        [Column(TypeName = "varchar(32)")]
+        [Column(TypeName = "varchar(128)")]
         public string Name { get; set; } = string.Empty;
 
         public int Order { get; set; }
 
-        [Column(TypeName = "varchar(32)")]
+        [Column(TypeName = "varchar(128)")]
         public string Color { get; set; } = string.Empty;
 
         public ICollection<JobApp>? JobApps { get; set; } = [];

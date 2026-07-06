@@ -52,6 +52,13 @@ builder.Services
     {
         options.Events = new JwtBearerEvents
         {
+            OnMessageReceived = context =>
+            {
+                if (context.Request.Cookies.TryGetValue("token", out var token))
+                    context.Token = token;
+
+                return Task.CompletedTask;
+            },
             OnChallenge = async context =>
             {
                 context.HandleResponse();
@@ -108,7 +115,8 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins(origins)
               .AllowAnyHeader()
-              .AllowAnyMethod();
+              .AllowAnyMethod()
+              .AllowCredentials();
     });
 });
 
