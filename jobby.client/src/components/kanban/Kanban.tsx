@@ -1,7 +1,13 @@
 import { KanbanColumn } from "@/components/kanban/KanbanColumn";
 import { Button } from "@/components/ui/button";
 import { moveAppStage } from "@/services/appService";
+import { reorderStages } from "@/services/stageService";
 import type { Application, Stage } from "@/types/";
+import {
+    isColumnDragId,
+    reorderStagesById,
+    stageIdFromColumnDragId,
+} from "@/helpers/kanbanHelpers";
 import { DragDropProvider, type DragEndEvent } from "@dnd-kit/react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useRef, type Dispatch, type SetStateAction } from "react";
@@ -14,7 +20,7 @@ export type KanbanBoardProps = {
     searchValue: string;
 }
 
-export function KanbanBoard({stages, setStages, onUpdate, searchValue } : KanbanBoardProps) {
+export function KanbanBoard({ stages, setStages, onUpdate, searchValue }: KanbanBoardProps) {
     const scrollRef = useRef<HTMLDivElement>(null);
     const stagesRef = useRef(stages);
 
@@ -30,44 +36,94 @@ export function KanbanBoard({stages, setStages, onUpdate, searchValue } : Kanban
         return undefined;
     }
 
+    function withUpdatedOrders(stages: Stage[]): Stage[] {
+        return stages.map((stage, index) => ({
+            ...stage,
+            order: index + 1,
+        }));
+    }
+
+    async function handleColumnReorder(sourceStageId: number, targetStageId: number) {
+        if (sourceStageId === targetStageId)
+            return;
+
+        const reordered = withUpdatedOrders(
+            reorderStagesById(stagesRef.current, sourceStageId, targetStageId),
+        );
+
+        setStages(reordered);
+
+        try {
+            await reorderStages(
+                reordered
+                    .filter((stage) => stage.id != null)
+                    .map((stage, index) => ({ id: stage.id!, order: index + 1 })),
+            );
+        } catch {
+            toast.error("An error occurred while reordering pipeline stages.");
+            onUpdate();
+        }
+    }
+
+    async function handleCardMove(cardId: string, newStageId: number) {
+        setStages(prev => {
+            const card = findCard(prev, cardId);
+            if (!card) return prev;
+            if (card.stageId === newStageId) return prev;
+            return prev.map(stage => {
+                if (stage.id === card.stageId) {
+                    return {
+                        ...stage,
+                        items: stage.items?.filter(item => item.id?.toString() !== cardId)
+                    };
+                }
+                if (stage.id === newStageId) {
+                    return {
+                        ...stage,
+                        items: [...stage.items!, { ...card, stageId: newStageId }]
+                    };
+                }
+                return stage;
+            });
+        });
+
+        const card = findCard(stagesRef.current, cardId);
+        if (card) {
+            try {
+                await moveAppStage(card.id!, newStageId);
+            } catch {
+                toast.error("An error occurred while moving your application.");
+                onUpdate();
+            }
+        }
+    }
+
     async function handleDragEnd(event: DragEndEvent) {
         try {
             if (event.canceled) return;
             const { source, target } = event.operation;
             if (!source || !target) return;
 
-            const cardId = source.id.toString();
-            const newStageId = Number(target.id);
+            const sourceId = source.id.toString();
+            const targetId = target.id.toString();
 
-            setStages(prev => {
-                const card = findCard(prev, cardId);
-                if (!card) return prev;
-                if (card.stageId === newStageId) return prev;
-                return prev.map(stage => {
-                    if (stage.id === card.stageId) {
-                        return {
-                            ...stage,
-                            items: stage.items?.filter(item => item.id?.toString() !== cardId)
-                        };
-                    }
-                    if (stage.id === newStageId) {
-                        return {
-                            ...stage,
-                            items: [...stage.items!, { ...card, stageId: newStageId }]
-                        };
-                    }
-                    return stage;
-                });
-            });
-            const card = findCard(stagesRef.current, cardId);
-            if (card) {
-                try {
-                    await moveAppStage(card.id!, newStageId);
-                } catch {
-                    toast.error("An error occurred while moving your application.");
-                    onUpdate(); 
-                }
+            if (isColumnDragId(sourceId)) {
+                const sourceStageId = stageIdFromColumnDragId(sourceId);
+                const targetStageId = Number(targetId);
+
+                if (Number.isNaN(sourceStageId) || Number.isNaN(targetStageId))
+                    return;
+
+                await handleColumnReorder(sourceStageId, targetStageId);
+                return;
             }
+
+            const newStageId = Number(targetId);
+
+            if (Number.isNaN(newStageId))
+                return;
+
+            await handleCardMove(sourceId, newStageId);
         }
         catch {
             toast.error("An error occured while moving your application.")
@@ -76,7 +132,6 @@ export function KanbanBoard({stages, setStages, onUpdate, searchValue } : Kanban
 
     function handleScrollLeft() {
         scrollRef.current?.scrollBy({ left: -300, behavior: "smooth" });
-       
     }
 
     function handleScrollRight() {

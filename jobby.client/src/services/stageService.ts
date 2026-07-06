@@ -16,3 +16,7 @@ export async function getAllStages() {
 export async function deleteStage(stageId: number) {
     await api.delete(`/stage/delete/${stageId}`);
 }
+
+export async function reorderStages(stages: { id: number; order: number }[]) {
+    await api.post("/stage/reorder", { stages });
+}

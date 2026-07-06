@@ -79,6 +79,7 @@ namespace Jobby.Server.Services
                     Id = e.JobApp!.Id,
                     CompanyName = e.JobApp.Company,
                     JobTitle = e.JobApp.Title,
+                    Summary = e.JobApp.Summary ?? string.Empty,
                     JobPostingUrl = e.JobApp.JobPostingUrl ?? string.Empty,
                     Address = e.JobApp.Address ?? string.Empty,
                     Salary = e.JobApp.Salary,

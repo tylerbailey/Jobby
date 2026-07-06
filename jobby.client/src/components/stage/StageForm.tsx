@@ -42,18 +42,6 @@ function StageForm({ title, stage, setStage, dialogOpen, setDialogOpen, action }
                         onChange={(e) => setStage({ ...stage, name: e.target.value })} />
                 </Field>
                 <Field className="py-3">
-                    <FieldLabel htmlFor="input-stage-order">Order</FieldLabel>
-                    <FieldDescription>
-                        The position of the stage in the pipeline.
-                    </FieldDescription>
-                    <Input
-                        id="input-stage-order"
-                        type="number"
-                        placeholder="Enter the display order"
-                        value={stage.order}
-                        onChange={(e) => setStage({ ...stage, order: Number.parseInt(e.target.value) })} />
-                </Field>
-                <Field className="py-3">
                     <FieldLabel>Color</FieldLabel>
                     <FieldDescription>
                         The color used to display the stage.

@@ -1,5 +1,5 @@
 import type { Stage } from "@/types";
-import { useState, type Dispatch, type SetStateAction } from "react";
+import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 import { toast } from "sonner";
 import StageForm from "./StageForm";
 import { updateStage } from "@/services/stageService";
@@ -12,6 +12,11 @@ export type EditStageProps = {
 }
 export default function EditStage({ stage, onUpdate, dialogOpen, setDialogOpen }: EditStageProps) {
     const [formStage, setFormStage] = useState<Stage>(stage);
+
+    useEffect(() => {
+        if (dialogOpen)
+            setFormStage(stage);
+    }, [dialogOpen, stage]);
 
     async function handleEdit() {
         await updateStage(formStage);

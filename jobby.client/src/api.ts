@@ -16,6 +16,10 @@ api.interceptors.response.use(
             url.includes("/auth/login")
             || url.includes("/auth/register")
             || url.includes("/auth/logout");
+        const skipToast =
+            isAuthAttempt
+            || url.includes("/app/scrape-posting")
+            || url.includes("/profile/stats");
         const tokenExpiredHeader = error.response?.headers?.["token-expired"] === "true";
 
         if (!isAuthAttempt && (status === 401 || tokenExpiredHeader)) {
@@ -23,7 +27,7 @@ api.interceptors.response.use(
             return Promise.reject(error);
         }
 
-        if (!isAuthAttempt) {
+        if (!skipToast) {
             const safeMessages: Record<number, string> = {
                 400: error.response?.data?.message ?? "Invalid request.",
                 403: error.response?.data?.message ?? "You do not have permission to do that.",

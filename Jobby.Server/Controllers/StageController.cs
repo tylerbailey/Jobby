@@ -28,6 +28,14 @@ namespace Jobby.Server.Controllers
             return Ok();
         }
 
+        [HttpPost("reorder")]
+        public async Task<IActionResult> ReorderStages(ReorderStagesRequest request)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
+            await _stageService.ReorderStagesAsync(request, userId);
+            return Ok();
+        }
+
         [HttpDelete("delete/{stageId}")]
         public async Task<IActionResult> DeleteStage(int stageId)
         {

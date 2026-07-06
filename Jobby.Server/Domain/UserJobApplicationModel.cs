@@ -16,6 +16,9 @@ namespace Jobby.Server.Domain
         [JsonPropertyName("jobTitle")]
         public string JobTitle { get; set; } = string.Empty;
 
+        [JsonPropertyName("summary")]
+        public string Summary { get; set; } = string.Empty;
+
         [JsonPropertyName("jobPostingUrl")]
         public string JobPostingUrl { get; set; } = string.Empty;
 
@@ -42,6 +45,9 @@ namespace Jobby.Server.Domain
 
         [JsonPropertyName("appliedDate")]
         public DateTime? AppliedDate { get; set; }
+
+        [JsonPropertyName("createdDate")]
+        public DateTime CreatedDate { get; set; }
 
         [JsonPropertyName("status")]
         public int Status { get; set; }

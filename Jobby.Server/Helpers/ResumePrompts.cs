@@ -22,8 +22,13 @@ namespace Jobby.Server.Helpers
         Return ONLY valid JSON in the following format:
 
         {
+          "company": "",
           "title": "",
           "summary": "",
+          "isRemote": false,
+          "isHybrid": false,
+          "isOnsite": false,
+          "salaryRange": "",
           "requiredSkills": [],
           "preferredSkills": [],
           "technologies": [],

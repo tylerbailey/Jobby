@@ -183,6 +183,9 @@ namespace Jobby.Server.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
+                    b.Property<string>("Summary")
+                        .HasColumnType("varchar(2046)");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("varchar(256)");

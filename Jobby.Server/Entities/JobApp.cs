@@ -13,6 +13,9 @@ namespace Jobby.Server.Entities
         [Column(TypeName = "varchar(256)")]
         public string Title { get; set; } = string.Empty;
 
+        [Column(TypeName = "varchar(2046)")]
+        public string? Summary { get; set; }
+
         [Column(TypeName = "varchar(1024)")]
         public string? JobPostingUrl { get; set; }
 

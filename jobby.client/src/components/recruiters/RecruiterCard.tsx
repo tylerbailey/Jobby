@@ -10,6 +10,7 @@ import { deleteRecruiter } from "@/services/recruiterService";
 import { useState } from "react";
 import { toast } from "sonner";
 import EditRecruiter from "./EditRecruiter";
+import RecruiterInfo from "./RecruiterInfo";
 
 
 export type RecruiterCardProps = {
@@ -20,6 +21,7 @@ export type RecruiterCardProps = {
 export default function RecruiterCard({ recruiter, onUpdate }: RecruiterCardProps) {
     const [menuOpen, setMenuOpen] = useState<boolean>(false);
     const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+    const [infoOpen, setInfoOpen] = useState<boolean>(false);
     function getInitials(name: string) {
         return name.split(" ").map(n => n[0]).join("").toUpperCase();
     }
@@ -38,7 +40,10 @@ export default function RecruiterCard({ recruiter, onUpdate }: RecruiterCardProp
 
     return (
         <div className="py-3">
-            <Card className="flex bg-stone-100 justify-center border-none shadow-none ring-0 w-full transition hover:-translate-y-0.5 hover:shadow-md">
+            <Card
+                className="flex w-full cursor-pointer justify-center border-none bg-stone-100 shadow-none ring-0 transition hover:-translate-y-0.5 hover:shadow-md"
+                onClick={() => setInfoOpen(true)}
+            >
                 <CardHeader>
                     {
                         <div className="flex min-w-0 items-start justify-between gap-2">
@@ -115,6 +120,7 @@ export default function RecruiterCard({ recruiter, onUpdate }: RecruiterCardProp
                 </CardContent>
 
             </Card>
+            <RecruiterInfo recruiter={recruiter} infoOpen={infoOpen} setInfoOpen={setInfoOpen} />
             <EditRecruiter formItem={recruiter} onUpdate={onUpdate} dialogOpen={dialogOpen} setDialogOpen={setDialogOpen} />
         </div>
     );
