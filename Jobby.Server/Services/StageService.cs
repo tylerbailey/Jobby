@@ -11,32 +11,18 @@ namespace Jobby.Server.Services
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
 
-            var conflict = await db.AppStages
-                .AnyAsync(s => s.UserId == userId && s.Order == appStage.Order);
+            var existingStages = await db.AppStages
+                .Where(s => s.UserId == userId && !s.Disabled)
+                .ToListAsync();
 
-            if (conflict)
-            {
-                var conflictingStages = await db.AppStages.Where(s => s.UserId == userId && s.Order >= appStage.Order).OrderBy(s => s.Order).ToListAsync();
-                int previousStage = appStage.Order;
-                foreach (var stage in conflictingStages)
-                {
-                    if (stage.Order <= previousStage + 1)
-                    {
-                        previousStage = stage.Order;
-                        stage.Order++;
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-                await db.SaveChangesAsync();
-            }
+            foreach (var stage in existingStages)
+                stage.Order++;
+
             db.AppStages.Add(new AppStage
             {
                 UserId = userId,
                 Name = appStage.Name,
-                Order = appStage.Order,
+                Order = 1,
                 Color = appStage.Color
             });
 
@@ -50,10 +36,30 @@ namespace Jobby.Server.Services
             if (stage != null)
             {
                 stage.Name = appStage.Name;
-                stage.Order = appStage.Order;
                 stage.Color = appStage.Color;
                 await db.SaveChangesAsync();
             }
+        }
+
+        public async Task ReorderStagesAsync(ReorderStagesRequest request, string userId)
+        {
+            if (request.Stages.Count == 0)
+                return;
+
+            await using var db = await _dbContextFactory.CreateDbContextAsync();
+            var stageIds = request.Stages.Select(s => s.Id).ToHashSet();
+            var stages = await db.AppStages
+                .Where(s => s.UserId == userId && !s.Disabled && stageIds.Contains(s.Id))
+                .ToListAsync();
+
+            foreach (var update in request.Stages)
+            {
+                var stage = stages.FirstOrDefault(s => s.Id == update.Id);
+                if (stage != null)
+                    stage.Order = update.Order;
+            }
+
+            await db.SaveChangesAsync();
         }
 
         public async Task DeleteStageAsync(int stageId, string userId)
