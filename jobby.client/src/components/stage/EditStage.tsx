@@ -14,8 +14,11 @@ export default function EditStage({ stage, onUpdate, dialogOpen, setDialogOpen }
     const [formStage, setFormStage] = useState<Stage>(stage);
 
     useEffect(() => {
+        function formDetails() {
         if (dialogOpen)
-            setFormStage(stage);
+                setFormStage(stage);
+        }
+        formDetails();
     }, [dialogOpen, stage]);
 
     async function handleEdit() {

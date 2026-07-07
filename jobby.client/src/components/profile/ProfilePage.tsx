@@ -55,34 +55,43 @@ export default function ProfilePage() {
     const [isSaving, setIsSaving] = useState(false);
     const [stats, setStats] = useState<ProfileStats | null>(null);
     const [isLoadingStats, setIsLoadingStats] = useState(true);
-
+    const [refresh, setRefresh] = useState(0);
+    function handleRefresh() {
+        setRefresh(prev => prev + 1);
+    }
     useEffect(() => {
-        setDisplayName(user?.displayName ?? "");
+        function setUserName() {
+            setDisplayName(user?.displayName ?? "");
+        }
+        setUserName();
     }, [user?.displayName]);
 
     useEffect(() => {
-        let cancelled = false;
-        setIsLoadingStats(true);
+        function loadUserStats() {
+            let cancelled = false;
+            setIsLoadingStats(true);
 
-        async function loadStats() {
-            try {
-                const data = await getProfileStats();
-                if (!cancelled)
-                    setStats(data);
-            } catch {
-                if (!cancelled)
-                    toast.error("Failed to load profile statistics.");
-            } finally {
-                if (!cancelled)
-                    setIsLoadingStats(false);
+            async function loadStats() {
+                try {
+                    const data = await getProfileStats();
+                    if (!cancelled)
+                        setStats(data);
+                } catch {
+                    if (!cancelled)
+                        toast.error("Failed to load profile statistics.");
+                } finally {
+                    if (!cancelled)
+                        setIsLoadingStats(false);
+                }
             }
+
+            loadStats();
+
+            return () => {
+                cancelled = true;
+            };
         }
-
-        loadStats();
-
-        return () => {
-            cancelled = true;
-        };
+        loadUserStats();
     }, [location.pathname]);
 
     const chartData = useMemo(() => {

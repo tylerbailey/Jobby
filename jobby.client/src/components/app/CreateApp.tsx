@@ -9,7 +9,7 @@ import { createNewApp, getAllAppLocations, scrapeJobPosting } from "@/services/a
 import type { Application } from "@/types";
 import axios from "axios";
 import { Link2, Loader2, PenLine } from "lucide-react";
-import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
+import { useState, type Dispatch, type SetStateAction } from "react";
 import { toast } from "sonner";
 
 export type AppCreateProps = {
@@ -48,16 +48,13 @@ export default function CreateApp({ stage, onUpdate, sheetOpen, setSheetOpen }: 
     const [scrapeUrl, setScrapeUrl] = useState("");
     const [item, setItem] = useState<Application>(() => createEmptyApplication(stage));
 
-    useEffect(() => {
-        if (sheetOpen) {
+    function handleOpenChange(open: boolean) {
+        setSheetOpen(open);
+        if (open) {
             setStep("choose");
             setScrapeUrl("");
             setItem(createEmptyApplication(stage));
         }
-    }, [sheetOpen, stage]);
-
-    function handleOpenChange(open: boolean) {
-        setSheetOpen(open);
     }
 
     async function handleScrape() {

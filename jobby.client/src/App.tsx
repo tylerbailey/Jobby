@@ -1,8 +1,8 @@
 import ArchivedApps from "@/components/archive/Archive";
 import AdminDashboard from "@/components/admin/AdminDashboard";
 import LandingPage from "@/components/auth/Landing";
-import { LoginPage } from "@/components/auth/login";
-import { RegisterPage } from "@/components/auth/register";
+import { LoginPage } from "@/components/auth/Login";
+import { RegisterPage } from "@/components/auth/Register";
 import EventCalendar from "@/components/calendar/EventCalendar";
 import Dashboard from "@/components/dashboard/Dashboard";
 import Layout from "@/components/layout/Layout";

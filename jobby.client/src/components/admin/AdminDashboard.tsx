@@ -47,7 +47,7 @@ function toFormState(user: AdminUser): EditFormState {
 }
 
 export default function AdminDashboard() {
-    const { user: currentUser } = useAuth();
+    const {user: currentUser } = useAuth();
     const [users, setUsers] = useState<AdminUser[]>([]);
     const [availableRoles, setAvailableRoles] = useState<string[]>([]);
     const [search, setSearch] = useState("");
@@ -55,23 +55,27 @@ export default function AdminDashboard() {
     const [saving, setSaving] = useState(false);
     const [editingUser, setEditingUser] = useState<AdminUser | null>(null);
     const [form, setForm] = useState<EditFormState | null>(null);
+    const [refresh, setRefresh] = useState(0);
 
-    async function loadUsers() {
-        setLoading(true);
-        try {
-            const [usersData, rolesData] = await Promise.all([getAllUsers(), getAllRoles()]);
-            setUsers(usersData);
-            setAvailableRoles(rolesData);
-        } catch {
-            toast.error("Failed to load users.");
-        } finally {
-            setLoading(false);
-        }
+    function handleRefresh() {
+        setRefresh(prev => prev + 1);
     }
 
     useEffect(() => {
+        async function loadUsers() {
+            setLoading(true);
+            try {
+                const [usersData, rolesData] = await Promise.all([getAllUsers(), getAllRoles()]);
+                setUsers(usersData);
+                setAvailableRoles(rolesData);
+            } catch {
+                toast.error("Failed to load users.");
+            } finally {
+                setLoading(false);
+            }
+        }
         loadUsers();
-    }, []);
+    }, [refresh]);
 
     const filteredUsers = useMemo(() => {
         const query = search.trim().toLowerCase();
@@ -125,7 +129,7 @@ export default function AdminDashboard() {
             await updateUserRoles(editingUser.id, { roles: form.roles });
             toast.success("User updated.");
             closeEdit();
-            await loadUsers();
+            handleRefresh();
         } catch (err: unknown) {
             const message =
                 err &&
@@ -152,7 +156,7 @@ export default function AdminDashboard() {
         try {
             await deleteUser(user.id);
             toast.success("User deleted.");
-            await loadUsers();
+            handleRefresh();
         } catch (err: unknown) {
             const message =
                 err &&
