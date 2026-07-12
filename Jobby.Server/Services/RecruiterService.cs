@@ -1,5 +1,5 @@
-﻿using Jobby.Server.Data;
-using Jobby.Server.Domain;
+﻿using Jobby.Infrastructure.Data;
+using Jobby.Server.Dto;
 using Jobby.Server.Entities;
 using Microsoft.EntityFrameworkCore;
 

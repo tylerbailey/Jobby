@@ -1,4 +1,4 @@
-﻿using Jobby.Server.Domain;
+﻿using Jobby.Server.Dto;
 using Jobby.Server.Entities;
 
 namespace Jobby.Server.Services;

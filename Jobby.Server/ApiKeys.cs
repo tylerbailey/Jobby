@@ -2,6 +2,6 @@
 {
     public class ApiKeys
     {
-        public string Gemini {  get; set; }
+        public string Gemini {  get; set; } = string.Empty;
     }
 }

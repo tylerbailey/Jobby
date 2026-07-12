@@ -1,12 +1,11 @@
+using Jobby.Infrastructure.Data;
 using Jobby.Server.Constants;
-using Jobby.Server.Data;
 using Jobby.Server.Entities;
 using Jobby.Server.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);

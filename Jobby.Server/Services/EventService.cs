@@ -1,6 +1,6 @@
-﻿using Jobby.Server.Consts;
-using Jobby.Server.Data;
-using Jobby.Server.Domain;
+﻿using Jobby.Infrastructure.Data;
+using Jobby.Server.Consts;
+using Jobby.Server.Dto;
 using Jobby.Server.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,16 +21,17 @@ namespace Jobby.Server.Services
                 Created = DateTime.UtcNow,
             };
             await db.JobEvents.AddAsync(entry);
-
-            await db.JobHistories.AddAsync(new JobHistory
+            if (jobEvent.AppId.HasValue)
             {
-                AppId = jobEvent.AppId,
-                Color = Colors.Yellow,
-                EventTitle = "Event Creation",
-                EventDescription = $@"Event ""{jobEvent.EventTitle}"" was created.",
-                Created = DateTime.UtcNow
-            });
-            
+                await db.JobHistories.AddAsync(new JobHistory
+                {
+                    AppId = jobEvent.AppId.Value,
+                    Color = Colors.Yellow,
+                    EventTitle = "Event Creation",
+                    EventDescription = $@"Event ""{jobEvent.EventTitle}"" was created.",
+                    Created = DateTime.UtcNow
+                });
+            }
             await db.SaveChangesAsync();
         }
 
@@ -101,12 +102,12 @@ namespace Jobby.Server.Services
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
             var foundEvent = await db.JobEvents.Where(e => e.Id == eventId && e.JobApp!.UserId == userId).FirstOrDefaultAsync();
-            if (foundEvent != null)
+            if (foundEvent != null && foundEvent.AppId.HasValue)
             {
                 foundEvent.Disabled = true;
                 await db.JobHistories.AddAsync(new JobHistory
                 {
-                    AppId = foundEvent.AppId,
+                    AppId = foundEvent.AppId.Value,
                     Color = Colors.Yellow,
                     EventTitle = "Event Deleted",
                     EventDescription = $@"Event ""{foundEvent.EventTitle}"" was deleted.",
