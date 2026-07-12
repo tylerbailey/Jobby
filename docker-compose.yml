@@ -9,7 +9,7 @@ services:
   api:
     build:
       context: .
-      dockerfile: Jobby.Server/Dockerfile
+      dockerfile: Dockerfile
     ports:
       - "8080:8080"
     environment:

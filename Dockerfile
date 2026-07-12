@@ -1,7 +1,3 @@
-# Prefer the repository-root Dockerfile when deploying.
-# This file is kept so existing Render "Dockerfile Path" settings of
-# Jobby.Server/Dockerfile still work — but the Docker build context
-# MUST be the repository root, and Root Directory must be empty.
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
 WORKDIR /app
 EXPOSE 8080
@@ -9,6 +5,7 @@ EXPOSE 8080
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
+# Build context MUST be the repository root (not Jobby.Server/).
 COPY Jobby.Models/Jobby.Models.csproj Jobby.Models/
 COPY Jobby.Infrastructure/Jobby.Infrastructure.csproj Jobby.Infrastructure/
 COPY Jobby.Server/Jobby.Server.csproj Jobby.Server/
