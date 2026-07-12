@@ -1,4 +1,4 @@
-﻿namespace Jobby.Server.Entities
+namespace Jobby.Models.Entities
 {
     public interface IEntity
     {

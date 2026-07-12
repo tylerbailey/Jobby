@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Jobby.Server.Migrations
+namespace Jobby.Infrastructure.Migrations
 {
     /// <inheritdoc />
     public partial class Init : Migration

@@ -1,8 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Jobby.Server.Migrations
+namespace Jobby.Infrastructure.Migrations
 {
     /// <inheritdoc />
     public partial class IncreasedCharacters : Migration

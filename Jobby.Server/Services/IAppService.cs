@@ -1,4 +1,4 @@
-﻿using Jobby.Server.Dto;
+using Jobby.Models.Dto;
 
 namespace Jobby.Server.Services;
 

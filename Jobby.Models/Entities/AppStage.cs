@@ -1,7 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
-namespace Jobby.Server.Entities
+namespace Jobby.Models.Entities
 {
     public class AppStage : BaseModel, IEntity
     {

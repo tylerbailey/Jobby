@@ -1,7 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Jobby.Server.Entities
+namespace Jobby.Models.Entities
 {
     public class Recruiter : BaseModel, IEntity
     {

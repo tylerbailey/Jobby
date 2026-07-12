@@ -1,6 +1,6 @@
-﻿using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Packaging;
 using Jobby.Infrastructure.Data;
-using Jobby.Server.Dto;
+using Jobby.Models.Dto;
 using Jobby.Server.Helpers;
 using Microsoft.EntityFrameworkCore;
 using NJsonSchema;

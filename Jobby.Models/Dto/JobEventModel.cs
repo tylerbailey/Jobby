@@ -1,6 +1,6 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 
-namespace Jobby.Server.Dto
+namespace Jobby.Models.Dto
 {
     public class JobEventModel
     {

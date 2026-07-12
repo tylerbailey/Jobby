@@ -1,7 +1,7 @@
-﻿using Jobby.Infrastructure.Data;
+using Jobby.Infrastructure.Data;
 using Jobby.Server.Consts;
-using Jobby.Server.Dto;
-using Jobby.Server.Entities;
+using Jobby.Models.Dto;
+using Jobby.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Jobby.Server.Services

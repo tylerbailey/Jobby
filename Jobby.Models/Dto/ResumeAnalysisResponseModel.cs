@@ -1,7 +1,7 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace Jobby.Server.Dto
+namespace Jobby.Models.Dto
 {
     public class ResumeAnalysisResponse
     {

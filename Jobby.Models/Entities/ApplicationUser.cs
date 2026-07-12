@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Jobby.Server.Entities
+namespace Jobby.Models.Entities
 {
 
     public class ApplicationUser : IdentityUser

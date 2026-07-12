@@ -1,5 +1,5 @@
-﻿using Jobby.Server.Constants;
-using Jobby.Server.Entities;
+using Jobby.Server.Constants;
+using Jobby.Models.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

@@ -1,9 +1,9 @@
-﻿using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 using Jobby.Infrastructure.Data;
 using Jobby.Server.Consts;
-using Jobby.Server.Dto;
-using Jobby.Server.Entities;
+using Jobby.Models.Dto;
+using Jobby.Models.Entities;
 using Jobby.Server.Helpers;
 using Microsoft.EntityFrameworkCore;
 using NJsonSchema;

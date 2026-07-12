@@ -1,5 +1,5 @@
-﻿using Jobby.Server.Dto;
-using Jobby.Server.Entities;
+using Jobby.Models.Dto;
+using Jobby.Models.Entities;
 
 namespace Jobby.Server.Services;
 

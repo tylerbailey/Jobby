@@ -1,4 +1,4 @@
-namespace Jobby.Server.Dto
+namespace Jobby.Models.Dto
 {
     public class ResumeGenerationResponse
     {

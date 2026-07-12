@@ -1,7 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
-namespace Jobby.Server.Entities
+namespace Jobby.Models.Entities
 {
     public class BaseModel
     {

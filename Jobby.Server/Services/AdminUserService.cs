@@ -1,6 +1,6 @@
 using Jobby.Server.Constants;
-using Jobby.Server.Dto;
-using Jobby.Server.Entities;
+using Jobby.Models.Dto;
+using Jobby.Models.Entities;
 using Microsoft.AspNetCore.Identity;
 
 namespace Jobby.Server.Services;

@@ -1,4 +1,4 @@
-﻿namespace Jobby.Server.Entities
+namespace Jobby.Models.Entities
 {
     public class LocationType : BaseModel, IEntity
     {

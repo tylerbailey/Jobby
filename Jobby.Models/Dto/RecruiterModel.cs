@@ -1,8 +1,8 @@
-﻿using Jobby.Server.Entities;
+using Jobby.Models.Entities;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
-namespace Jobby.Server.Dto
+namespace Jobby.Models.Dto
 {
     public class RecruiterModel
     {

@@ -1,6 +1,6 @@
 using Jobby.Infrastructure.Data;
 using Jobby.Server.Constants;
-using Jobby.Server.Entities;
+using Jobby.Models.Entities;
 using Jobby.Server.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
