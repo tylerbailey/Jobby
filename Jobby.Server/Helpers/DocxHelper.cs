@@ -1,7 +1,7 @@
 ﻿using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
-using Jobby.Server.Domain;
+using Jobby.Server.Dto;
 
 namespace Jobby.Server.Helpers
 {

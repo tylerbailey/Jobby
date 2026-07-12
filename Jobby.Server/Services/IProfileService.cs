@@ -1,4 +1,4 @@
-using Jobby.Server.Domain;
+using Jobby.Server.Dto;
 
 namespace Jobby.Server.Services
 {

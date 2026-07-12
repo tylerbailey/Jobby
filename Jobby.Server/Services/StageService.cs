@@ -1,5 +1,5 @@
-﻿using Jobby.Server.Data;
-using Jobby.Server.Domain;
+﻿using Jobby.Infrastructure.Data;
+using Jobby.Server.Dto;
 using Jobby.Server.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -77,13 +77,13 @@ namespace Jobby.Server.Services
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
             var stages = await db.AppStages
-                .Where(s => !s.Disabled && s.UserId == userId)
-                .Include(s => s.JobApps.Where(a => a.UserId == userId && !a.Disabled))
-                .ThenInclude(a => a.LocationType)
-                .Include(s => s.JobApps)
-                .ThenInclude(a => a.JobEvents.Where(e => !e.Disabled))
-                .OrderBy(s => s.Order)
-                .ToListAsync();
+       .Where(s => !s.Disabled && s.UserId == userId)
+       .Include(s => s.JobApps.Where(a => a.UserId == userId && !a.Disabled))
+           .ThenInclude(a => a.LocationType)
+       .Include(s => s.JobApps.Where(a => a.UserId == userId && !a.Disabled))
+           .ThenInclude(a => a.JobEvents.Where(e => !e.Disabled))
+       .OrderBy(s => s.Order)
+       .ToListAsync();
 
             var result = stages.Select(s => new AppStageModel
             {

@@ -1,4 +1,4 @@
-﻿using Jobby.Server.Data;
+﻿using Jobby.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace Jobby.Server.Services

@@ -3,6 +3,9 @@
     <Build />
     <Deploy />
   </Project>
+  <Project Path="Jobby.Email/Jobby.Email.csproj" Id="46bcd0c0-bc71-483a-a432-ffd1f682eb43" />
+  <Project Path="Jobby.Infrastructure/Jobby.Infrastructure.csproj" Id="d2f30867-488a-4e00-a316-6d9e9dde6f8c" />
+  <Project Path="Jobby.Models/Jobby.Models.csproj" Id="9fd91ba1-774b-4c28-a211-ea01e9ad7d51" />
   <Project Path="Jobby.Scraper/Jobby.Scraper.csproj" />
   <Project Path="Jobby.Server.Tests/Jobby.Server.Tests.csproj" />
   <Project Path="Jobby.Server/Jobby.Server.csproj" />

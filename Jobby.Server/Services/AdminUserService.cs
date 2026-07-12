@@ -1,5 +1,5 @@
 using Jobby.Server.Constants;
-using Jobby.Server.Domain;
+using Jobby.Server.Dto;
 using Jobby.Server.Entities;
 using Microsoft.AspNetCore.Identity;
 
