@@ -34,7 +34,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\jobby.client\jobby.client.esproj">
+    <ProjectReference Include="..\jobby.client\jobby.client.esproj" Condition="Exists('..\jobby.client\jobby.client.esproj')">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
     <ProjectReference Include="..\Jobby.Infrastructure\Jobby.Infrastructure.csproj" />

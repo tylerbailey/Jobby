@@ -4,9 +4,17 @@ EXPOSE 8080
 
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
-COPY . .
-RUN dotnet restore
-RUN dotnet publish -c Release -o /app/publish
+
+# Restore with only project files for better layer caching.
+COPY Jobby.Models/Jobby.Models.csproj Jobby.Models/
+COPY Jobby.Infrastructure/Jobby.Infrastructure.csproj Jobby.Infrastructure/
+COPY Jobby.Server/Jobby.Server.csproj Jobby.Server/
+RUN dotnet restore Jobby.Server/Jobby.Server.csproj
+
+COPY Jobby.Models/ Jobby.Models/
+COPY Jobby.Infrastructure/ Jobby.Infrastructure/
+COPY Jobby.Server/ Jobby.Server/
+RUN dotnet publish Jobby.Server/Jobby.Server.csproj -c Release -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app

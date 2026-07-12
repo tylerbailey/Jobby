@@ -8,8 +8,8 @@ services:
 
   api:
     build:
-      context: ./Jobby.Server
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: Jobby.Server/Dockerfile
     ports:
       - "8080:8080"
     environment:

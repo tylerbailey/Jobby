@@ -1,0 +1,13 @@
+**/.git
+**/bin
+**/obj
+**/node_modules
+**/.vs
+**/.idea
+**/dist
+jobby.client
+Jobby.Scraper
+Jobby.Email
+Jobby.Server.Tests
+*.md
+.dockerignore
