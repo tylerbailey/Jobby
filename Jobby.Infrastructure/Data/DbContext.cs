@@ -10,7 +10,7 @@ namespace Jobby.Infrastructure.Data
         public DbSet<AppStage> AppStages { get; set; }
         public DbSet<LocationType> LocationTypes { get; set; }
         public DbSet<JobHistory> JobHistories { get; set; }
-        public DbSet<JobEvent> JobEvents { get; set; }
+        public DbSet<CalendarEvent> CalendarEvents { get; set; }
         public DbSet<Recruiter> Recruiters { get; set; }
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

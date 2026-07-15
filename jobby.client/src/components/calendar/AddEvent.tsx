@@ -35,6 +35,7 @@ export default function AddEvent({ onUpdate, isOpen, setIsOpen }: AddEventProps)
         const date = new Date(eventDate);
         await createEvent({
             appId: Number.parseInt(selectedApp),
+            recruiterId: undefined,
             eventTitle: eventTitle,
             eventDescription: eventDescription,
             eventDate: date,

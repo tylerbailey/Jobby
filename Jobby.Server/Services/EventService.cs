@@ -9,18 +9,20 @@ namespace Jobby.Server.Services
     public class EventService(IDbContextFactory<AppDbContext> dbContextFactory) : ServiceBase(dbContextFactory), IEventService
     {
 
-        public async Task CreateEventAsync(JobEventModel jobEvent)
+        public async Task CreateEventAsync(JobEventModel jobEvent, string userId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
-            var entry = new JobEvent
+            var entry = new CalendarEvent
             {
+                UserId = userId,
                 AppId = jobEvent.AppId,
+                RecruiterId = jobEvent.RecruiterId,
                 EventTitle = jobEvent.EventTitle,
                 EventDescription = jobEvent.EventDescription,
                 EventDate = DateTime.SpecifyKind(jobEvent.EventDate, DateTimeKind.Utc),
                 Created = DateTime.UtcNow,
             };
-            await db.JobEvents.AddAsync(entry);
+            await db.CalendarEvents.AddAsync(entry);
             if (jobEvent.AppId.HasValue)
             {
                 await db.JobHistories.AddAsync(new JobHistory
@@ -38,7 +40,7 @@ namespace Jobby.Server.Services
         public async Task<List<JobEventModel>> GetEventsAsync(int appId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
-            List<JobEventModel> jobEvents = db.JobEvents.Where(j => j.AppId == appId && !j.Disabled).Select(j => new JobEventModel()
+            List<JobEventModel> jobEvents = db.CalendarEvents.Where(j => j.AppId == appId && !j.Disabled).Select(j => new JobEventModel()
             {
                 Id = j.Id,
               AppId = j.AppId,
@@ -53,7 +55,7 @@ namespace Jobby.Server.Services
         public async Task<List<JobEventModel>> GetUpcomingEventsAsync(int appId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
-            List<JobEventModel> jobEvents = [.. db.JobEvents.Where(j => j.AppId == appId && j.EventDate >= DateTime.UtcNow &&!j.Disabled).Select(j => new JobEventModel()
+            List<JobEventModel> jobEvents = [.. db.CalendarEvents.Where(j => j.AppId == appId && j.EventDate >= DateTime.UtcNow &&!j.Disabled).Select(j => new JobEventModel()
             {
                 Id = j.Id,
                 AppId = j.AppId,
@@ -101,7 +103,7 @@ namespace Jobby.Server.Services
         public async Task DeleteEventAsync(int eventId, string userId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
-            var foundEvent = await db.JobEvents.Where(e => e.Id == eventId && e.JobApp!.UserId == userId).FirstOrDefaultAsync();
+            var foundEvent = await db.CalendarEvents.Where(e => e.Id == eventId && e.JobApp!.UserId == userId).FirstOrDefaultAsync();
             if (foundEvent != null && foundEvent.AppId.HasValue)
             {
                 foundEvent.Disabled = true;

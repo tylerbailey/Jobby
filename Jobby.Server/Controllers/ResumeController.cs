@@ -14,7 +14,7 @@ namespace Jobby.Server.Controllers
 
         [HttpPost("review")]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> RateResume([FromForm] IFormFile file)
+        public async Task<IActionResult> RateResume(IFormFile file)
         {
             if (file is null || file.Length == 0)
                 return BadRequest(new { message = "A docx file is required." });

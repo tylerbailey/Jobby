@@ -368,3 +368,4 @@ FodyWeavers.xsd
 /jobby.client/public/icons.svg
 /jobby.client/public/favicon.svg
 /jobby.client/src/assets/hero.png
+/Jobby.Email/appsettings.Development.json

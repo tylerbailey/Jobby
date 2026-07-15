@@ -4,7 +4,7 @@ namespace Jobby.Server.Services;
 
 public interface IEventService
 {
-    Task CreateEventAsync(JobEventModel jobEvent);
+    Task CreateEventAsync(JobEventModel jobEvent, string userId);
     Task DeleteEventAsync(int eventId, string userId);
     Task<List<JobEventModel>> GetEventsAsync(int appId);
     Task<List<JobEventModel>> GetUpcomingEventsAsync(int appId);

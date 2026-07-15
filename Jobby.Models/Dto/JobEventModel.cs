@@ -10,6 +10,9 @@ namespace Jobby.Models.Dto
         [JsonPropertyName("appId")]
         public int? AppId { get; set; }
 
+        [JsonPropertyName("recruiterId")]
+        public int? RecruiterId { get; set; }
+
         [JsonPropertyName("eventTitle")]
         public string EventTitle { get; set; } = string.Empty;
 

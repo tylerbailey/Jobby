@@ -53,6 +53,6 @@ namespace Jobby.Models.Entities
             
         public ICollection<JobHistory> JobHistory { get; set; } = [];
 
-        public ICollection<JobEvent> JobEvents { get; set; } = [];       
+        public ICollection<CalendarEvent> JobEvents { get; set; } = [];       
     }
 }

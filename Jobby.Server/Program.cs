@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,8 +15,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
+//Database
 builder.Services.AddDbContextFactory<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 // Identity
 builder.Services
     .AddIdentity<ApplicationUser, IdentityRole>()
@@ -105,7 +108,7 @@ builder.Services.AddScoped<IProfileService, ProfileService>();
 
 builder.Services.AddAuthorization();
 
-// -------------------- CORS (FIXED) --------------------
+// -------------------- CORS --------------------
 var origins = builder.Configuration
     .GetSection("Cors:AllowedOrigins")
     .Get<string[]>() ?? [];
@@ -124,6 +127,13 @@ builder.Services.AddCors(options =>
 // -------------------- OPENAPI --------------------
 
 builder.Services.AddOpenApi();
+
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo { Title = "Jobby API", Version = "v1" });
+});
+
+
 
 // -------------------- BUILD APP --------------------
 
@@ -149,6 +159,8 @@ app.MapStaticAssets();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
@@ -163,5 +175,5 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.MapFallbackToFile("/index.html");
-
+app.UseSwagger();
 app.Run();

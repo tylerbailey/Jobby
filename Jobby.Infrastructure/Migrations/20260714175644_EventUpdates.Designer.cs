@@ -3,6 +3,7 @@ using System;
 using Jobby.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Jobby.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260714175644_EventUpdates")]
+    partial class EventUpdates
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -132,64 +135,6 @@ namespace Jobby.Infrastructure.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("Jobby.Models.Entities.CalendarEvent", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("AppId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("Disabled")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime>("EventDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("EventDescription")
-                        .IsRequired()
-                        .HasColumnType("varchar(1024)");
-
-                    b.Property<string>("EventTitle")
-                        .IsRequired()
-                        .HasColumnType("varchar(256)");
-
-                    b.Property<DateTime?>("Modified")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("NotificationMinutesBefore")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("NotificationSent")
-                        .HasColumnType("boolean");
-
-                    b.Property<int?>("RecruiterId")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("SendNotification")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AppId");
-
-                    b.HasIndex("RecruiterId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("CalendarEvents");
-                });
-
             modelBuilder.Entity("Jobby.Models.Entities.JobApp", b =>
                 {
                     b.Property<int>("Id")
@@ -264,6 +209,63 @@ namespace Jobby.Infrastructure.Migrations
                     b.HasIndex("StageId");
 
                     b.ToTable("JobApps");
+                });
+
+            modelBuilder.Entity("Jobby.Models.Entities.JobEvent", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("AppId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("Disabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("EventDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("EventDescription")
+                        .IsRequired()
+                        .HasColumnType("varchar(1024)");
+
+                    b.Property<string>("EventTitle")
+                        .IsRequired()
+                        .HasColumnType("varchar(256)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("NotificationMinutesBefore")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("NotificationSent")
+                        .HasColumnType("boolean");
+
+                    b.Property<int?>("RecruiterId")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("SendNotification")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppId");
+
+                    b.HasIndex("RecruiterId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("JobEvents");
                 });
 
             modelBuilder.Entity("Jobby.Models.Entities.JobHistory", b =>
@@ -515,29 +517,6 @@ namespace Jobby.Infrastructure.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Jobby.Models.Entities.CalendarEvent", b =>
-                {
-                    b.HasOne("Jobby.Models.Entities.JobApp", "JobApp")
-                        .WithMany("JobEvents")
-                        .HasForeignKey("AppId");
-
-                    b.HasOne("Jobby.Models.Entities.Recruiter", "Recruiter")
-                        .WithMany()
-                        .HasForeignKey("RecruiterId");
-
-                    b.HasOne("Jobby.Models.Entities.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("JobApp");
-
-                    b.Navigation("Recruiter");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Jobby.Models.Entities.JobApp", b =>
                 {
                     b.HasOne("Jobby.Models.Entities.LocationType", "LocationType")
@@ -561,6 +540,27 @@ namespace Jobby.Infrastructure.Migrations
                     b.Navigation("LocationType");
 
                     b.Navigation("Recruitor");
+                });
+
+            modelBuilder.Entity("Jobby.Models.Entities.JobEvent", b =>
+                {
+                    b.HasOne("Jobby.Models.Entities.JobApp", "JobApp")
+                        .WithMany("JobEvents")
+                        .HasForeignKey("AppId");
+
+                    b.HasOne("Jobby.Models.Entities.Recruiter", "Recruiter")
+                        .WithMany()
+                        .HasForeignKey("RecruiterId");
+
+                    b.HasOne("Jobby.Models.Entities.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("JobApp");
+
+                    b.Navigation("Recruiter");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Jobby.Models.Entities.JobHistory", b =>

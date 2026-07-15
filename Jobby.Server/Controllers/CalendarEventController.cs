@@ -1,5 +1,4 @@
 using Jobby.Models.Dto;
-using Jobby.Models.Entities;
 using Jobby.Server.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +16,8 @@ namespace Jobby.Server.Controllers
         [HttpPost("new")]
         public async Task<IActionResult> CreateEvent(JobEventModel jobEvent)
         {
-            await _eventService.CreateEventAsync(jobEvent);
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
+            await _eventService.CreateEventAsync(jobEvent, userId);
             return Ok();
         }
 

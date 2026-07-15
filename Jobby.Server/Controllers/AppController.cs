@@ -85,7 +85,7 @@ namespace Jobby.Server.Controllers
 
         [HttpPost("gen")]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> GenerateResumeAsync([FromForm] IFormFile file, [FromForm] string posting)
+        public async Task<IActionResult> GenerateResumeAsync(IFormFile file, [FromForm] string posting)
         {
             if (file is null || file.Length == 0)
                 return BadRequest(new { message = "A docx file is required." });
