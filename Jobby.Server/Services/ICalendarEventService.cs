@@ -2,7 +2,7 @@ using Jobby.Models.Dto;
 
 namespace Jobby.Server.Services;
 
-public interface IEventService
+public interface ICalendarEventService
 {
     Task CreateEventAsync(JobEventModel jobEvent, string userId);
     Task DeleteEventAsync(int eventId, string userId);

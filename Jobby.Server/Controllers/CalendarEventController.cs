@@ -9,9 +9,9 @@ namespace Jobby.Server.Controllers
     [Authorize]
     [ApiController]
     [Route("api/events")]
-    public class CalendarEventController(IEventService eventService) : Controller
+    public class CalendarEventController(ICalendarEventService eventService) : Controller
     {
-        private readonly IEventService _eventService = eventService;
+        private readonly ICalendarEventService _eventService = eventService;
 
         [HttpPost("new")]
         public async Task<IActionResult> CreateEvent(JobEventModel jobEvent)

@@ -97,10 +97,10 @@ builder.Services
 
 // -------------------- CUSTOM SERVICES --------------------
 
-builder.Services.AddScoped<IAppService, AppService>();
+builder.Services.AddScoped<IJobService, JobService>();
 builder.Services.AddScoped<IStageService, StageService>();
-builder.Services.AddScoped<IHistoryService, HistoryService>();
-builder.Services.AddScoped<IEventService, EventService>();
+builder.Services.AddScoped<IJobHistoryService, JobHistoryService>();
+builder.Services.AddScoped<ICalendarEventService, CalendarEventService>();
 builder.Services.AddScoped<IRecruiterService, RecruiterService>();
 builder.Services.AddScoped<IResumeService, ResumeService>();
 builder.Services.AddScoped<IAdminUserService, AdminUserService>();

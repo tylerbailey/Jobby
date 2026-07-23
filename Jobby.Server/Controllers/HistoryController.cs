@@ -9,9 +9,9 @@ namespace Jobby.Server.Controllers;
 [Authorize]
 [ApiController]
 [Route("api/history")]
-public class HistoryController(IHistoryService historyService) : Controller
+public class HistoryController(IJobHistoryService historyService) : Controller
 {
-    private readonly IHistoryService _historyService = historyService;
+    private readonly IJobHistoryService _historyService = historyService;
 
     [HttpGet("{appId}")]
     public async Task<IActionResult> GetHistory(int appId)

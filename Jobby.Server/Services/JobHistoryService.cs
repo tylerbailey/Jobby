@@ -5,14 +5,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Jobby.Server.Services;
 
-public class HistoryService(IDbContextFactory<AppDbContext> dbContextFactory) : ServiceBase(dbContextFactory), IHistoryService
+public class JobHistoryService(IDbContextFactory<AppDbContext> dbContextFactory) : ServiceBase(dbContextFactory), IJobHistoryService
 {
     public async Task CreateHistoryAsync(JobHistoryModel jobHistory)
     {
         await using var db = await _dbContextFactory.CreateDbContextAsync();
         await db.JobHistories.AddAsync(new JobHistory
         {
-            AppId = jobHistory.AppId,
+            JobId = jobHistory.AppId,
             Color = jobHistory.Color,
             Created = DateTime.UtcNow,
             EventTitle = jobHistory.EventTitle,
@@ -24,16 +24,16 @@ public class HistoryService(IDbContextFactory<AppDbContext> dbContextFactory) : 
     public async Task<List<JobHistoryModel>> GetHistoryAsync(int appId, string userId)
     {
         await using var db = await _dbContextFactory.CreateDbContextAsync();
-        var ownsApp = await db.JobApps.AnyAsync(a => a.Id == appId && a.UserId == userId && !a.Disabled);
+        var ownsApp = await db.Jobs.AnyAsync(a => a.Id == appId && a.UserId == userId && !a.Disabled);
 
         if (!ownsApp)
             return [];
 
         return await db.JobHistories
-            .Where(h => h.AppId == appId && !h.Disabled)
+            .Where(h => h.JobId == appId && !h.Disabled)
             .Select(history => new JobHistoryModel
             {
-                AppId = history.AppId,
+                AppId = history.JobId,
                 Color = history.Color,
                 EventDate = history.Created,
                 EventTitle = history.EventTitle,

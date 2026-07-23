@@ -7,18 +7,18 @@ namespace Jobby.Server.Services
 {
     public class StageService(IDbContextFactory<AppDbContext> dbContextFactory) : ServiceBase(dbContextFactory), IStageService
     {
-        public async Task CreateStageAsync(AppStageModel appStage, string userId)
+        public async Task CreateStageAsync(JobStageModel appStage, string userId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
 
-            var existingStages = await db.AppStages
+            var existingStages = await db.JobStages
                 .Where(s => s.UserId == userId && !s.Disabled)
                 .ToListAsync();
 
             foreach (var stage in existingStages)
                 stage.Order++;
 
-            db.AppStages.Add(new AppStage
+            db.JobStages.Add(new JobStage
             {
                 UserId = userId,
                 Name = appStage.Name,
@@ -29,10 +29,10 @@ namespace Jobby.Server.Services
             await db.SaveChangesAsync();
         }
 
-        public async Task UpdateStageAsync(AppStageModel appStage, string userId)
+        public async Task UpdateStageAsync(JobStageModel appStage, string userId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
-            var stage = await db.AppStages.Where(s => s.Id == appStage.Id && s.UserId == userId).FirstOrDefaultAsync();
+            var stage = await db.JobStages.Where(s => s.Id == appStage.Id && s.UserId == userId).FirstOrDefaultAsync();
             if (stage != null)
             {
                 stage.Name = appStage.Name;
@@ -48,7 +48,7 @@ namespace Jobby.Server.Services
 
             await using var db = await _dbContextFactory.CreateDbContextAsync();
             var stageIds = request.Stages.Select(s => s.Id).ToHashSet();
-            var stages = await db.AppStages
+            var stages = await db.JobStages
                 .Where(s => s.UserId == userId && !s.Disabled && stageIds.Contains(s.Id))
                 .ToListAsync();
 
@@ -65,33 +65,33 @@ namespace Jobby.Server.Services
         public async Task DeleteStageAsync(int stageId, string userId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
-            var stage = await db.AppStages.Where(s => s.Id == stageId && s.UserId == userId).FirstOrDefaultAsync();
-            if (stage != null && (stage.JobApps == null || stage.JobApps.Count == 0))
+            var stage = await db.JobStages.Where(s => s.Id == stageId && s.UserId == userId).FirstOrDefaultAsync();
+            if (stage != null && (stage.Jobs == null || stage.Jobs.Count == 0))
             {
-                db.AppStages.Remove(stage);
+                db.JobStages.Remove(stage);
                 await db.SaveChangesAsync();
             }
         }
 
-        public async Task<List<AppStageModel>> GetUserPipelineAsync(string userId)
+        public async Task<List<JobStageModel>> GetUserPipelineAsync(string userId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
-            var stages = await db.AppStages
+            var stages = await db.JobStages
        .Where(s => !s.Disabled && s.UserId == userId)
-       .Include(s => s.JobApps.Where(a => a.UserId == userId && !a.Disabled))
+       .Include(s => s.Jobs.Where(a => a.UserId == userId && !a.Disabled))
            .ThenInclude(a => a.LocationType)
-       .Include(s => s.JobApps.Where(a => a.UserId == userId && !a.Disabled))
+       .Include(s => s.Jobs.Where(a => a.UserId == userId && !a.Disabled))
            .ThenInclude(a => a.JobEvents.Where(e => !e.Disabled))
        .OrderBy(s => s.Order)
        .ToListAsync();
 
-            var result = stages.Select(s => new AppStageModel
+            var result = stages.Select(s => new JobStageModel
             {
                 Id = s.Id,
                 Name = s.Name,
                 Order = s.Order,
                 Color = s.Color,
-                Items = [.. (s.JobApps ?? []).Where(a => !a.Disabled && !a.IsArchived).Select(a => new UserJobApplicationModel
+                Items = [.. (s.Jobs ?? []).Where(a => !a.Disabled && !a.IsArchived).Select(a => new JobModel
                 {
                     Id = a.Id,
                     CompanyName = a.Company,
@@ -111,7 +111,7 @@ namespace Jobby.Server.Services
                     Events = [.. (a.JobEvents ?? []).Where(e => e.EventDate >= DateTime.UtcNow).Select(e => new JobEventModel
                     {
                         Id = e.Id,
-                        AppId = e.AppId,
+                        AppId = e.JobId,
                         EventDate = DateTime.SpecifyKind(e.EventDate, DateTimeKind.Utc),
                         EventTitle = e.EventTitle,
                         EventDescription = e.EventDescription,

@@ -9,9 +9,9 @@ namespace Jobby.Server.Controllers
     [Authorize]
     [ApiController]
     [Route("api/app")]
-    public class AppController(IAppService appService) : Controller
+    public class AppController(IJobService appService) : Controller
     {
-        private readonly IAppService _appService = appService;
+        private readonly IJobService _appService = appService;
 
         [HttpGet("all")]
         public async Task<IActionResult> GetAllApplicationsAsync()
@@ -22,7 +22,7 @@ namespace Jobby.Server.Controllers
         }
 
         [HttpPost("new")]
-        public async Task<IActionResult> CreateApplication(UserJobApplicationModel application)
+        public async Task<IActionResult> CreateApplication(JobModel application)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
             await _appService.CreateNewAppAsync(application, userId);
@@ -30,7 +30,7 @@ namespace Jobby.Server.Controllers
         }
 
         [HttpPost("update")]
-        public async Task<ActionResult> UpdateApplication(UserJobApplicationModel application)
+        public async Task<ActionResult> UpdateApplication(JobModel application)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
             await _appService.UpdateAppAsync(application, userId);

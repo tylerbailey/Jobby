@@ -35,7 +35,7 @@ public class RecruiterService(IDbContextFactory<AppDbContext> dbContextFactory) 
                 Agency = r.Agency,
                 Name = r.Name,
                 PhoneNumber = r.PhoneNumber,
-                Applications = r.Applications,
+                Jobs = r.Jobs,
                 LastContact = r.LastContact,
                 NextContact = r.NextContact,
                 Email = r.Email,
@@ -58,7 +58,7 @@ public class RecruiterService(IDbContextFactory<AppDbContext> dbContextFactory) 
                 NextContact = r.NextContact,
                 Email = r.Email,
                 Notes = r.Notes,
-                ApplicationIds = r.Applications.Select(a => a.Id).ToList(),
+                ApplicationIds = r.Jobs.Select(a => a.Id).ToList(),
             })
             .FirstOrDefaultAsync() ?? new RecruiterModel();
     }

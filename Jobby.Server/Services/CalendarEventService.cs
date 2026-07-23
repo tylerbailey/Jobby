@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Jobby.Server.Services
 {
-    public class EventService(IDbContextFactory<AppDbContext> dbContextFactory) : ServiceBase(dbContextFactory), IEventService
+    public class CalendarEventService(IDbContextFactory<AppDbContext> dbContextFactory) : ServiceBase(dbContextFactory), ICalendarEventService
     {
 
         public async Task CreateEventAsync(JobEventModel jobEvent, string userId)
@@ -15,7 +15,7 @@ namespace Jobby.Server.Services
             var entry = new CalendarEvent
             {
                 UserId = userId,
-                AppId = jobEvent.AppId,
+                JobId = jobEvent.AppId,
                 RecruiterId = jobEvent.RecruiterId,
                 EventTitle = jobEvent.EventTitle,
                 EventDescription = jobEvent.EventDescription,
@@ -27,7 +27,7 @@ namespace Jobby.Server.Services
             {
                 await db.JobHistories.AddAsync(new JobHistory
                 {
-                    AppId = jobEvent.AppId.Value,
+                    JobId = jobEvent.AppId.Value,
                     Color = Colors.Yellow,
                     EventTitle = "Event Creation",
                     EventDescription = $@"Event ""{jobEvent.EventTitle}"" was created.",
@@ -40,10 +40,10 @@ namespace Jobby.Server.Services
         public async Task<List<JobEventModel>> GetEventsAsync(int appId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
-            List<JobEventModel> jobEvents = db.CalendarEvents.Where(j => j.AppId == appId && !j.Disabled).Select(j => new JobEventModel()
+            List<JobEventModel> jobEvents = db.CalendarEvents.Where(j => j.JobId == appId && !j.Disabled).Select(j => new JobEventModel()
             {
                 Id = j.Id,
-              AppId = j.AppId,
+              AppId = j.JobId,
               EventTitle = j.EventTitle,
               EventDescription = j.EventDescription,
               EventDate = DateTime.SpecifyKind(j.EventDate, DateTimeKind.Utc)
@@ -55,10 +55,10 @@ namespace Jobby.Server.Services
         public async Task<List<JobEventModel>> GetUpcomingEventsAsync(int appId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
-            List<JobEventModel> jobEvents = [.. db.CalendarEvents.Where(j => j.AppId == appId && j.EventDate >= DateTime.UtcNow &&!j.Disabled).Select(j => new JobEventModel()
+            List<JobEventModel> jobEvents = [.. db.CalendarEvents.Where(j => j.JobId == appId && j.EventDate >= DateTime.UtcNow &&!j.Disabled).Select(j => new JobEventModel()
             {
                 Id = j.Id,
-                AppId = j.AppId,
+                AppId = j.JobId,
                 EventTitle = j.EventTitle,
                 EventDescription = j.EventDescription,
                 EventDate = j.EventDate
@@ -70,30 +70,30 @@ namespace Jobby.Server.Services
         public async Task<List<JobEventModel>> GetUserEventsAsync(string userId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
-            var events = await db.JobApps.Where(j => j.UserId == userId && j.JobEvents != null && j.JobEvents.Count > 0 && !j.Disabled).SelectMany(j => j.JobEvents.Where(e => !e.Disabled)).Select(e => new JobEventModel()
+            var events = await db.Jobs.Where(j => j.UserId == userId && j.JobEvents != null && j.JobEvents.Count > 0 && !j.Disabled).SelectMany(j => j.JobEvents.Where(e => !e.Disabled)).Select(e => new JobEventModel()
             {
                 Id = e.Id,
-                AppId = e.AppId,
+                AppId = e.JobId,
                 EventTitle = e.EventTitle,
                 EventDescription = e.EventDescription,
                 EventDate = DateTime.SpecifyKind(e.EventDate, DateTimeKind.Utc),
-                JobApplication = new UserJobApplicationModel()
+                JobApplication = new JobModel()
                 {
-                    Id = e.JobApp!.Id,
-                    CompanyName = e.JobApp.Company,
-                    JobTitle = e.JobApp.Title,
-                    Summary = e.JobApp.Summary ?? string.Empty,
-                    JobPostingUrl = e.JobApp.JobPostingUrl ?? string.Empty,
-                    Address = e.JobApp.Address ?? string.Empty,
-                    Salary = e.JobApp.Salary,
-                    LocationTypeId = e.JobApp.LocationTypeId,
-                    LocationType = (e.JobApp.LocationType != null ? e.JobApp.LocationType.Type : string.Empty ),
-                    Notes = e.JobApp.Notes ?? string.Empty,
-                    ContactName = e.JobApp.ContactName ?? string.Empty,
-                    AppliedDate = e.JobApp.Applied.HasValue ? DateTime.SpecifyKind(e.JobApp.Applied.Value, DateTimeKind.Utc) : null,
-                    Status = e.JobApp.Status,
-                    IsArchived = e.JobApp.IsArchived,
-                    StageId = e.JobApp.StageId,
+                    Id = e.Job!.Id,
+                    CompanyName = e.Job.Company,
+                    JobTitle = e.Job.Title,
+                    Summary = e.Job.Summary ?? string.Empty,
+                    JobPostingUrl = e.Job.JobPostingUrl ?? string.Empty,
+                    Address = e.Job.Address ?? string.Empty,
+                    Salary = e.Job.Salary,
+                    LocationTypeId = e.Job.LocationTypeId,
+                    LocationType = (e.Job.LocationType != null ? e.Job.LocationType.Type : string.Empty ),
+                    Notes = e.Job.Notes ?? string.Empty,
+                    ContactName = e.Job.ContactName ?? string.Empty,
+                    AppliedDate = e.Job.Applied.HasValue ? DateTime.SpecifyKind(e.Job.Applied.Value, DateTimeKind.Utc) : null,
+                    Status = e.Job.Status,
+                    IsArchived = e.Job.IsArchived,
+                    StageId = e.Job.StageId,
                 }
             }).ToListAsync();
 
@@ -103,13 +103,13 @@ namespace Jobby.Server.Services
         public async Task DeleteEventAsync(int eventId, string userId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
-            var foundEvent = await db.CalendarEvents.Where(e => e.Id == eventId && e.JobApp!.UserId == userId).FirstOrDefaultAsync();
-            if (foundEvent != null && foundEvent.AppId.HasValue)
+            var foundEvent = await db.CalendarEvents.Where(e => e.Id == eventId && e.Job!.UserId == userId).FirstOrDefaultAsync();
+            if (foundEvent != null && foundEvent.JobId.HasValue)
             {
                 foundEvent.Disabled = true;
                 await db.JobHistories.AddAsync(new JobHistory
                 {
-                    AppId = foundEvent.AppId.Value,
+                    JobId = foundEvent.JobId.Value,
                     Color = Colors.Yellow,
                     EventTitle = "Event Deleted",
                     EventDescription = $@"Event ""{foundEvent.EventTitle}"" was deleted.",

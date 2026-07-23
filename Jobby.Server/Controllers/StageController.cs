@@ -14,14 +14,14 @@ namespace Jobby.Server.Controllers
         private readonly IStageService _stageService = stageService;
 
         [HttpPost("new")]
-        public async Task<IActionResult> CreateStage(AppStageModel appStage)
+        public async Task<IActionResult> CreateStage(JobStageModel appStage)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
             await _stageService.CreateStageAsync(appStage, userId);
             return Ok();
         }
         [HttpPost("update")]
-        public async Task<IActionResult> UpdateStage(AppStageModel appStage)
+        public async Task<IActionResult> UpdateStage(JobStageModel appStage)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
             await _stageService.UpdateStageAsync(appStage, userId);

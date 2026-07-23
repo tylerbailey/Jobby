@@ -23,6 +23,6 @@ namespace Jobby.Models.Dto
         public DateTime EventDate { get; set; }
 
         [JsonPropertyName("application")]
-        public UserJobApplicationModel JobApplication { get; set; } = new UserJobApplicationModel();
+        public JobModel JobApplication { get; set; } = new JobModel();
     }
 }

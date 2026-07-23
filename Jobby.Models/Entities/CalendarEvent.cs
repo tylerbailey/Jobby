@@ -9,8 +9,8 @@ namespace Jobby.Models.Entities
         [ForeignKey("User")]
         public string UserId { get; set; } = string.Empty;
 
-        [ForeignKey("JobApp")]
-        public int? AppId { get; set; }
+        [ForeignKey("Job")]
+        public int? JobId { get; set; }
 
         [ForeignKey("Recruiter")]
         public int? RecruiterId { get; set; }
@@ -23,14 +23,9 @@ namespace Jobby.Models.Entities
 
         public DateTime EventDate { get; set; }
 
-        public int NotificationMinutesBefore { get; set; }
+        public virtual ApplicationUser? User { get; set; }
 
-        public Boolean SendNotification { get; set; } = false;
-
-        public Boolean NotificationSent { get; set; } = false;
-
-        public virtual ApplicationUser User { get; set; } = null!;
-        public virtual JobApp? JobApp { get; set; }
+        public virtual Job? Job { get; set; }
 
         public virtual Recruiter? Recruiter { get; set; }
     }

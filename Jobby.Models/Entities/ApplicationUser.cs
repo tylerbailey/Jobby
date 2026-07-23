@@ -9,6 +9,5 @@ namespace Jobby.Models.Entities
         [Column(TypeName = "varchar(256)")]
         public string? DisplayName { get; set; }
         public bool IsApproved { get; set; } = false;
-        public bool ReceiveEmailNotifications { get; set; } = false;
     }
 }

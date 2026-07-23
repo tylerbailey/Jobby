@@ -11,15 +11,15 @@ using System.Text.Json;
 
 namespace Jobby.Server.Services
 {
-    public class AppService(IDbContextFactory<AppDbContext> dbContextFactory, IOllamaService ollamaService, IJobScrapeService jobScrapeService) : ServiceBase(dbContextFactory), IAppService
+    public class JobService(IDbContextFactory<AppDbContext> dbContextFactory, IOllamaService ollamaService, IJobScrapeService jobScrapeService) : ServiceBase(dbContextFactory), IJobService
     {
         private readonly IOllamaService _ollamaService = ollamaService;
         private readonly IJobScrapeService _jobScrapeService = jobScrapeService;
 
-        public async Task<UserJobApplicationModel> GetAppAsync(string userId, int applicationId)
+        public async Task<JobModel> GetAppAsync(string userId, int applicationId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
-            var application = await db.JobApps.Where(a => a.UserId == userId && a.Id == applicationId && !a.Disabled && !a.IsArchived).Select(a => new UserJobApplicationModel
+            var application = await db.Jobs.Where(a => a.UserId == userId && a.Id == applicationId && !a.Disabled && !a.IsArchived).Select(a => new JobModel
             {
                 Id = a.Id,
                 CompanyName = a.Company,
@@ -36,15 +36,15 @@ namespace Jobby.Server.Services
                 Status = a.Status,
                 IsArchived = a.IsArchived,
                 StageId = a.StageId
-            }).FirstOrDefaultAsync() ?? new UserJobApplicationModel();
+            }).FirstOrDefaultAsync() ?? new JobModel();
             return application;
         }
 
-        public async Task<List<UserJobApplicationModel>> GetAppsAsync(string userId)
+        public async Task<List<JobModel>> GetAppsAsync(string userId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
-            var applications = await db.JobApps.Where(j => j.UserId == userId && !j.Disabled && !j.IsArchived).Select(j =>
-                new UserJobApplicationModel()
+            var applications = await db.Jobs.Where(j => j.UserId == userId && !j.Disabled && !j.IsArchived).Select(j =>
+                new JobModel()
                 {
                     Id = j.Id,
                     CompanyName = j.Company,
@@ -67,11 +67,11 @@ namespace Jobby.Server.Services
             return applications;
         }
 
-        public async Task CreateNewAppAsync(UserJobApplicationModel application, string userId)
+        public async Task CreateNewAppAsync(JobModel application, string userId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
-            var startingStage = await db.AppStages.Where(s => !s.Disabled && s.UserId == userId).OrderBy(s => s.Order).FirstOrDefaultAsync() ?? new AppStage();
-            var newJobApp = new JobApp()
+            var startingStage = await db.JobStages.Where(s => !s.Disabled && s.UserId == userId).OrderBy(s => s.Order).FirstOrDefaultAsync() ?? new JobStage();
+            var newJobApp = new Job()
             {
                 UserId = userId,
                 Company = application.CompanyName,
@@ -89,12 +89,12 @@ namespace Jobby.Server.Services
                 StageId = application.StageId ?? startingStage.Id,
                 Created = DateTime.UtcNow
             };
-            await db.JobApps.AddAsync(newJobApp);
+            await db.Jobs.AddAsync(newJobApp);
             await db.SaveChangesAsync();
 
             await db.JobHistories.AddAsync(new JobHistory
             {
-                AppId = newJobApp.Id,
+                JobId = newJobApp.Id,
                 Color = Colors.Purple,
                 EventTitle = "Creation",
                 EventDescription = "Application was created.",
@@ -107,13 +107,13 @@ namespace Jobby.Server.Services
         public async Task DeleteAppAsync(int appId, string userId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
-            var application = await db.JobApps.FirstOrDefaultAsync(a => a.Id == appId && a.UserId == userId);
+            var application = await db.Jobs.FirstOrDefaultAsync(a => a.Id == appId && a.UserId == userId);
             if (application != null)
             {
                 application.Disabled = true;
                 await db.JobHistories.AddAsync(new JobHistory
                 {
-                    AppId = application.Id,
+                    JobId = application.Id,
                     Color = Colors.Blue,
                     EventTitle = "Deleted",
                     EventDescription = "Application was deleted.",
@@ -123,10 +123,10 @@ namespace Jobby.Server.Services
             }
         }
 
-        public async Task UpdateAppAsync(UserJobApplicationModel application, string userId)
+        public async Task UpdateAppAsync(JobModel application, string userId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
-            var jobApp = await db.JobApps.FirstOrDefaultAsync(a => a.Id == application.Id && a.UserId == userId);
+            var jobApp = await db.Jobs.FirstOrDefaultAsync(a => a.Id == application.Id && a.UserId == userId);
             if (jobApp != null)
             {
                 jobApp.Company = application.CompanyName;
@@ -143,11 +143,11 @@ namespace Jobby.Server.Services
                 jobApp.Modified = DateTime.UtcNow;
                 jobApp.Status = application.Status;
                 jobApp.IsArchived = application.IsArchived;
-                db.JobApps.Update(jobApp);
+                db.Jobs.Update(jobApp);
 
                 await db.JobHistories.AddAsync(new JobHistory
                 {
-                    AppId = jobApp.Id,
+                    JobId = jobApp.Id,
                     Color = Colors.Green,
                     EventTitle = "Application Updated.",
                     EventDescription = "Application was updated.",
@@ -160,15 +160,15 @@ namespace Jobby.Server.Services
         public async Task MoveApplicationStageAsync(int applicationId, int stageId, string userId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
-            var application = await db.JobApps.Where(a => a.Id == applicationId && a.UserId == userId).FirstOrDefaultAsync();
+            var application = await db.Jobs.Where(a => a.Id == applicationId && a.UserId == userId).FirstOrDefaultAsync();
             if (application != null)
             {
-                var stage = db.AppStages.Where(a => a.Id == application.StageId && a.UserId == userId).FirstOrDefault();
-                var newStage = db.AppStages.Where(a => a.Id == stageId && a.UserId == userId).FirstOrDefault();
+                var stage = db.JobStages.Where(a => a.Id == application.StageId && a.UserId == userId).FirstOrDefault();
+                var newStage = db.JobStages.Where(a => a.Id == stageId && a.UserId == userId).FirstOrDefault();
 
                 db.JobHistories.Add(new JobHistory
                 {
-                    AppId = applicationId,
+                    JobId = applicationId,
                     Color = Colors.Blue,
                     EventTitle = "Moved Stage",
                     EventDescription = $"Application moved from stage {stage?.Name ?? "unknown"} to stage {newStage?.Name ?? "unknown"}.",
@@ -284,14 +284,14 @@ namespace Jobby.Server.Services
         public async Task ArchiveAppAsync(int appId, bool isArchived, string userId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
-            var jobApp = await db.JobApps.FirstOrDefaultAsync(a => a.Id == appId && a.UserId == userId);
+            var jobApp = await db.Jobs.FirstOrDefaultAsync(a => a.Id == appId && a.UserId == userId);
             if (jobApp is null)
                 return;
 
             jobApp.IsArchived = isArchived;
             await db.JobHistories.AddAsync(new JobHistory
             {
-                AppId = jobApp.Id,
+                JobId = jobApp.Id,
                 Color = isArchived ? Colors.Gray : Colors.Olive,
                 EventTitle = isArchived ? "Application archived" : "Application removed from archive",
                 EventDescription = isArchived ? "Application marked as archived" : "Application was unarchived",
@@ -300,11 +300,11 @@ namespace Jobby.Server.Services
             await db.SaveChangesAsync();
         }
 
-        public async Task<List<UserJobApplicationModel>> GetArchivedAppsAsync(string userId)
+        public async Task<List<JobModel>> GetArchivedAppsAsync(string userId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
-            var applications = await db.JobApps.Where(j => j.UserId == userId && !j.Disabled && j.IsArchived).Select(j =>
-                new UserJobApplicationModel()
+            var applications = await db.Jobs.Where(j => j.UserId == userId && !j.Disabled && j.IsArchived).Select(j =>
+                new JobModel()
                 {
                     Id = j.Id,
                     CompanyName = j.Company,

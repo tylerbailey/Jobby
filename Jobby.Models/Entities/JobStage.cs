@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace Jobby.Models.Entities
 {
-    public class AppStage : BaseModel, IEntity
+    public class JobStage : BaseModel, IEntity
     {
         [Column(TypeName = "varchar(450)")]
         public string UserId { get; set; } = string.Empty;
@@ -16,6 +16,6 @@ namespace Jobby.Models.Entities
         [Column(TypeName = "varchar(128)")]
         public string Color { get; set; } = string.Empty;
 
-        public ICollection<JobApp> JobApps { get; set; } = [];
+        public ICollection<Job> Jobs { get; set; } = [];
     }
 }

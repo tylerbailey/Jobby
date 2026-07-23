@@ -22,7 +22,7 @@ namespace Jobby.Server.Services
             var periodEnd = DateOnly.FromDateTime(DateTime.UtcNow);
             var periodStart = periodEnd.AddDays(-(WindowDays - 1));
 
-            var apps = await db.JobApps
+            var apps = await db.Jobs
                 .AsNoTracking()
                 .Where(a => a.UserId == userId && !a.Disabled)
                 .Select(a => new { a.Created, a.Applied })

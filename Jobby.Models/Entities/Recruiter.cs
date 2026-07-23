@@ -26,6 +26,6 @@ namespace Jobby.Models.Entities
 
         public DateTime? NextContact { get; set; }
 
-        public ICollection<JobApp> Applications { get; set; } = [];
+        public ICollection<Job> Jobs { get; set; } = [];
     }
 }
