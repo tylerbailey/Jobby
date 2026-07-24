@@ -13,6 +13,6 @@ export type AuthContextType = {
 export type AuthResponse = {
     id: string;
     email: string;
-    displayName?: string;
+    displayName?: string | null;
     roles: string[];
 };

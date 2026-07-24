@@ -23,7 +23,7 @@ export type KanbanCardProps = {
     onUpdate: () => void;
 }
 export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
-    const { ref: dragRef } = useDraggable({ id: item.id.toString() });
+    const { ref: dragRef } = useDraggable({ id: item.id?.toString() ?? "new-app" });
     const [histories, setHistories] = useState<HistoryItem[]>([]);
     const [infoOpen, setInfoOpen] = useState<boolean>(false);
     const [menuOpen, setMenuOpen] = useState<boolean>(false);
@@ -36,7 +36,7 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
     }
 
     async function handleDelete() {
-        if (!item.id) {
+        if (item.id == null) {
             toast.warning("This application must be saved before it can be deleted.");
             return;
         }
@@ -72,6 +72,9 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
 
     useEffect(() => {
         async function loadItemHistory() {
+            if (item.id == null)
+                return;
+
             const response = await getHistory(item.id);
             setHistories(response.data);
         }

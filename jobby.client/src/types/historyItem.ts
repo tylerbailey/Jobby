@@ -1,8 +1,8 @@
-
 export type HistoryItem = {
+    id?: number | null;
     appId: number;
-    color: string
+    color: string;
     eventTitle: string;
     eventDescription: string;
-    eventDate: Date;
+    eventDate: string | Date;
 }

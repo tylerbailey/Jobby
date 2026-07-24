@@ -10,31 +10,26 @@ export type AddRecruiterProps = {
     setDialogOpen: Dispatch<SetStateAction<boolean>>;
 }
 export default function CreateRecruiter({onUpdate, dialogOpen, setDialogOpen }: AddRecruiterProps){
-    const [item, setItem] = useState<Recruiter>({
+    const emptyRecruiter = (): Recruiter => ({
+        id: null,
         name: "",
         agency: "",
         email: "",
-        lastContact: undefined,
-        nextContact: undefined,
+        lastContact: null,
+        nextContact: null,
         notes: "",
         phoneNumber: "",
-    })
+        applicationIds: [],
+    });
+
+    const [item, setItem] = useState<Recruiter>(emptyRecruiter)
 
     async function handleSave() {
-        console.log(item)
         await createRecruiter(item);
         setDialogOpen(false);
         onUpdate();
         toast.info("Recruiter added.")
-        setItem({
-            name: "",
-            agency: "",
-            email: "",
-            lastContact: undefined,
-            nextContact: undefined,
-            notes: "",
-            phoneNumber: "",
-        })
+        setItem(emptyRecruiter())
     }
 
   return (

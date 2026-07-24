@@ -3,6 +3,10 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+# macOS AppleDouble sidecars (created when writing via macOS to Windows/NTFS volumes)
+._*
+.DS_Store
+
 # User-specific files
 *.rsuser
 *.suo
@@ -369,3 +373,4 @@ FodyWeavers.xsd
 /jobby.client/public/favicon.svg
 /jobby.client/src/assets/hero.png
 /Jobby.Email/appsettings.Development.json
+/.cursor/rules

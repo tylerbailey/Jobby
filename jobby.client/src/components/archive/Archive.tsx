@@ -29,6 +29,11 @@ export default function ArchivedApps() {
     }
 
     async function handleDelete(application: Application) {
+        if (application.id == null) {
+            toast.error("This application has not been saved yet.");
+            return;
+        }
+
         await deleteApp(application.id);
         handleRefresh();
         toast.info("Archived application deleted.")

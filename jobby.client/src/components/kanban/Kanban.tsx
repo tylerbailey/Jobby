@@ -30,7 +30,7 @@ export function KanbanBoard({ stages, setStages, onUpdate, searchValue }: Kanban
 
     function findCard(stages: Stage[], cardId: string): Application | undefined {
         for (const stage of stages) {
-            const card = stage.items?.find(item => item.id?.toString() === cardId);
+            const card = stage.items.find(item => item.id?.toString() === cardId);
             if (card) return card;
         }
         return undefined;
@@ -74,13 +74,13 @@ export function KanbanBoard({ stages, setStages, onUpdate, searchValue }: Kanban
                 if (stage.id === card.stageId) {
                     return {
                         ...stage,
-                        items: stage.items?.filter(item => item.id?.toString() !== cardId)
+                        items: stage.items.filter(item => item.id?.toString() !== cardId)
                     };
                 }
                 if (stage.id === newStageId) {
                     return {
                         ...stage,
-                        items: [...stage.items!, { ...card, stageId: newStageId }]
+                        items: [...stage.items, { ...card, stageId: newStageId }]
                     };
                 }
                 return stage;
@@ -88,9 +88,9 @@ export function KanbanBoard({ stages, setStages, onUpdate, searchValue }: Kanban
         });
 
         const card = findCard(stagesRef.current, cardId);
-        if (card) {
+        if (card?.id != null) {
             try {
-                await moveAppStage(card.id!, newStageId);
+                await moveAppStage(card.id, newStageId);
             } catch {
                 toast.error("An error occurred while moving your application.");
                 onUpdate();
@@ -154,7 +154,7 @@ export function KanbanBoard({ stages, setStages, onUpdate, searchValue }: Kanban
                 >
                     {stages.map((stage) => (
                         <KanbanColumn
-                            key={stage.id!}
+                            key={stage.id ?? stage.name}
                             stage={stage}
                             searchValue={searchValue}
                             onUpdate={onUpdate}

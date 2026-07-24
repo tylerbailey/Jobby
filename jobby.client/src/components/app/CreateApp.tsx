@@ -13,7 +13,7 @@ import { useState, type Dispatch, type SetStateAction } from "react";
 import { toast } from "sonner";
 
 export type AppCreateProps = {
-    stage: number;
+    stage?: number | null;
     sheetOpen: boolean;
     setSheetOpen: Dispatch<SetStateAction<boolean>>
     onUpdate: () => void;
@@ -21,9 +21,9 @@ export type AppCreateProps = {
 
 type CreateStep = "choose" | "scrape" | "scraping" | "form";
 
-function createEmptyApplication(stage: number): Application {
+function createEmptyApplication(stage?: number | null): Application {
     return {
-        id: 0,
+        id: null,
         userId: "",
         companyName: "",
         jobTitle: "",
@@ -31,15 +31,27 @@ function createEmptyApplication(stage: number): Application {
         jobPostingUrl: "",
         locationTypeId: 0,
         locationType: "",
-        address: "",
-        salary: 0,
-        contactName: "",
-        stageId: stage,
-        notes: "",
+        address: null,
+        salary: null,
+        contactName: null,
+        stageId: stage ?? null,
+        notes: null,
         status: Status.InProgress,
         isArchived: false,
-        appliedDate: undefined,
+        appliedDate: null,
+        createdDate: null,
         events: [],
+        recruiter: {
+            id: null,
+            name: "",
+            agency: "",
+            notes: "",
+            email: "",
+            phoneNumber: "",
+            lastContact: null,
+            nextContact: null,
+            applicationIds: [],
+        },
     };
 }
 

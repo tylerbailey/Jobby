@@ -24,7 +24,7 @@ export function KanbanColumn({ stage, onUpdate, searchValue }: KanbanColumnProps
     const [sheetOpen, setSheetOpen] = useState<boolean>(false);
     const [dialogOpen, setDialogOpen] = useState<boolean>(false);
 
-    const stageId = stage.id!.toString();
+    const stageId = stage.id?.toString() ?? "";
     const { ref: dropRef } = useDroppable({ id: stageId });
     const { ref: columnDragRef, handleRef: columnHandleRef, isDragging } = useDraggable({
         id: `${COLUMN_DRAG_PREFIX}${stageId}`,
@@ -32,7 +32,12 @@ export function KanbanColumn({ stage, onUpdate, searchValue }: KanbanColumnProps
 
     async function handleDelete() {
         try {
-            if ((stage.items ?? []).length === 0) {
+            if (stage.id == null) {
+                toast.error("This stage has not been saved yet.")
+                return;
+            }
+
+            if (stage.items.length === 0) {
                 await deleteStage(stage.id);
                 setMenuOpen(false);
                 onUpdate();
@@ -68,7 +73,7 @@ export function KanbanColumn({ stage, onUpdate, searchValue }: KanbanColumnProps
                         <GripVertical className="h-4 w-4 shrink-0 text-muted-foreground" />
                         <h2 className="truncate font-semibold">{stage.name}</h2>
                         <span className="rounded-full bg-background/80 px-2 py-0.5 text-xs font-medium">
-                            {(stage.items ?? []).length}
+                            {stage.items.length}
                         </span>
                     </div>
                     <Popover open={menuOpen} onOpenChange={setMenuOpen}>

@@ -11,5 +11,5 @@ export type ProfileStats = {
 };
 
 export type UpdateProfileRequest = {
-    displayName: string;
+    displayName?: string | null;
 };

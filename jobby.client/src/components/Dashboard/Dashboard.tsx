@@ -34,9 +34,9 @@ export default function Dashboard() {
             const response = await getAllStages();
             const data = response.data;
             setStages(data);
-            setTotalApps(data.reduce((total, stage) => total + (stage.items ?? []).length, 0));
-            setAppliedApps(data.reduce((total, stage) => total + (stage.items ?? []).filter(item => item.appliedDate != null).length, 0));
-            setTotalRejected(data.reduce((total, stage) => total + (stage.items ?? []).filter(item => item.status == Status.Rejected).length, 0));
+            setTotalApps(data.reduce((total, stage) => total + stage.items.length, 0));
+            setAppliedApps(data.reduce((total, stage) => total + stage.items.filter(item => item.appliedDate != null).length, 0));
+            setTotalRejected(data.reduce((total, stage) => total + stage.items.filter(item => item.status == Status.Rejected).length, 0));
         }
         getMyStages();
     }, [refresh]);

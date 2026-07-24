@@ -31,7 +31,7 @@ export default function AppForm({
     header,
 }: AppFormProps) {
     const [locationTypes, setLocationTypes] = useState<AppLocationType[]>([]);
-    const [datePickerOpen, setDatePickerOpen] = useState<boolean>();
+    const [datePickerOpen, setDatePickerOpen] = useState<boolean>(false);
 
     useEffect(() => {
         async function loadLocations() {
@@ -111,7 +111,7 @@ export default function AppForm({
                             <SelectGroup>
                                 <SelectLabel>Locations</SelectLabel>
                                 {locationTypes.map((loc) => (
-                                    <SelectItem key={"loc-" + loc.id} value={loc.id.toString()}>
+                                    <SelectItem key={"loc-" + loc.id} value={(loc.id ?? 0).toString()}>
                                         {loc.type}
                                     </SelectItem>
                                 ))}
@@ -128,7 +128,7 @@ export default function AppForm({
                         id="input-field-jobaddress"
                         type="text"
                         placeholder="Enter the job posting address"
-                        value={item.address}
+                        value={item.address ?? ""}
                         onChange={(e) => setItem({ ...item, address: e.target.value })} />
                 </Field>
                 <Field className="py-3">
@@ -140,8 +140,11 @@ export default function AppForm({
                         id="input-field-jobsalary"
                         type="number"
                         placeholder="Enter the target salary"
-                        value={item.salary}
-                        onChange={(e) => setItem({ ...item, salary: Number.parseInt(e.target.value) })} />
+                        value={item.salary ?? ""}
+                        onChange={(e) => setItem({
+                            ...item,
+                            salary: e.target.value === "" ? null : Number.parseInt(e.target.value),
+                        })} />
                 </Field>
                 <Field className="py-3">
                     <FieldLabel>
@@ -161,7 +164,7 @@ export default function AppForm({
                         id="input-field-jobcontact"
                         type="text"
                         placeholder="Enter the contact name"
-                        value={item.contactName}
+                        value={item.contactName ?? ""}
                         onChange={(e) => setItem({ ...item, contactName: e.target.value })} />
                 </Field>
                 <Field className="py-3">
@@ -170,7 +173,7 @@ export default function AppForm({
                         Notes for the job.
                     </FieldDescription>
                     <Textarea className="h-40 resize-none overflow-y-auto" placeholder="Enter your notes here."
-                        value={item.notes}
+                        value={item.notes ?? ""}
                         onChange={(e) => setItem({ ...item, notes: e.target.value })} />
                 </Field>
             </div>

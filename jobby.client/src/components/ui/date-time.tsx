@@ -8,7 +8,7 @@ import { CalendarIcon, X } from "lucide-react";
 import { useState, type Dispatch, type SetStateAction } from "react";
 
 export type DateTimePickerProps = {
-    dateTime: Date;
+    dateTime?: string | Date | null;
     isOpen: boolean;
     setIsOpen: Dispatch<SetStateAction<boolean>>
     action: (e) => void;

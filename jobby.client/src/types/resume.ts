@@ -89,7 +89,7 @@ export interface ActionPlan {
 }
 
 export interface ResumeChange {
-    id: number;
+    id?: number | null;
     originalText: string;
     newText: string;
 }

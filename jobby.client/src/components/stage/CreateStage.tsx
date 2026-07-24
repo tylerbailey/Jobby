@@ -12,9 +12,11 @@ export type CreateStageProps = {
 }
 export default function CreateStage({onUpdate, dialogOpen, setDialogOpen } : CreateStageProps) {
     const [stage, setStage] = useState<Stage>({
+        id: null,
         order: 0,
         color: Colors.Gray,
         name: "",
+        items: [],
     });
 
     async function handleCreate() {

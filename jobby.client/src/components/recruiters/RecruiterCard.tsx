@@ -32,6 +32,11 @@ export default function RecruiterCard({ recruiter, onUpdate }: RecruiterCardProp
     }
 
     async function handleDelete() {
+        if (recruiter.id == null) {
+            toast.error("This recruiter has not been saved yet.")
+            return;
+        }
+
         await deleteRecruiter(recruiter.id)
         setMenuOpen(false);
         onUpdate();

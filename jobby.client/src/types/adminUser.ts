@@ -1,7 +1,7 @@
 export type AdminUser = {
     id: string;
     email: string;
-    displayName?: string;
+    displayName?: string | null;
     isApproved: boolean;
     emailConfirmed: boolean;
     lockoutEnabled: boolean;
@@ -11,7 +11,7 @@ export type AdminUser = {
 
 export type UpdateAdminUserRequest = {
     email?: string;
-    displayName?: string;
+    displayName?: string | null;
     isApproved?: boolean;
     emailConfirmed?: boolean;
     lockoutEnabled?: boolean;

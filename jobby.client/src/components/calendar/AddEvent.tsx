@@ -66,7 +66,13 @@ export default function AddEvent({ onUpdate, isOpen, setIsOpen }: AddEventProps)
                             <SelectGroup>
                                 <SelectLabel>Applications</SelectLabel>
                                 {applications && applications.map((app) => (
-                                    <SelectItem value={app.id.toString()}>{app.companyName} - {app.jobTitle}</SelectItem>
+                                    <SelectItem
+                                        key={app.id}
+                                        value={(app.id ?? 0).toString()}
+                                        disabled={app.id == null}
+                                    >
+                                        {app.companyName} - {app.jobTitle}
+                                    </SelectItem>
                                 ))}
                             </SelectGroup>
                         </SelectContent>
