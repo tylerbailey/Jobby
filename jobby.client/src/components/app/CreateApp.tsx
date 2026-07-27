@@ -23,7 +23,7 @@ type CreateStep = "choose" | "scrape" | "scraping" | "form";
 
 function createEmptyApplication(stage?: number | null): Application {
     return {
-        id: null,
+        id: 0,
         userId: "",
         companyName: "",
         jobTitle: "",
@@ -31,18 +31,18 @@ function createEmptyApplication(stage?: number | null): Application {
         jobPostingUrl: "",
         locationTypeId: 0,
         locationType: "",
-        address: null,
+        address: "",
         salary: null,
-        contactName: null,
+        contactName: "",
         stageId: stage ?? null,
-        notes: null,
+        notes: "",
         status: Status.InProgress,
         isArchived: false,
         appliedDate: null,
-        createdDate: null,
+        createdDate: new Date(0).toISOString(),
         events: [],
         recruiter: {
-            id: null,
+            id: 0,
             name: "",
             agency: "",
             notes: "",
