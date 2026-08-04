@@ -12,7 +12,6 @@ public class AdminUserService(
     private readonly UserManager<ApplicationUser> _userManager = userManager;
     private readonly RoleManager<IdentityRole> _roleManager = roleManager;
 
-    /// <summary>Retrieves all users, ordered by email, mapped to admin view models.</summary>
     public async Task<IList<UserAdminModel>> GetAllUsersAsync()
     {
         var users = _userManager.Users.OrderBy(u => u.Email).ToList();
@@ -24,14 +23,12 @@ public class AdminUserService(
         return models;
     }
 
-    /// <summary>Retrieves a single user mapped to an admin view model, or null if not found.</summary>
     public async Task<UserAdminModel?> GetUserAsync(string userId)
     {
         var user = await _userManager.FindByIdAsync(userId);
         return user is null ? null : await MapUserAsync(user);
     }
 
-    /// <summary>Retrieves the names of all available roles, ordered alphabetically.</summary>
     public Task<IList<string>> GetAllRolesAsync()
     {
         var roles = _roleManager.Roles
@@ -42,7 +39,6 @@ public class AdminUserService(
         return Task.FromResult<IList<string>>(roles);
     }
 
-    /// <summary>Updates a user's email, display name, approval, confirmation, lockout, and password settings.</summary>
     public async Task<(bool Succeeded, string? Error)> UpdateUserAsync(
         string userId,
         UpdateUserAdminRequest request,
@@ -105,7 +101,6 @@ public class AdminUserService(
         return (true, null);
     }
 
-    /// <summary>Updates a user's assigned roles, preventing an admin from removing their own Admin role.</summary>
     public async Task<(bool Succeeded, string? Error)> UpdateUserRolesAsync(
         string userId,
         IList<string> roles,
@@ -155,7 +150,6 @@ public class AdminUserService(
         return (true, null);
     }
 
-    /// <summary>Deletes a user account, preventing an admin from deleting their own account.</summary>
     public async Task<(bool Succeeded, string? Error)> DeleteUserAsync(string userId, string actingUserId)
     {
         if (userId == actingUserId)
@@ -171,7 +165,6 @@ public class AdminUserService(
             : (false, string.Join(", ", result.Errors.Select(e => e.Description)));
     }
 
-    /// <summary>Maps an application user and their roles to an admin view model.</summary>
     private async Task<UserAdminModel> MapUserAsync(ApplicationUser user)
     {
         var roles = await _userManager.GetRolesAsync(user);

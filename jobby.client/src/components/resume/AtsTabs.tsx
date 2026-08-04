@@ -8,10 +8,8 @@ import { ArrowRight, Check, CheckSquare, Square } from "lucide-react";
 import type { ResumeAnalysisResponse } from "@/types";
 import { Badge } from "@/components/ui/badge";
 
-/** Renders tabbed detail views for ATS findings, bullet rewrites, and the action plan. */
 function AtsTabs({ report }: {report: ResumeAnalysisResponse }) {
     const [checked, setChecked] = useState<Record<string, boolean>>({});
-    /** Toggles the completed state of an action plan item. */
     const toggle = (id: string) => setChecked((c) => ({ ...c, [id]: !c[id] }));
   return (
       <Tabs defaultValue="overview" className="w-full">

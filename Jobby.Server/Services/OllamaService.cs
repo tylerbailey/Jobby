@@ -11,7 +11,6 @@ public class OllamaService(HttpClient httpClient, IOptions<OllamaOptions> option
     private readonly OllamaOptions _options = options.Value;
     private readonly OllamaApiClient _client = new(httpClient);
 
-    /// <summary>Streams a plain-text completion from the Ollama model for the given prompt.</summary>
     public async Task<string> GenerateTextAsync(string prompt, CancellationToken cancellationToken = default)
     {
         var request = new GenerateRequest
@@ -24,7 +23,6 @@ public class OllamaService(HttpClient httpClient, IOptions<OllamaOptions> option
         return await CollectGenerateResponseAsync(request, cancellationToken);
     }
 
-    /// <summary>Streams a JSON-formatted chat completion from the Ollama model for the given prompt and optional system prompt.</summary>
     public async Task<string> GenerateJsonAsync(
         string prompt,
         string? systemPrompt = null,
@@ -57,7 +55,6 @@ public class OllamaService(HttpClient httpClient, IOptions<OllamaOptions> option
         return response.ToString();
     }
 
-    /// <summary>Collects and concatenates the streamed response chunks from a generate request.</summary>
     private async Task<string> CollectGenerateResponseAsync(
         GenerateRequest request,
         CancellationToken cancellationToken)

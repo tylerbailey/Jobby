@@ -4,7 +4,6 @@ namespace Jobby.Scraper.Services;
 
 public class PageScrapeService
 {
-    /// <summary>Loads a URL in a headless browser and returns its rendered HTML content.</summary>
     public async Task<string> ScrapeHtmlAsync(string url, CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();

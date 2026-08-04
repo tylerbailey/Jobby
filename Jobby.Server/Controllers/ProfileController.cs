@@ -12,7 +12,6 @@ public class ProfileController(IProfileService profileService) : ControllerBase
 {
     private readonly IProfileService _profileService = profileService;
 
-    /// <summary>Gets the current user's monthly application statistics.</summary>
     [HttpGet("stats")]
     public async Task<IActionResult> GetStats()
     {
@@ -24,7 +23,6 @@ public class ProfileController(IProfileService profileService) : ControllerBase
         return Ok(stats);
     }
 
-    /// <summary>Updates the current user's display name.</summary>
     [HttpPut]
     public async Task<IActionResult> UpdateProfile(UpdateProfileRequest request)
     {

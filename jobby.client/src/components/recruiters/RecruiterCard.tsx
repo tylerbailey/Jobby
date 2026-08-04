@@ -18,23 +18,19 @@ export type RecruiterCardProps = {
     onUpdate: () => void;
 }
 
-/** Renders a card summarizing a recruiter contact with edit and delete actions. */
 export default function RecruiterCard({ recruiter, onUpdate }: RecruiterCardProps) {
     const [menuOpen, setMenuOpen] = useState<boolean>(false);
     const [dialogOpen, setDialogOpen] = useState<boolean>(false);
     const [infoOpen, setInfoOpen] = useState<boolean>(false);
-    /** Derives initials from the recruiter's full name. */
     function getInitials(name: string) {
         return name.split(" ").map(n => n[0]).join("").toUpperCase();
     }
 
-    /** Opens the edit dialog for the recruiter. */
     function handleEdit() {
         setMenuOpen(false);
         setDialogOpen(true);
     }
 
-    /** Deletes the recruiter after verifying it has been saved. */
     async function handleDelete() {
         if (recruiter.id == null) {
             toast.error("This recruiter has not been saved yet.")

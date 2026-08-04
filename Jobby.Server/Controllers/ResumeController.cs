@@ -12,7 +12,6 @@ namespace Jobby.Server.Controllers
     {
         private readonly IResumeService _resumeService = resumeService;
 
-        /// <summary>Rates an uploaded resume docx and returns feedback.</summary>
         [HttpPost("review")]
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> RateResume(IFormFile file)

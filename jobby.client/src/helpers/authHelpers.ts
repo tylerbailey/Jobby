@@ -11,7 +11,6 @@ type ApiErrorBody = {
     errors?: string[] | IdentityError[];
 };
 
-/** Extracts a user-friendly error message from an auth-related API error. */
 export function getAuthErrorMessage(error: unknown, fallback: string): string {
     if (!axios.isAxiosError(error))
         return fallback;
@@ -66,7 +65,6 @@ export type RegisterFieldErrors = {
     password?: string;
 };
 
-/** Validates registration form fields and returns any field errors. */
 export function validateRegisterForm(
     displayName: string,
     email: string,
@@ -94,7 +92,6 @@ export function validateRegisterForm(
     return errors;
 }
 
-/** Checks whether any field error is present. */
 export function hasFieldErrors(errors: RegisterFieldErrors): boolean {
     return Object.values(errors).some(Boolean);
 }
@@ -103,7 +100,6 @@ type JwtPayload = {
     exp?: number;
 };
 
-/** Determines whether a JWT token is expired, allowing for a clock skew buffer. */
 export function isTokenExpired(token: string, skewSeconds = 30): boolean {
     try {
         const { exp } = jwtDecode<JwtPayload>(token);
@@ -116,7 +112,6 @@ export function isTokenExpired(token: string, skewSeconds = 30): boolean {
     }
 }
 
-/** Reads and parses the stored user from local storage, clearing it if invalid. */
 export function getStoredUser<T>(): T | null {
     const storedUser = localStorage.getItem("user");
     if (!storedUser)

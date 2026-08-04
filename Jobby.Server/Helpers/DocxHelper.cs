@@ -7,7 +7,6 @@ namespace Jobby.Server.Helpers
 {
     public static class DocxHelper
     {
-        /// <summary>Extracts each paragraph of a Word document into an indexed list of resume blocks.</summary>
         public static List<ResumeBlock> GetResumeBlocks(WordprocessingDocument wordDoc)
         {
             var data = wordDoc.MainDocumentPart!.Document!.Body;
@@ -16,7 +15,6 @@ namespace Jobby.Server.Helpers
             return blocks ?? [];
         }
 
-        /// <summary>Replaces a paragraph's text while preserving its formatting properties.</summary>
         public static void ReplaceParagraphText(Paragraph paragraph, string newText)
         {
             var pPr = paragraph.ParagraphProperties?.CloneNode(true);

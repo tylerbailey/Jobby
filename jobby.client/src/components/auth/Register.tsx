@@ -14,7 +14,6 @@ import {
 import { CircleAlert } from "lucide-react";
 import { useAuth } from "@/context/authContext";
 
-/** Renders the registration form and handles new account creation. */
 export function RegisterPage() {
     const navigate = useNavigate();
     const context = useAuth();
@@ -25,7 +24,6 @@ export function RegisterPage() {
     const [formError, setFormError] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    /** Clears the validation error for a single field, and any form-level error. */
     function clearFieldError(field: keyof RegisterFieldErrors) {
         if (fieldErrors[field] || formError) {
             setFieldErrors((current) => ({ ...current, [field]: undefined }));
@@ -33,7 +31,6 @@ export function RegisterPage() {
         }
     }
 
-    /** Validates and submits the registration form, then redirects to login. */
     async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
         setFormError(null);

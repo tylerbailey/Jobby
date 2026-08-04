@@ -20,7 +20,6 @@ export type KanbanBoardProps = {
     searchValue: string;
 }
 
-/** Renders the drag-and-drop kanban board of pipeline stages and application cards. */
 export function KanbanBoard({ stages, setStages, onUpdate, searchValue }: KanbanBoardProps) {
     const scrollRef = useRef<HTMLDivElement>(null);
     const stagesRef = useRef(stages);
@@ -29,7 +28,6 @@ export function KanbanBoard({ stages, setStages, onUpdate, searchValue }: Kanban
         stagesRef.current = stages;
     }, [stages]);
 
-    /** Finds the application card with the given id across all stages. */
     function findCard(stages: Stage[], cardId: string): Application | undefined {
         for (const stage of stages) {
             const card = stage.items.find(item => item.id?.toString() === cardId);
@@ -38,7 +36,6 @@ export function KanbanBoard({ stages, setStages, onUpdate, searchValue }: Kanban
         return undefined;
     }
 
-    /** Returns the stages with their order field renumbered by position. */
     function withUpdatedOrders(stages: Stage[]): Stage[] {
         return stages.map((stage, index) => ({
             ...stage,
@@ -46,7 +43,6 @@ export function KanbanBoard({ stages, setStages, onUpdate, searchValue }: Kanban
         }));
     }
 
-    /** Reorders pipeline stage columns and persists the new order. */
     async function handleColumnReorder(sourceStageId: number, targetStageId: number) {
         if (sourceStageId === targetStageId)
             return;
@@ -69,7 +65,6 @@ export function KanbanBoard({ stages, setStages, onUpdate, searchValue }: Kanban
         }
     }
 
-    /** Moves an application card to a new stage, updating local state and the server. */
     async function handleCardMove(cardId: string, newStageId: number) {
         setStages(prev => {
             const card = findCard(prev, cardId);
@@ -103,7 +98,6 @@ export function KanbanBoard({ stages, setStages, onUpdate, searchValue }: Kanban
         }
     }
 
-    /** Handles the end of a drag operation, dispatching column or card moves. */
     async function handleDragEnd(event: DragEndEvent) {
         try {
             if (event.canceled) return;
@@ -136,12 +130,10 @@ export function KanbanBoard({ stages, setStages, onUpdate, searchValue }: Kanban
         }
     }
 
-    /** Scrolls the board left by one column-width increment. */
     function handleScrollLeft() {
         scrollRef.current?.scrollBy({ left: -300, behavior: "smooth" });
     }
 
-    /** Scrolls the board right by one column-width increment. */
     function handleScrollRight() {
         scrollRef.current?.scrollBy({ left: 300, behavior: "smooth" });
     }

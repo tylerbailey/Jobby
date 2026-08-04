@@ -11,14 +11,12 @@ import { Status } from "@/consts/consts";
 import { deleteApp, getArchivedApps, updateApp } from "@/services/appService";
 import { toast } from "sonner";
 
-/** Renders the list of archived job applications with restore and delete actions. */
 export default function ArchivedApps() {
     const [refresh, setRefresh] = useState(0);
     const [search, setSearch] = useState("");
     const [items, setItems] = useState<Application[]>([])
 
     useEffect(() => {
-        /** Loads the archived applications from the server. */
         async function getArchived() {
             const response = await getArchivedApps();
             setItems(response.data);
@@ -26,12 +24,10 @@ export default function ArchivedApps() {
         getArchived();
     }, [refresh])
 
-    /** Triggers a reload of the archived applications. */
     function handleRefresh() {
         setRefresh(refresh + 1);
     }
 
-    /** Permanently deletes an archived application. */
     async function handleDelete(application: Application) {
         if (application.id == null) {
             toast.error("This application has not been saved yet.");
@@ -43,7 +39,6 @@ export default function ArchivedApps() {
         toast.info("Archived application deleted.")
     }
 
-    /** Restores an archived application by clearing its archived flag. */
     async function handleUnarchive(application: Application) {
         await updateApp({ ...application, isArchived: false })
         handleRefresh();

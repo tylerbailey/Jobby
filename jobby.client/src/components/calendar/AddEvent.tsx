@@ -15,7 +15,6 @@ export type AddEventProps = {
     onUpdate: () => void;
 }
 
-/** Renders the dialog for creating a new calendar event tied to an application. */
 export default function AddEvent({ onUpdate, isOpen, setIsOpen }: AddEventProps) {
     const [eventTitle, setEventTitle] = useState("");
     const [eventDescription, setEventDescription] = useState("");
@@ -25,7 +24,6 @@ export default function AddEvent({ onUpdate, isOpen, setIsOpen }: AddEventProps)
     const [datePickerOpen, setDatePickerOpen] = useState<boolean>();
 
     useEffect(() => {
-        /** Loads all applications so one can be linked to the new event. */
         async function getApplications() {
             const apps = await getAllApps();
             setApplications(apps.data)
@@ -33,7 +31,6 @@ export default function AddEvent({ onUpdate, isOpen, setIsOpen }: AddEventProps)
         getApplications();
     }, [])
 
-    /** Creates the new event and closes the dialog. */
     async function handleCreate() {
         const date = new Date(eventDate);
         await createEvent({

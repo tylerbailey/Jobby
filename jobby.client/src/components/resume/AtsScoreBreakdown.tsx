@@ -8,7 +8,6 @@ export type AtsScoreBreakdownProps = {
     scores: ScoreBreakdown[];
 
 }
-/** Renders a bar chart breaking down the ATS score by category. */
 function AtsScoreBreakdown({ scores }: AtsScoreBreakdownProps) {
     const chartConfig = {
         score: {

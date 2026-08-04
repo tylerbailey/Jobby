@@ -13,7 +13,6 @@ namespace Jobby.Server.Controllers
     {
         private readonly IStageService _stageService = stageService;
 
-        /// <summary>Creates a new pipeline stage for the current user.</summary>
         [HttpPost("new")]
         public async Task<IActionResult> CreateStage(JobStageModel appStage)
         {
@@ -21,7 +20,6 @@ namespace Jobby.Server.Controllers
             await _stageService.CreateStageAsync(appStage, userId);
             return Ok();
         }
-        /// <summary>Updates an existing pipeline stage for the current user.</summary>
         [HttpPost("update")]
         public async Task<IActionResult> UpdateStage(JobStageModel appStage)
         {
@@ -30,7 +28,6 @@ namespace Jobby.Server.Controllers
             return Ok();
         }
 
-        /// <summary>Reorders the current user's pipeline stages.</summary>
         [HttpPost("reorder")]
         public async Task<IActionResult> ReorderStages(ReorderStagesRequest request)
         {
@@ -39,7 +36,6 @@ namespace Jobby.Server.Controllers
             return Ok();
         }
 
-        /// <summary>Deletes a pipeline stage belonging to the current user.</summary>
         [HttpDelete("delete/{stageId}")]
         public async Task<IActionResult> DeleteStage(int stageId)
         {
@@ -48,7 +44,6 @@ namespace Jobby.Server.Controllers
             return Ok();
         }
 
-        /// <summary>Gets the current user's pipeline stages.</summary>
         [HttpGet("pipeline")]
         public async Task<IActionResult> GetUserPipeline()
         {

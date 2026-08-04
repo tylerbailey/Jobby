@@ -10,11 +10,9 @@ export type AppEditProps = {
     setSheetOpen: Dispatch<SetStateAction<boolean>>
     onUpdate: () => void;
 }
-/** Renders the sheet for editing an existing application. */
 export function EditAppSheet({ cardItem, onUpdate, sheetOpen, setSheetOpen }: AppEditProps) { 
     const [item, setItem] = useState<Application>(cardItem);
    
-    /** Saves the edited application. */
     async function saveApp() {
         try {
             await updateApp(item);

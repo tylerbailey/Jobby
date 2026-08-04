@@ -11,7 +11,6 @@ export type RecruiterCardProps = {
     onUpdate: () => void;
 }
 
-/** Renders the column listing all recruiter contact cards. */
 export default function RecruiterColumn({ recruiters, onUpdate }: RecruiterCardProps) {
     const [dialogOpen, setDialogOpen] = useState<boolean>(false);
 

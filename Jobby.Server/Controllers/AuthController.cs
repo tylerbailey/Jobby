@@ -25,7 +25,6 @@ public class AuthController(
     private readonly IConfiguration _config = config;
     private readonly IWebHostEnvironment _env = env;
 
-    /// <summary>Registers a new user account pending admin approval.</summary>
     [AllowAnonymous]
     [HttpPost("register")]
     public async Task<IActionResult> Register(RegisterRequest request)
@@ -66,7 +65,6 @@ public class AuthController(
         return Ok(new { message = "Account created. Your account is awaiting approval." });
     }
 
-    /// <summary>Authenticates a user and sets the auth token cookie.</summary>
     [AllowAnonymous]
     [HttpPost("login")]
     public async Task<IActionResult> Login(LoginRequest request)
@@ -100,7 +98,6 @@ public class AuthController(
         });
     }
 
-    /// <summary>Logs the current user out by clearing the auth token cookie.</summary>
     [AllowAnonymous]
     [HttpPost("logout")]
     public IActionResult Logout()
@@ -109,7 +106,6 @@ public class AuthController(
         return Ok();
     }
 
-    /// <summary>Gets the currently authenticated user's profile information.</summary>
     [HttpGet("user")]
     public async Task<IActionResult> GetUser()
     {
@@ -132,7 +128,6 @@ public class AuthController(
         });
     }
 
-    /// <summary>Builds the cookie options used for the auth token cookie.</summary>
     private CookieOptions CreateTokenCookieOptions(DateTimeOffset expires) => new()
     {
         HttpOnly = true,
@@ -142,7 +137,6 @@ public class AuthController(
         Expires = expires
     };
 
-    /// <summary>Creates a signed JWT for the given user and roles.</summary>
     private async Task<string> CreateTokenAsync(ApplicationUser user, IList<string>? roles = null)
     {
         var jwt = _config.GetSection("Jwt");

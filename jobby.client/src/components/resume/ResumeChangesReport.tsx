@@ -9,7 +9,6 @@ export type ResumeChangesReportProps = {
     onGenerateAgain: () => void;
 };
 
-/** Renders the before/after changes report for a generated tailored resume. */
 export default function ResumeChangesReport({ result, onGenerateAgain }: ResumeChangesReportProps) {
     const changeCount = result.changes.length;
 

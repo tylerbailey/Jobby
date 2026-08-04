@@ -6,18 +6,15 @@ import type { AuthContextType, User } from "@/types";
 import axios from "axios";
 import { useCallback, useEffect, useState } from "react";
 
-/** Provides authentication state and actions to the rest of the app. */
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(() => getStoredUser<User>());
     const [isInitialized, setIsInitialized] = useState(false);
 
-    /** Clears the stored user from state and local storage. */
     const clearUser = useCallback(() => {
         localStorage.removeItem("user");
         setUser(null);
     }, []);
 
-    /** Logs out the current user and clears local session state. */
     const logout = useCallback(async () => {
         try {
             await logoutUser();
@@ -30,7 +27,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         let cancelled = false;
 
-        /** Loads the current user session on mount, clearing it if unauthorized. */
         async function initSession() {
             try {
                 const currentUser = await getCurrentUser();
@@ -55,7 +51,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }, [clearUser]);
 
     useEffect(() => {
-        /** Clears the local session when an unauthorized event is received. */
         function onUnauthorized() {
             clearUser();
             void logoutUser().catch(() => {});
@@ -65,7 +60,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return () => window.removeEventListener(AUTH_UNAUTHORIZED_EVENT, onUnauthorized);
     }, [clearUser]);
 
-    /** Logs in the user and persists the resulting user to state and local storage. */
     async function login(email: string, password: string) {
         const response = await loginUser(email, password);
         const nextUser: User = {
@@ -78,12 +72,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         localStorage.setItem("user", JSON.stringify(nextUser));
     }
 
-    /** Registers a new user account. */
     async function register(email: string, password: string, displayName: string) {
         await registerUser(email, password, displayName);
     }
 
-    /** Updates the current user's display name in state and local storage. */
     function updateDisplayName(displayName: string) {
         setUser((current) => {
             if (!current)

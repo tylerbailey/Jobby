@@ -19,7 +19,6 @@ export type KanbanColumnProps = {
     onUpdate: () => void;
 };
 
-/** Renders a droppable pipeline stage column containing its application cards. */
 export function KanbanColumn({ stage, onUpdate, searchValue }: KanbanColumnProps) {
     const [menuOpen, setMenuOpen] = useState<boolean>(false);
     const [sheetOpen, setSheetOpen] = useState<boolean>(false);
@@ -31,7 +30,6 @@ export function KanbanColumn({ stage, onUpdate, searchValue }: KanbanColumnProps
         id: `${COLUMN_DRAG_PREFIX}${stageId}`,
     });
 
-    /** Deletes the stage if it has no remaining applications. */
     async function handleDelete() {
         try {
             if (stage.id == null) {
@@ -54,7 +52,6 @@ export function KanbanColumn({ stage, onUpdate, searchValue }: KanbanColumnProps
         }
     }
 
-    /** Opens the sheet for creating a new application in this stage. */
     function handleNew() {
         setSheetOpen(true);
         setMenuOpen(false);
@@ -121,7 +118,6 @@ export function KanbanColumn({ stage, onUpdate, searchValue }: KanbanColumnProps
         </section>
     );
 
-    /** Checks whether any string property of the item contains the search term. */
     function searchObject<T extends object>(item: T, term: string): boolean {
         return Object.values(item).some(val =>
             typeof val === 'string' && val.toLowerCase().includes(term.toLowerCase())

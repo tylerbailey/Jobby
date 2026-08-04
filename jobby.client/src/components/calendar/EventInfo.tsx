@@ -12,10 +12,8 @@ export type EventInfoProps = {
     onUpdate: () => void;
 }
 
-/** Renders the dialog with details of a calendar event and a delete action. */
 export default function EventForm({ eventItem, onUpdate, isOpen, setIsOpen }: EventInfoProps) {
 
-    /** Deletes the event and closes the dialog. */
     async function handleDelete() {
         await deleteEvent(eventItem)
         onUpdate();

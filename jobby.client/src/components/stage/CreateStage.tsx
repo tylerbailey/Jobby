@@ -10,7 +10,6 @@ export type CreateStageProps = {
     dialogOpen: boolean;
     setDialogOpen: Dispatch<SetStateAction<boolean>>;
 }
-/** Renders the dialog for creating a new pipeline stage. */
 export default function CreateStage({onUpdate, dialogOpen, setDialogOpen } : CreateStageProps) {
     const [stage, setStage] = useState<Stage>({
         id: null,
@@ -20,7 +19,6 @@ export default function CreateStage({onUpdate, dialogOpen, setDialogOpen } : Cre
         items: [],
     });
 
-    /** Creates the new pipeline stage. */
     async function handleCreate() {
         await createStage(stage);
         setDialogOpen(false);

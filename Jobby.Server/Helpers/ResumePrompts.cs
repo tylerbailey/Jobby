@@ -4,7 +4,6 @@ namespace Jobby.Server.Helpers
 {
     public static class ResumePrompts
     {
-        /// <summary>Builds the LLM prompt for extracting structured data from a scraped job posting.</summary>
         public static string JobPosting(string scrapedHtml) => $$"""
         You are an expert technical recruiter.
 
@@ -56,7 +55,6 @@ namespace Jobby.Server.Helpers
         {{scrapedHtml}}
         """;
 
-        /// <summary>Builds the LLM prompt for tailoring resume blocks to a job posting.</summary>
         public static string ResumeEditing(string jobPostingData, string resumeData) => $$"""
         You are an expert ATS resume editor and technical resume writer.
 
@@ -254,7 +252,6 @@ namespace Jobby.Server.Helpers
         {{resumeData}}
         """;
 
-        /// <summary>Builds the LLM prompt for scoring and reviewing a resume.</summary>
         public static string ResumeRating() => $$"""
             You are an expert resume reviewer, ATS optimization specialist, technical recruiter, hiring manager, copy editor, and career coach.
 

@@ -11,12 +11,10 @@ export type RecruiterInfoProps = {
     setInfoOpen: Dispatch<SetStateAction<boolean>>;
 };
 
-/** Derives initials from the recruiter's full name. */
 function getInitials(name: string) {
     return name.split(" ").map((part) => part[0]).join("").toUpperCase();
 }
 
-/** Renders a read-only sheet with the details of a recruiter contact. */
 export default function RecruiterInfo({ recruiter, infoOpen, setInfoOpen }: RecruiterInfoProps) {
     return (
         <Sheet open={infoOpen} onOpenChange={setInfoOpen}>

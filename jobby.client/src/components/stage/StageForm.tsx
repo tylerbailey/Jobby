@@ -15,11 +15,9 @@ export type StageFormProps = {
     setDialogOpen: Dispatch<SetStateAction<boolean>>
     action: () => void;
 }
-/** Renders the create/edit form fields for a pipeline stage. */
 function StageForm({ title, stage, setStage, dialogOpen, setDialogOpen, action }: StageFormProps) {
     const [popoverOpen, setPopoverOpen] = useState<boolean>(false);
 
-    /** Updates the stage's color and closes the color picker. */
     function handleColorChange(selectedColor: string) {
         setStage({ ... stage, color: selectedColor })
         setPopoverOpen(false);

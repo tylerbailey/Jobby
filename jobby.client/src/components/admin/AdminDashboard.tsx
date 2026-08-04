@@ -34,7 +34,6 @@ type EditFormState = {
     roles: string[];
 };
 
-/** Converts an admin user into editable form state. */
 function toFormState(user: AdminUser): EditFormState {
     return {
         email: user.email,
@@ -47,7 +46,6 @@ function toFormState(user: AdminUser): EditFormState {
     };
 }
 
-/** Renders the admin dashboard for managing users, approvals, and roles. */
 export default function AdminDashboard() {
     const {user: currentUser } = useAuth();
     const [users, setUsers] = useState<AdminUser[]>([]);
@@ -59,13 +57,11 @@ export default function AdminDashboard() {
     const [form, setForm] = useState<EditFormState | null>(null);
     const [refresh, setRefresh] = useState(0);
 
-    /** Triggers a reload of the user list. */
     function handleRefresh() {
         setRefresh(prev => prev + 1);
     }
 
     useEffect(() => {
-        /** Loads all users and available roles from the server. */
         async function loadUsers() {
             setLoading(true);
             try {
@@ -93,19 +89,16 @@ export default function AdminDashboard() {
         );
     }, [search, users]);
 
-    /** Opens the edit dialog for the given user. */
     function openEdit(user: AdminUser) {
         setEditingUser(user);
         setForm(toFormState(user));
     }
 
-    /** Closes the edit dialog and clears the form state. */
     function closeEdit() {
         setEditingUser(null);
         setForm(null);
     }
 
-    /** Toggles whether the given role is assigned in the edit form. */
     function toggleRole(role: string) {
         if (!form)
             return;
@@ -118,7 +111,6 @@ export default function AdminDashboard() {
         });
     }
 
-    /** Saves the edited user's details and role assignments. */
     async function handleSave() {
         if (!editingUser || !form)
             return;
@@ -157,7 +149,6 @@ export default function AdminDashboard() {
         }
     }
 
-    /** Deletes the given user after confirmation. */
     async function handleDelete(user: AdminUser) {
         if (!window.confirm(`Delete ${user.email}? This cannot be undone.`))
             return;

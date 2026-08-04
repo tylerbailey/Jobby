@@ -13,7 +13,6 @@ import { Button } from '@/components/ui/button';
 import AddEvent from './AddEvent';
 import EventInfo from './EventInfo';
 
-/** Renders the full calendar view of the user's events. */
 export default function EventCalendar() {
     const [calendarEvents, setCalendarEvents] = useState<EventItem[]>([])
     const [selectedEvent, setSelectedEvent] = useState<EventItem>();
@@ -22,12 +21,10 @@ export default function EventCalendar() {
     const [refresh, setRefresh] = useState<number>(0);
     const controller = useCalendarController();
 
-    /** Triggers a reload of the calendar events. */
     function handleRefresh() {
         setRefresh(refresh + 1);
     }
     useEffect(() => {
-        /** Loads the current user's events. */
         async function loadUserEvents() {
             const userEvents = await getUserEvents();
             setCalendarEvents(userEvents.data);

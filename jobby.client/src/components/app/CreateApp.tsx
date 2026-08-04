@@ -21,7 +21,6 @@ export type AppCreateProps = {
 
 type CreateStep = "choose" | "scrape" | "scraping" | "form";
 
-/** Builds a blank application object for the given stage. */
 function createEmptyApplication(stage?: number | null): Application {
     return {
         id: 0,
@@ -56,13 +55,11 @@ function createEmptyApplication(stage?: number | null): Application {
     };
 }
 
-/** Renders the sheet flow for creating a new application, via scraping or manual entry. */
 export default function CreateApp({ stage, onUpdate, sheetOpen, setSheetOpen }: AppCreateProps) {
     const [step, setStep] = useState<CreateStep>("choose");
     const [scrapeUrl, setScrapeUrl] = useState("");
     const [item, setItem] = useState<Application>(() => createEmptyApplication(stage));
 
-    /** Resets the create flow whenever the sheet is opened. */
     function handleOpenChange(open: boolean) {
         setSheetOpen(open);
         if (open) {
@@ -72,7 +69,6 @@ export default function CreateApp({ stage, onUpdate, sheetOpen, setSheetOpen }: 
         }
     }
 
-    /** Scrapes the entered job posting URL and pre-fills the application form. */
     async function handleScrape() {
         const url = scrapeUrl.trim();
         if (!url) {
@@ -106,7 +102,6 @@ export default function CreateApp({ stage, onUpdate, sheetOpen, setSheetOpen }: 
         }
     }
 
-    /** Saves the new application. */
     async function saveApp() {
         try {
             await createNewApp(item);

@@ -13,7 +13,6 @@ public class HistoryController(IJobHistoryService historyService) : Controller
 {
     private readonly IJobHistoryService _historyService = historyService;
 
-    /// <summary>Gets the change history for a specific job application.</summary>
     [HttpGet("{appId}")]
     public async Task<IActionResult> GetHistory(int appId)
     {

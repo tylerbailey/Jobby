@@ -13,7 +13,6 @@ namespace Jobby.Server.Controllers
     {
         private readonly ICalendarEventService _eventService = eventService;
 
-        /// <summary>Creates a new calendar event for the current user.</summary>
         [HttpPost("new")]
         public async Task<IActionResult> CreateEvent(JobEventModel jobEvent)
         {
@@ -22,7 +21,6 @@ namespace Jobby.Server.Controllers
             return Ok();
         }
 
-        /// <summary>Gets all calendar events for the current user.</summary>
         [HttpGet("get")]
         public async Task<IActionResult> GetEvents()
         {
@@ -31,7 +29,6 @@ namespace Jobby.Server.Controllers
             return Ok(events);
         }
 
-        /// <summary>Deletes a calendar event belonging to the current user.</summary>
         [HttpDelete("delete/{eventId}")]
         public async Task<IActionResult> DeleteEvent(int eventId)
         {
@@ -40,7 +37,6 @@ namespace Jobby.Server.Controllers
             return Ok();
         }
 
-        /// <summary>Gets all calendar events for a specific job application.</summary>
         [HttpGet("{applicationId}")]
         public async Task<IActionResult> GetApplicationEvents(int applicationId)
         {
@@ -48,7 +44,6 @@ namespace Jobby.Server.Controllers
             return Ok(events);
         }
 
-        /// <summary>Gets upcoming calendar events for a specific job application.</summary>
         [HttpGet("upcoming/{applicationId}")]
         public async Task<IActionResult> GetUpcomingApplicationEvents(int applicationId)
         {

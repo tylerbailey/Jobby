@@ -9,27 +9,23 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import ResumeChangesReport from "./ResumeChangesReport";
 
-/** Renders the flow for generating a tailored resume from a job posting. */
 export default function ResumeGenerate() {
     const [jobPosting, setJobPosting] = useState<string>("");
     const [resumeFile, setResumeFile] = useState<File | null>(null);
     const [result, setResult] = useState<ResumeGenerationResponse | null>(null);
     const [isGenerating, setIsGenerating] = useState(false);
 
-    /** Stores the selected resume file. */
     async function handleFileChange(e: ChangeEvent<HTMLInputElement>) {
         const file = e.target.files?.[0];
         setResumeFile(file ?? null);
     }
 
-    /** Resets the form to generate another tailored resume. */
     function handleGenerateAgain() {
         setResult(null);
         setResumeFile(null);
         setJobPosting("");
     }
 
-    /** Validates inputs and generates a tailored resume for the job posting. */
     async function handleResumeGeneration() {
         if (!resumeFile) {
             toast.warning("You must select a docx file.");

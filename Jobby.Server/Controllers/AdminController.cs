@@ -14,7 +14,6 @@ public class AdminController(IAdminUserService adminUserService) : ControllerBas
 {
     private readonly IAdminUserService _adminUserService = adminUserService;
 
-    /// <summary>Gets all users in the system.</summary>
     [HttpGet("users")]
     public async Task<IActionResult> GetAllUsers()
     {
@@ -22,7 +21,6 @@ public class AdminController(IAdminUserService adminUserService) : ControllerBas
         return Ok(users);
     }
 
-    /// <summary>Gets a single user by id.</summary>
     [HttpGet("users/{userId}")]
     public async Task<IActionResult> GetUser(string userId)
     {
@@ -30,7 +28,6 @@ public class AdminController(IAdminUserService adminUserService) : ControllerBas
         return user is null ? NotFound() : Ok(user);
     }
 
-    /// <summary>Gets all available roles.</summary>
     [HttpGet("roles")]
     public async Task<IActionResult> GetAllRoles()
     {
@@ -38,7 +35,6 @@ public class AdminController(IAdminUserService adminUserService) : ControllerBas
         return Ok(roles);
     }
 
-    /// <summary>Updates a user's account details as an admin.</summary>
     [HttpPut("users/{userId}")]
     public async Task<IActionResult> UpdateUser(string userId, UpdateUserAdminRequest request)
     {
@@ -52,7 +48,6 @@ public class AdminController(IAdminUserService adminUserService) : ControllerBas
         return Ok(user);
     }
 
-    /// <summary>Updates a user's assigned roles as an admin.</summary>
     [HttpPut("users/{userId}/roles")]
     public async Task<IActionResult> UpdateUserRoles(string userId, UpdateUserRolesRequest request)
     {
@@ -66,7 +61,6 @@ public class AdminController(IAdminUserService adminUserService) : ControllerBas
         return Ok(user);
     }
 
-    /// <summary>Deletes a user account as an admin.</summary>
     [HttpDelete("users/{userId}")]
     public async Task<IActionResult> DeleteUser(string userId)
     {

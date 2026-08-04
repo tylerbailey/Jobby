@@ -13,7 +13,6 @@ namespace Jobby.Server.Controllers
     {
         private readonly IJobService _appService = appService;
 
-        /// <summary>Gets all job applications for the current user.</summary>
         [HttpGet("all")]
         public async Task<IActionResult> GetAllApplicationsAsync()
         {
@@ -22,7 +21,6 @@ namespace Jobby.Server.Controllers
             return Ok(applications);
         }
 
-        /// <summary>Creates a new job application for the current user.</summary>
         [HttpPost("new")]
         public async Task<IActionResult> CreateApplication(JobModel application)
         {
@@ -31,7 +29,6 @@ namespace Jobby.Server.Controllers
             return Ok();
         }
 
-        /// <summary>Updates an existing job application for the current user.</summary>
         [HttpPost("update")]
         public async Task<ActionResult> UpdateApplication(JobModel application)
         {
@@ -40,7 +37,6 @@ namespace Jobby.Server.Controllers
             return Ok();
         }
 
-        /// <summary>Gets the distinct set of locations used across all applications.</summary>
         [HttpGet("locations")]
         public async Task<IActionResult> GetAllApplicationLocations()
         {
@@ -48,7 +44,6 @@ namespace Jobby.Server.Controllers
             return Ok(locations);
         }
 
-        /// <summary>Moves a job application to a different pipeline stage.</summary>
         [HttpPost("move/{applicationId}")]
         public async Task<IActionResult> MoveStage(int applicationId, [FromQuery] int stageId)
         {
@@ -57,7 +52,6 @@ namespace Jobby.Server.Controllers
             return Ok();
         }
 
-        /// <summary>Deletes a job application belonging to the current user.</summary>
         [HttpDelete("{applicationId}")]
         public async Task<IActionResult> DeleteApplication(int applicationId)
         {
@@ -66,7 +60,6 @@ namespace Jobby.Server.Controllers
             return Ok();
         }
 
-        /// <summary>Scrapes and extracts structured job posting data from a given URL.</summary>
         [HttpPost("scrape-posting")]
         public async Task<IActionResult> ScrapeJobPostingAsync(
             ScrapeJobPostingRequest request,
@@ -90,7 +83,6 @@ namespace Jobby.Server.Controllers
             }
         }
 
-        /// <summary>Generates a tailored resume docx from an uploaded resume and job posting text.</summary>
         [HttpPost("gen")]
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> GenerateResumeAsync(IFormFile file, [FromForm] string posting)
@@ -105,7 +97,6 @@ namespace Jobby.Server.Controllers
             return Ok(result);
         }
 
-        /// <summary>Gets all archived job applications for the current user.</summary>
         [HttpGet("archive")]
         public async Task<IActionResult> GetArchivedApplications()
         {

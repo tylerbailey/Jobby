@@ -15,7 +15,6 @@ namespace Jobby.Server.Services
         private readonly IDbContextFactory<AppDbContext> _dbContextFactory = dbContextFactory;
         private readonly UserManager<ApplicationUser> _userManager = userManager;
 
-        /// <summary>Computes daily counts of jobs added and applied to over the trailing 30-day window for the given user.</summary>
         public async Task<ProfileStatsModel> GetMonthlyStatsAsync(string userId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
@@ -61,7 +60,6 @@ namespace Jobby.Server.Services
             };
         }
 
-        /// <summary>Updates the display name of the given user, returning an error message on failure.</summary>
         public async Task<string?> UpdateDisplayNameAsync(string userId, string displayName)
         {
             if (string.IsNullOrWhiteSpace(displayName))

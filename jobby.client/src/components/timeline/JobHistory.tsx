@@ -12,7 +12,6 @@ export type HistoryProps = {
     sheetOpen: boolean;
     setSheetOpen: Dispatch<SetStateAction<boolean>>
 }
-/** Renders the sheet showing the timeline of status changes for an application. */
 export default function JobHistory({ sheetOpen, setSheetOpen, items:histories }: HistoryProps) {
     return (
         <Sheet open={sheetOpen} onOpenChange={ setSheetOpen }>           
