@@ -12,6 +12,7 @@ namespace Jobby.Email.Services
         protected readonly IDbContextFactory<AppDbContext> _dbContextFactory = dbContextFactory;
         private readonly MailJetOptions _mailJetOptions = mailJetOptions.Value;
 
+        /// <summary>Sends email alerts for upcoming calendar events that have not yet been notified.</summary>
         public async Task SendEmails()
         {
             var dbContext = await _dbContextFactory.CreateDbContextAsync();

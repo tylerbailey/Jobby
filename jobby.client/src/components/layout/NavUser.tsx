@@ -5,15 +5,18 @@ import { MoreVertical } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/authContext";
 
+/** Renders the current user's account menu in the sidebar footer. */
 export function NavUser() {
     const navigate = useNavigate();
     const context = useAuth();
 
+    /** Logs the user out and redirects to the landing page. */
     function handleLogout() {
         context.logout();
         navigate("/");
     }
 
+    /** Navigates to the user's profile page. */
     function handleProfileClick() {
         navigate("/profile");
     }

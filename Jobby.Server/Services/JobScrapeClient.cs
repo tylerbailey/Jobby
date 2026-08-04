@@ -7,6 +7,7 @@ public class JobScrapeClient(HttpClient httpClient) : IJobScrapeService
 {
     private readonly HttpClient _httpClient = httpClient;
 
+    /// <summary>Requests the rendered HTML for a job posting URL from the external scraper service.</summary>
     public async Task<string> ScrapeHtmlAsync(string url, CancellationToken cancellationToken = default)
     {
         var response = await _httpClient.PostAsJsonAsync(

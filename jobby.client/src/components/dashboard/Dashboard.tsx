@@ -11,6 +11,7 @@ import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import CreateStage from "@/components/stage/CreateStage";
 
+/** Renders the main dashboard with the recruiter list and kanban pipeline board. */
 export default function Dashboard() {
     const [dialogOpen, setDialogOpen] = useState<boolean>(false);
     const [stages, setStages] = useState<Stage[]>([]);
@@ -22,6 +23,7 @@ export default function Dashboard() {
     const [recruiters, setRecruiters] = useState<Recruiter[]>([])
 
     useEffect(() => {
+        /** Loads the user's recruiters. */
         async function getMyRecruiters() {
             const response = await getAllRecruiters();
             setRecruiters(response.data)
@@ -30,6 +32,7 @@ export default function Dashboard() {
     }, [refresh])
 
     useEffect(() => {
+        /** Loads the pipeline stages and derives summary application counts. */
         async function getMyStages() {
             const response = await getAllStages();
             const data = response.data;
@@ -41,6 +44,7 @@ export default function Dashboard() {
         getMyStages();
     }, [refresh]);
 
+    /** Triggers a reload of recruiters and pipeline stages. */
     function handleRefresh() {
         setRefresh(prev => prev + 1);
     }

@@ -7,6 +7,7 @@ namespace Jobby.Server.Services;
 
 public class JobHistoryService(IDbContextFactory<AppDbContext> dbContextFactory) : ServiceBase(dbContextFactory), IJobHistoryService
 {
+    /// <summary>Creates a new job history entry.</summary>
     public async Task CreateHistoryAsync(JobHistoryModel jobHistory)
     {
         await using var db = await _dbContextFactory.CreateDbContextAsync();
@@ -21,6 +22,7 @@ public class JobHistoryService(IDbContextFactory<AppDbContext> dbContextFactory)
         await db.SaveChangesAsync();
     }
 
+    /// <summary>Retrieves the active history entries for a job application owned by the given user.</summary>
     public async Task<List<JobHistoryModel>> GetHistoryAsync(int appId, string userId)
     {
         await using var db = await _dbContextFactory.CreateDbContextAsync();

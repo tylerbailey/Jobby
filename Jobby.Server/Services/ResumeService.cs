@@ -12,6 +12,7 @@ namespace Jobby.Server.Services
     {
         private readonly IOllamaService _ollamaService = ollamaService;
 
+        /// <summary>Extracts text from an uploaded resume and uses the AI service to produce an ATS-style analysis report.</summary>
         public async Task<ResumeAnalysisResponse> RateResumeAsync(IFormFile file)
         {
             using var inputDocStream = new MemoryStream();

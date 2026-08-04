@@ -2,6 +2,7 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "@/context/authContext";
 
+/** Renders child routes only when the user is authenticated and has the Admin role. */
 export function AdminRoute() {
     const { isLoggedIn, isInitialized, user } = useAuth();
 

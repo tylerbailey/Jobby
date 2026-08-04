@@ -22,6 +22,7 @@ export type KanbanCardProps = {
     isMatch: boolean;
     onUpdate: () => void;
 }
+/** Renders a draggable card for a single application on the kanban board. */
 export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
     const { ref: dragRef } = useDraggable({ id: item.id?.toString() ?? "new-app" });
     const [histories, setHistories] = useState<HistoryItem[]>([]);
@@ -30,11 +31,13 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
     const [editOpen, setEditOpen] = useState<boolean>(false);
     const [historyOpen, setHistoryOpen] = useState<boolean>(false);
 
+    /** Opens the application's status history sheet. */
     function handleHistory() {
         setMenuOpen(false);
         setHistoryOpen(true);
     }
 
+    /** Deletes the application card after confirming it has been saved. */
     async function handleDelete() {
         if (item.id == null) {
             toast.warning("This application must be saved before it can be deleted.");
@@ -46,11 +49,13 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
         toast.info("The application has been deleted.");
     }
 
+    /** Opens the edit sheet for the application. */
     function handleEdit() {
         setMenuOpen(false);
         setEditOpen(true);
     }
 
+    /** Archives the application. */
     async function handleArchive() {
         setMenuOpen(false);
         await updateApp({
@@ -61,6 +66,7 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
         toast.info("The application has been archived.");
     }
 
+    /** Updates the application's status. */
     async function handleStatus(newStatus: number) {
         setMenuOpen(false);
         await updateApp({
@@ -71,6 +77,7 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
     }
 
     useEffect(() => {
+        /** Loads the application's status change history. */
         async function loadItemHistory() {
             if (item.id == null)
                 return;
@@ -224,6 +231,7 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
     );
 }
 
+/** Determines the text color for an event based on how soon it occurs. */
 function eventColor(item: EventItem) {
     const now = new Date();
     const firstCutOff = new Date();

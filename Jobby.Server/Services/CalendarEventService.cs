@@ -9,6 +9,7 @@ namespace Jobby.Server.Services
     public class CalendarEventService(IDbContextFactory<AppDbContext> dbContextFactory) : ServiceBase(dbContextFactory), ICalendarEventService
     {
 
+        /// <summary>Creates a new calendar event and, if linked to a job, records its creation in the job history.</summary>
         public async Task CreateEventAsync(JobEventModel jobEvent, string userId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
@@ -37,6 +38,7 @@ namespace Jobby.Server.Services
             await db.SaveChangesAsync();
         }
 
+        /// <summary>Retrieves all active calendar events for the given job application.</summary>
         public async Task<List<JobEventModel>> GetEventsAsync(int appId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
@@ -52,6 +54,7 @@ namespace Jobby.Server.Services
             return jobEvents;
         }
 
+        /// <summary>Retrieves active calendar events for the given job application that occur in the future.</summary>
         public async Task<List<JobEventModel>> GetUpcomingEventsAsync(int appId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
@@ -67,6 +70,7 @@ namespace Jobby.Server.Services
             return jobEvents;
         }
 
+        /// <summary>Retrieves all active calendar events across all of the user's job applications, including the related job details.</summary>
         public async Task<List<JobEventModel>> GetUserEventsAsync(string userId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
@@ -100,6 +104,7 @@ namespace Jobby.Server.Services
             return events;
         }
 
+        /// <summary>Soft-deletes a calendar event and records the deletion in the job history.</summary>
         public async Task DeleteEventAsync(int eventId, string userId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();

@@ -16,6 +16,7 @@ export type AppInfoProps = {
     setInfoOpen: Dispatch<SetStateAction<boolean>>
 }
 
+/** Renders a read-only sheet with the details of a job application. */
 export default function AppInfo({ item, infoOpen, setInfoOpen }: AppInfoProps) {
     return (
         <Sheet open={infoOpen} onOpenChange={setInfoOpen}>
