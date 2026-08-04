@@ -1,5 +1,6 @@
 import type { AppLocationType, JobPostingData } from "@/types";
 
+/** Resolves the location type id matching a job posting's remote/hybrid/onsite flags. */
 export function resolveLocationTypeId(
     posting: JobPostingData,
     locations: AppLocationType[],

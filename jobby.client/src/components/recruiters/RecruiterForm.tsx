@@ -14,6 +14,7 @@ export type RecruiterCreateProps = {
     setDialogOpen: Dispatch<SetStateAction<boolean>>
     action: () => void;
 }
+/** Renders the create/edit form fields for a recruiter contact. */
 export default function RecruiterForm({ title, item, setItem, dialogOpen, setDialogOpen, action }: RecruiterCreateProps) {
     const [nextOpen, setNextOpen] = useState<boolean>(false);
     const [lastOpen, setLastOpen] = useState<boolean>(false);

@@ -10,6 +10,7 @@ export type AtsScoreProps = {
     recommendation: RecommendationLevel;
 
 }
+/** Renders the overall ATS compatibility score gauge and summary badges. */
 function AtsScore({overallScore, atsFindings, recommendation }: AtsScoreProps) {
   return (
       <Card>

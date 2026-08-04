@@ -7,6 +7,7 @@ export type AtsScoreReportProps = {
     report: ResumeAnalysisResponse;
 }
 
+/** Renders the full ATS analysis report combining score, breakdown, and detail tabs. */
 export default function AtsScoreReport({report }:AtsScoreReportProps) {
 
 

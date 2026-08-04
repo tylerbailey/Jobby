@@ -10,10 +10,12 @@ export type EditStageProps = {
     dialogOpen: boolean;
     setDialogOpen: Dispatch<SetStateAction<boolean>>;
 }
+/** Renders the dialog for editing an existing pipeline stage. */
 export default function EditStage({ stage, onUpdate, dialogOpen, setDialogOpen }: EditStageProps) {
     const [formStage, setFormStage] = useState<Stage>(stage);
 
     useEffect(() => {
+        /** Resets the form to the current stage whenever the dialog opens. */
         function formDetails() {
         if (dialogOpen)
                 setFormStage(stage);
@@ -21,6 +23,7 @@ export default function EditStage({ stage, onUpdate, dialogOpen, setDialogOpen }
         formDetails();
     }, [dialogOpen, stage]);
 
+    /** Saves the edited pipeline stage. */
     async function handleEdit() {
         await updateStage(formStage);
         setDialogOpen(false);

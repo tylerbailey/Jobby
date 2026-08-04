@@ -5,6 +5,7 @@ export type KanbanInfoCardProps = {
     applied: number;
     rejected: number;
 }
+/** Renders summary count cards for active, applied, and rejected applications. */
 export default function InfoCards({ active, applied, rejected }: KanbanInfoCardProps) {
     return (
         <div className="grid grid-cols-3 gap-3">

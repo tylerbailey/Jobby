@@ -29,6 +29,7 @@ const chartConfig = {
     },
 };
 
+/** Renders summary count cards for applications added and applied. */
 function ProfileStatCards({ added, applied }: { added: number; applied: number }) {
     return (
         <div className="grid grid-cols-2 gap-3">
@@ -48,6 +49,7 @@ function ProfileStatCards({ added, applied }: { added: number; applied: number }
     );
 }
 
+/** Renders the user's profile page with account settings and activity stats. */
 export default function ProfilePage() {
     const location = useLocation();
     const { user, updateDisplayName } = useAuth();
@@ -56,10 +58,12 @@ export default function ProfilePage() {
     const [stats, setStats] = useState<ProfileStats | null>(null);
     const [isLoadingStats, setIsLoadingStats] = useState(true);
     const [refresh, setRefresh] = useState(0);
+    /** Triggers a reload of the profile statistics. */
     function handleRefresh() {
         setRefresh(prev => prev + 1);
     }
     useEffect(() => {
+        /** Syncs the local display name field with the auth context. */
         function setUserName() {
             setDisplayName(user?.displayName ?? "");
         }
@@ -67,10 +71,12 @@ export default function ProfilePage() {
     }, [user?.displayName]);
 
     useEffect(() => {
+        /** Loads the user's profile statistics, guarding against stale updates. */
         function loadUserStats() {
             let cancelled = false;
             setIsLoadingStats(true);
 
+            /** Fetches profile statistics from the server. */
             async function loadStats() {
                 try {
                     const data = await getProfileStats();
@@ -110,6 +116,7 @@ export default function ProfilePage() {
         (point) => point.added > 0 || point.applied > 0,
     );
 
+    /** Saves the updated display name to the profile. */
     async function handleSave() {
         const trimmed = displayName.trim();
         if (!trimmed) {

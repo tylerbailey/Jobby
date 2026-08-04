@@ -20,6 +20,7 @@ export type AppFormProps = {
     header?: ReactNode;
 }
 
+/** Renders the create/edit form fields for a job application. */
 export default function AppForm({
     title,
     item,
@@ -34,6 +35,7 @@ export default function AppForm({
     const [datePickerOpen, setDatePickerOpen] = useState<boolean>(false);
 
     useEffect(() => {
+        /** Loads the available application location types. */
         async function loadLocations() {
             const response = await getAllAppLocations();
             setLocationTypes(response.data);
