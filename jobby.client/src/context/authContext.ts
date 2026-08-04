@@ -3,6 +3,7 @@ import { createContext, useContext } from "react";
 
 export const AuthContext = createContext<AuthContextType | null>(null);
 
+/** Accesses the auth context, throwing if used outside of AuthProvider. */
 export function useAuth() {
     const context = useContext(AuthContext);
 

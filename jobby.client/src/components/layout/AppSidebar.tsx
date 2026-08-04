@@ -12,6 +12,7 @@ const adminNavItems = [
     },
 ];
 
+/** Renders the app's primary navigation sidebar. */
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const location = useLocation();
     const { user } = useAuth();

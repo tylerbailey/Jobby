@@ -7,13 +7,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import AtsScoreReport from "./AtsScoreReport";
 
+/** Renders the flow for uploading a resume and scoring its ATS compatibility. */
 export default function ResumeRating() {
     const [resumeFile, setResumeFile] = useState<File | null>(null);
     const [report, setReport] = useState<ResumeAnalysisResponse | null>(null)
+    /** Stores the selected resume file. */
     async function handleFileChange(e: ChangeEvent<HTMLInputElement>) {
         const file = e.target.files?.[0];
         setResumeFile(file ?? null);
     }
+    /** Validates the selected file and generates the ATS report. */
     async function handleResumeGeneration() {
 
         if (resumeFile != null) {

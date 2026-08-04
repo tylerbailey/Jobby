@@ -4,6 +4,7 @@ namespace Jobby.Server.Helpers;
 
 public static class JsonHelpers
 {
+    /// <summary>Strips surrounding markdown code fences from a JSON string.</summary>
     public static string RemoveFence(string input)
     {
         if (string.IsNullOrWhiteSpace(input))

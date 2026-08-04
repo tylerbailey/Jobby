@@ -7,6 +7,7 @@ namespace Jobby.Server.Services;
 
 public class RecruiterService(IDbContextFactory<AppDbContext> dbContextFactory) : ServiceBase(dbContextFactory), IRecruiterService
 {
+    /// <summary>Creates a new recruiter record for the given user.</summary>
     public async Task CreateRecruiterAsync(RecruiterModel recruiterModel, string userId)
     {
         await using var db = await _dbContextFactory.CreateDbContextAsync();
@@ -24,6 +25,7 @@ public class RecruiterService(IDbContextFactory<AppDbContext> dbContextFactory) 
         await db.SaveChangesAsync();
     }
 
+    /// <summary>Retrieves all active recruiters for the given user.</summary>
     public async Task<List<Recruiter>> GetRecruitersAsync(string userId)
     {
         await using var db = await _dbContextFactory.CreateDbContextAsync();
@@ -44,6 +46,7 @@ public class RecruiterService(IDbContextFactory<AppDbContext> dbContextFactory) 
             .ToListAsync();
     }
 
+    /// <summary>Retrieves a single active recruiter and their linked application ids for the given user.</summary>
     public async Task<RecruiterModel> GetRecruiterAsync(int recruiterId, string userId)
     {
         await using var db = await _dbContextFactory.CreateDbContextAsync();
@@ -63,6 +66,7 @@ public class RecruiterService(IDbContextFactory<AppDbContext> dbContextFactory) 
             .FirstOrDefaultAsync() ?? new RecruiterModel();
     }
 
+    /// <summary>Updates the fields of an existing recruiter belonging to the given user.</summary>
     public async Task UpdateRecruiterAsync(RecruiterModel recruiterModel, string userId)
     {
         await using var db = await _dbContextFactory.CreateDbContextAsync();
@@ -83,6 +87,7 @@ public class RecruiterService(IDbContextFactory<AppDbContext> dbContextFactory) 
         await db.SaveChangesAsync();
     }
 
+    /// <summary>Deletes a recruiter belonging to the given user.</summary>
     public async Task DeleteRecruiterAsync(int recruiterId, string userId)
     {
         await using var db = await _dbContextFactory.CreateDbContextAsync();

@@ -9,6 +9,7 @@ export type AddRecruiterProps = {
     dialogOpen: boolean;
     setDialogOpen: Dispatch<SetStateAction<boolean>>;
 }
+/** Renders the dialog for creating a new recruiter contact. */
 export default function CreateRecruiter({onUpdate, dialogOpen, setDialogOpen }: AddRecruiterProps){
     const emptyRecruiter = (): Recruiter => ({
         id: null,
@@ -24,6 +25,7 @@ export default function CreateRecruiter({onUpdate, dialogOpen, setDialogOpen }: 
 
     const [item, setItem] = useState<Recruiter>(emptyRecruiter)
 
+    /** Creates the new recruiter and resets the form. */
     async function handleSave() {
         await createRecruiter(item);
         setDialogOpen(false);

@@ -16,6 +16,7 @@ namespace Jobby.Server.Services
         private readonly IOllamaService _ollamaService = ollamaService;
         private readonly IJobScrapeService _jobScrapeService = jobScrapeService;
 
+        /// <summary>Retrieves a single non-archived job application for the given user.</summary>
         public async Task<JobModel> GetAppAsync(string userId, int applicationId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
@@ -40,6 +41,7 @@ namespace Jobby.Server.Services
             return application;
         }
 
+        /// <summary>Retrieves all non-archived job applications for the given user.</summary>
         public async Task<List<JobModel>> GetAppsAsync(string userId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
@@ -67,6 +69,7 @@ namespace Jobby.Server.Services
             return applications;
         }
 
+        /// <summary>Creates a new job application and records its creation in the job history.</summary>
         public async Task CreateNewAppAsync(JobModel application, string userId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
@@ -104,6 +107,7 @@ namespace Jobby.Server.Services
 
         }
 
+        /// <summary>Soft-deletes a job application and records the deletion in the job history.</summary>
         public async Task DeleteAppAsync(int appId, string userId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
@@ -123,6 +127,7 @@ namespace Jobby.Server.Services
             }
         }
 
+        /// <summary>Updates an existing job application's fields and records the change in the job history.</summary>
         public async Task UpdateAppAsync(JobModel application, string userId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
@@ -157,6 +162,7 @@ namespace Jobby.Server.Services
             }
         }
 
+        /// <summary>Moves a job application to a different pipeline stage and records the move in the job history.</summary>
         public async Task MoveApplicationStageAsync(int applicationId, int stageId, string userId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
@@ -180,6 +186,7 @@ namespace Jobby.Server.Services
             }
         }
 
+        /// <summary>Retrieves the list of available job location types.</summary>
         public async Task<List<LocationTypeModel>> GetAppLocationsAsync()
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
@@ -191,6 +198,7 @@ namespace Jobby.Server.Services
             return locations;
         }
 
+        /// <summary>Scrapes a job posting URL and uses the AI service to extract structured job posting data.</summary>
         public async Task<JobPostingData> ScrapeJobPostingAsync(string url, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(url))
@@ -223,6 +231,7 @@ namespace Jobby.Server.Services
             return postingData ?? throw new InvalidOperationException("The AI response could not be parsed.");
         }
 
+        /// <summary>Edits an uploaded resume document to tailor it toward a job posting using AI-generated text replacements.</summary>
         public async Task<ResumeGenerationResponse> EditDocxAsync(IFormFile file, string posting)
         {
             using var memoryStream = new MemoryStream();
@@ -281,6 +290,7 @@ namespace Jobby.Server.Services
             };
         }
 
+        /// <summary>Archives or unarchives a job application and records the change in the job history.</summary>
         public async Task ArchiveAppAsync(int appId, bool isArchived, string userId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
@@ -300,6 +310,7 @@ namespace Jobby.Server.Services
             await db.SaveChangesAsync();
         }
 
+        /// <summary>Retrieves all archived job applications for the given user.</summary>
         public async Task<List<JobModel>> GetArchivedAppsAsync(string userId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();

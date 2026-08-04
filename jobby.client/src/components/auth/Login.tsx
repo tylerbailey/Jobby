@@ -10,6 +10,7 @@ import { useState } from "react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
 import { useAuth } from "@/context/authContext"
 
+/** Renders the login form and handles user authentication. */
 export function LoginPage({
     className,
     ...props
@@ -23,11 +24,13 @@ export function LoginPage({
     const [isSubmitting, setIsSubmitting] = useState(false);
     const context = useAuth();
 
+    /** Clears the current form-level error message, if any. */
     function clearError() {
         if (formError)
             setFormError(null);
     }
 
+    /** Validates and submits the login form, then navigates to the dashboard. */
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         setFormError(null);

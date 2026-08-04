@@ -1,146 +1,116 @@
 # Jobby
 
-Jobby is a full-stack job application tracker with a kanban pipeline, calendar, recruiter CRM, AI resume tools, and an admin approval workflow. The stack is **ASP.NET Core 10** (API + SPA host) and **React 19 / Vite / TypeScript**.
+Full-stack job application tracker: kanban pipeline, calendar, recruiter CRM, AI resume tools, and admin approval. Built as a multi-project .NET solution with a React SPA.
 
 ## Architecture
 
 ```
-jobby.client/          React SPA (Vite, Tailwind, shadcn/ui)
-Jobby.Server/          ASP.NET Core Web API, EF Core, Identity + JWT
-Jobby.Server.Tests/    xUnit tests for shared helpers and constants
+jobby.client/           React 19 + Vite + TypeScript SPA (Tailwind, shadcn/ui)
+Jobby.Server/           ASP.NET Core 10 Web API and SPA host
+Jobby.Models/           Shared entities and API DTOs
+Jobby.Infrastructure/   EF Core DbContext, PostgreSQL, migrations
+Jobby.Scraper/          Playwright-based HTML scrape microservice
+Jobby.Server.Tests/     xUnit tests
 ```
 
-In development, the Vite dev server runs on `https://localhost:60922` and proxies `/api` to the backend at `https://localhost:7048`. In production, the API serves the built SPA from `jobby.client/dist`.
+```
+┌─────────────────┐     cookie JWT      ┌──────────────────┐
+│  jobby.client   │ ◄──────────────────► │  Jobby.Server    │
+│  (Vite / React) │   /api/*             │  Controllers +   │
+└─────────────────┘                      │  domain services │
+                                         └────────┬─────────┘
+                    ┌─────────────────────────────┼─────────────────────────────┐
+                    ▼                             ▼                             ▼
+           ┌────────────────┐          ┌─────────────────┐          ┌──────────────────┐
+           │ PostgreSQL     │          │ Jobby.Scraper   │          │ Ollama (cloud)   │
+           │ via            │          │ Playwright HTML │          │ resume AI        │
+           │ Infrastructure │          └─────────────────┘          └──────────────────┘
+           └────────────────┘
+```
+
+| Layer | Responsibility |
+|-------|----------------|
+| **Client** | UI, axios client (`withCredentials`), feature services under `src/services/` |
+| **Server** | Auth, REST API, orchestration (jobs, stages, scrape + Ollama calls) |
+| **Models** | `Job`, `JobStage`, `CalendarEvent`, `JobHistory`, `Recruiter`, `LocationType`, `ApplicationUser` |
+| **Infrastructure** | `AppDbContext`, Npgsql, migrations (applied on API startup) |
+| **Scraper** | Separate service: POST `/scrape` → rendered HTML for a job URL |
+
+### Runtime topology
+
+- **Development:** Vite on `https://localhost:60922`, API on `https://localhost:7048` (SPA proxy). Client env `VITE_API_URL=/api`.
+- **Production:** API hosts the built SPA from `jobby.client/dist`.
+- **Auth:** ASP.NET Identity + JWT stored in an httpOnly `token` cookie. The client keeps a cached user profile in `localStorage` and sends cookies on every request.
 
 ## Features
 
 | Area | Description |
 |------|-------------|
-| **Dashboard / Kanban** | Drag-and-drop pipeline of job applications across custom stages |
-| **Applications** | Company, title, URL, location, salary, notes, status, archive |
-| **Calendar** | Interview and follow-up events tied to applications |
-| **Recruiters** | Track recruiter contacts, agencies, and follow-up dates |
-| **Resume rating** | Upload a `.docx` resume for ATS-style scoring via Ollama |
-| **Resume tailoring** | Paste a job posting + upload `.docx` to generate a tailored resume |
-| **Archive** | View and restore archived applications |
-| **Admin** | Approve users, manage roles (`User`, `Admin`), edit accounts |
+| **Dashboard / Kanban** | Drag-and-drop jobs across custom stages |
+| **Applications** | Company, title, URL, location type, salary, notes, status, archive; optional scrape-from-URL |
+| **Calendar** | Events linked to applications |
+| **Recruiters** | Contacts, agencies, follow-up dates |
+| **Profile** | Display name + activity stats |
+| **Resume rating** | Upload `.docx` → ATS-style analysis via Ollama |
+| **Resume tailoring** | Job posting + `.docx` → edited docx + change list |
+| **Archive** | Archived applications |
+| **Admin** | Approve users, roles (`User`, `Admin`) |
 
-## Authentication
+## API surface
 
-- ASP.NET Core Identity with JWT bearer tokens
-- New registrations require admin approval (`IsApproved`) before login succeeds
-- Password rules: 8+ chars, uppercase, digit
-- Frontend stores token and user in `localStorage`; axios attaches `Authorization: Bearer` on each request
+Authenticated routes under `/api` (except register/login):
 
-### Roles
+| Area | Base route |
+|------|------------|
+| Auth | `/api/auth` |
+| Jobs | `/api/app` |
+| Stages | `/api/stage` |
+| Recruiters | `/api/recruiter` |
+| Calendar | `/api/events` |
+| History | `/api/history` |
+| Resume | `/api/resume` |
+| Profile | `/api/profile` |
+| Admin | `/api/admin` |
 
-- **User** — standard access to own data
-- **Admin** — access to `/admin` user management
+Multipart: `POST /api/app/gen` and `POST /api/resume/review` take a `.docx` `file`; generation also needs `posting`.
 
-## API Overview
+## AI & scraping
 
-All routes are under `/api` and require authentication unless noted.
+- **Ollama** (via OllamaSharp) powers resume rating and tailoring. Configured under `Ollama` in server appsettings.
+- **Job posting scrape:** API calls `Jobby.Scraper`, then asks Ollama to structure the HTML into job fields.
 
-| Controller | Base route | Key endpoints |
-|------------|------------|---------------|
-| Auth | `/api/auth` | `POST register`, `POST login`, `GET user` |
-| App | `/api/app` | `GET all`, `POST new`, `POST update`, `POST move/{id}`, `POST gen`, `GET archive`, `DELETE {id}` |
-| Stage | `/api/stage` | `GET pipeline`, `POST new`, `POST update`, `DELETE delete/{id}` |
-| Recruiter | `/api/recruiter` | `GET all`, `GET {id}`, `POST new`, `POST update`, `DELETE {id}` |
-| Events | `/api/events` | `GET get`, `POST new`, `DELETE delete/{id}` |
-| History | `/api/history` | `GET {appId}` |
-| Resume | `/api/resume` | `POST review` |
-| Admin | `/api/admin` | User and role management |
-
-**Multipart uploads:** `POST /api/app/gen` and `POST /api/resume/review` accept `file` (`.docx`) via `multipart/form-data`. Resume generation also requires a `posting` field.
-
-## AI (Ollama)
-
-Resume features use **Ollama Cloud** through `OllamaSharp`:
-
-- **Tailoring** (`AppService.EditDocxAsync`) — extracts resume blocks from Word, analyzes the job posting, applies targeted edits, returns base64 docx + change list
-- **Rating** (`ResumeService.RateResumeAsync`) — extracts text from Word, returns structured JSON analysis
-
-Configure in `appsettings.Development.json` (gitignored):
-
-```json
-"Ollama": {
-  "ApiKey": "<your-key>",
-  "BaseUrl": "https://ollama.com",
-  "TextModel": "gpt-oss:120b"
-}
-```
-
-## Database
-
-- **PostgreSQL** via EF Core (`Npgsql`)
-- Migrations run automatically on startup
-- Key entities: `JobApp`, `AppStage`, `JobEvent`, `JobHistory`, `Recruiter`, `ApplicationUser`
-
-## Getting Started
+## Getting started
 
 ### Prerequisites
 
 - .NET 10 SDK
 - Node.js 20+
-- PostgreSQL connection string in `Jobby.Server/appsettings.Development.json`
+- PostgreSQL (connection string in `Jobby.Server/appsettings.Development.json`)
+- Optional: running `Jobby.Scraper` and Ollama credentials for scrape/resume flows
 
-### Run locally
+### Run the SPA + API
 
-1. Start the backend (also launches Vite via SPA proxy):
-
-   ```bash
-   cd Jobby.Server
-   dotnet run --launch-profile https
-   ```
-
-2. Open `https://localhost:60922` (or the URL shown in the console).
-
-3. Register an account, then approve it via an existing admin user or directly in the database.
-
-### Environment (frontend)
-
-`jobby.client/.env.development`:
-
-```
-VITE_API_URL=/api
-DEV_SERVER_PORT=60922
+```bash
+cd Jobby.Server
+dotnet run --launch-profile https
 ```
 
-## Testing
+Open `https://localhost:60922`. Register, then approve the user as an admin (UI or database) before login works.
 
-### Backend (xUnit)
+### Tests
 
 ```bash
 dotnet test Jobby.Server.Tests/Jobby.Server.Tests.csproj
-```
 
-> If the server is running, stop it first so the build can copy `Jobby.Server.exe`.
-
-### Frontend (Vitest)
-
-```bash
 cd jobby.client
 npm test
 ```
 
-## Project Conventions
+## Conventions
 
-### Backend
+**Backend:** Controllers at `api/...`; services use `IDbContextFactory<AppDbContext>`; user-scoped queries filter by JWT user id.
 
-- Controllers use `[ApiController]` + `[Route("api/...")]`
-- Services use `IDbContextFactory<AppDbContext>` for scoped database access
-- Async methods use the `Async` suffix
-- User-scoped operations filter by `userId` from JWT claims
-
-### Frontend
-
-- API calls go through `src/api.ts` (axios instance)
-- Feature services live in `src/services/`
-- Types in `src/types/`
-- Protected routes via `ProtectedRoute`; admin routes via `AdminRoute`
-- `AuthProvider` wraps the app once in `App.tsx`
-
+**Frontend:** Axios instance in `src/api.ts`; feature API wrappers in `src/services/`; types in `src/types/`; route guards via `ProtectedRoute` / `AdminRoute`.
 
 ## License
 

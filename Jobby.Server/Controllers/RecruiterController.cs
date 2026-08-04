@@ -13,6 +13,7 @@ public class RecruiterController(IRecruiterService recruiterService) : Controlle
 {
     private readonly IRecruiterService _recruiterService = recruiterService;
 
+    /// <summary>Creates a new recruiter for the current user.</summary>
     [HttpPost("new")]
     public async Task<IActionResult> CreateRecruiter(RecruiterModel recruiter)
     {
@@ -21,6 +22,7 @@ public class RecruiterController(IRecruiterService recruiterService) : Controlle
         return Ok();
     }
 
+    /// <summary>Gets a single recruiter belonging to the current user.</summary>
     [HttpGet("{recruiterId}")]
     public async Task<IActionResult> GetRecruiter(int recruiterId)
     {
@@ -29,6 +31,7 @@ public class RecruiterController(IRecruiterService recruiterService) : Controlle
         return Ok(recruiter);
     }
 
+    /// <summary>Gets all recruiters belonging to the current user.</summary>
     [HttpGet("all")]
     public async Task<IActionResult> GetRecruiters()
     {
@@ -37,6 +40,7 @@ public class RecruiterController(IRecruiterService recruiterService) : Controlle
         return Ok(recruiters);
     }
 
+    /// <summary>Updates an existing recruiter for the current user.</summary>
     [HttpPost("update")]
     public async Task<IActionResult> UpdateRecruiter(RecruiterModel recruiter)
     {
@@ -45,6 +49,7 @@ public class RecruiterController(IRecruiterService recruiterService) : Controlle
         return Ok();
     }
 
+    /// <summary>Deletes a recruiter belonging to the current user.</summary>
     [HttpDelete("{recruiterId}")]
     public async Task<IActionResult> DeleteRecruiter(int recruiterId)
     {

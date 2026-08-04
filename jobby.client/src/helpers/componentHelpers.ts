@@ -1,6 +1,7 @@
 import type { Application } from "@/types";
 import { atsColors, Status } from "@/consts/consts";
 
+/** Maps a location type string to a badge display variant. */
 export function getBadgeVariant(type: string): "default" | "secondary" | "outline" {
     switch (type?.toLowerCase()) {
         case "remote":
@@ -14,6 +15,7 @@ export function getBadgeVariant(type: string): "default" | "secondary" | "outlin
     }
 }
 
+/** Returns a background color class for an application card based on its status. */
 export function getCardColor(item: Application) {
     switch (item.status) {
         case Status.Rejected:
@@ -22,6 +24,7 @@ export function getCardColor(item: Application) {
             return "bg-green-50"
     }
 }
+/** Maps an ATS score to its corresponding display color. */
 export function calculateScoreColor(score: number) {
     if (score <= 24) {
         return atsColors.terrible
@@ -34,6 +37,7 @@ export function calculateScoreColor(score: number) {
         return atsColors.excellent
 }
 
+/** Maps a risk level to its corresponding text color class. */
 export function calculateRiskColors(riskLevel: number) {
     switch (riskLevel) {
         case 0:

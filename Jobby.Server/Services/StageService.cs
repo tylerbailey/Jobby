@@ -7,6 +7,7 @@ namespace Jobby.Server.Services
 {
     public class StageService(IDbContextFactory<AppDbContext> dbContextFactory) : ServiceBase(dbContextFactory), IStageService
     {
+        /// <summary>Creates a new pipeline stage as the first stage and shifts existing stages down.</summary>
         public async Task CreateStageAsync(JobStageModel appStage, string userId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
@@ -29,6 +30,7 @@ namespace Jobby.Server.Services
             await db.SaveChangesAsync();
         }
 
+        /// <summary>Updates the name and color of an existing pipeline stage.</summary>
         public async Task UpdateStageAsync(JobStageModel appStage, string userId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
@@ -41,6 +43,7 @@ namespace Jobby.Server.Services
             }
         }
 
+        /// <summary>Updates the display order of the user's pipeline stages.</summary>
         public async Task ReorderStagesAsync(ReorderStagesRequest request, string userId)
         {
             if (request.Stages.Count == 0)
@@ -62,6 +65,7 @@ namespace Jobby.Server.Services
             await db.SaveChangesAsync();
         }
 
+        /// <summary>Deletes a pipeline stage if it has no associated jobs.</summary>
         public async Task DeleteStageAsync(int stageId, string userId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
@@ -73,6 +77,7 @@ namespace Jobby.Server.Services
             }
         }
 
+        /// <summary>Retrieves the user's full pipeline of stages with their associated jobs and upcoming events.</summary>
         public async Task<List<JobStageModel>> GetUserPipelineAsync(string userId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();

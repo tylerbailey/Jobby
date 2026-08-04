@@ -95,6 +95,7 @@ const previewColumns = [
 ];
 
 
+/** Renders the marketing landing page with a rotating tagline and feature preview. */
 export default function LandingPage() {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [visible, setVisible] = useState(true);
