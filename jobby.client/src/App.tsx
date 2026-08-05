@@ -5,7 +5,7 @@ import { LoginPage } from "@/components/auth/Login";
 import { RegisterPage } from "@/components/auth/Register";
 import EventCalendar from "@/components/calendar/EventCalendar";
 import Dashboard from "@/components/dashboard/Dashboard";
-import Layout from "@/components/layout/Layout";
+import Layout from "@/components/layout/layout";
 import { AdminRoute } from "@/AdminRoute";
 import { ProtectedRoute } from "@/ProtectedRoute";
 import { AuthProvider } from "@/providers/authProvider";

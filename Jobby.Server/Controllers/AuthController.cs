@@ -1,28 +1,25 @@
-using Jobby.Server.Constants;
 using Jobby.Models.Entities;
+using Jobby.Server.Constants;
+using Jobby.Server.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
+using Microsoft.Extensions.Options;
 using System.Security.Claims;
-using System.Text;
 
 namespace Jobby.Server.Controllers;
 
 [Authorize]
 [ApiController]
 [Route("api/auth")]
-public class AuthController(
-    UserManager<ApplicationUser> users,
-    IConfiguration config,
-    IWebHostEnvironment env) : ControllerBase
+public class AuthController(UserManager<ApplicationUser> users, ITokenService tokenService, IOptions<JwtOptions> jwtOptions, IWebHostEnvironment env) : ControllerBase
 {
     private const string TokenCookieName = "token";
     private static readonly TimeSpan TokenLifetime = TimeSpan.FromHours(1);
 
     private readonly UserManager<ApplicationUser> _users = users;
-    private readonly IConfiguration _config = config;
+    private readonly ITokenService _tokenService = tokenService;
+    private readonly JwtOptions _jwtOptions = jwtOptions.Value;
     private readonly IWebHostEnvironment _env = env;
 
     /// <summary>Registers a new user account pending admin approval.</summary>
@@ -86,8 +83,8 @@ public class AuthController(
             });
 
         var roles = await _users.GetRolesAsync(user);
-        var token = await CreateTokenAsync(user, roles);
-        var expires = DateTimeOffset.UtcNow.Add(TokenLifetime);
+        var token =  _tokenService.GenerateToken(user, roles);
+        var expires = DateTime.UtcNow.AddMinutes(_jwtOptions.ExpiryInMinutes);
 
         Response.Cookies.Append(TokenCookieName, token, CreateTokenCookieOptions(expires));
 
@@ -142,33 +139,7 @@ public class AuthController(
         Expires = expires
     };
 
-    /// <summary>Creates a signed JWT for the given user and roles.</summary>
-    private async Task<string> CreateTokenAsync(ApplicationUser user, IList<string>? roles = null)
-    {
-        var jwt = _config.GetSection("Jwt");
-        roles ??= await _users.GetRolesAsync(user);
-        var claims = new List<Claim>
-        {
-            new(JwtRegisteredClaimNames.Sub, user.Id),
-            new (JwtRegisteredClaimNames.Email, user.Email!),
-            new (ClaimTypes.NameIdentifier, user.Id),
-            new (ClaimTypes.Name, user.UserName!),
-        };
-
-        claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
-
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt["Key"]!));
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-        var token = new JwtSecurityToken(
-            issuer: jwt["Issuer"],
-            audience: jwt["Audience"],
-            claims: claims,
-            expires: DateTime.UtcNow.Add(TokenLifetime),
-            signingCredentials: creds);
-
-        return new JwtSecurityTokenHandler().WriteToken(token);
-    }
+   
 }
 
 public record RegisterRequest(string Email, string Password, string? DisplayName);

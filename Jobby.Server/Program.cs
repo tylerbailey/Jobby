@@ -1,13 +1,17 @@
+using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 using Jobby.Infrastructure.Data;
-using Jobby.Server.Constants;
 using Jobby.Models.Entities;
+using Jobby.Server;
+using Jobby.Server.Constants;
 using Jobby.Server.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
 using Microsoft.OpenApi;
+using System.Text;
+using static OllamaSharp.OllamaApiClient;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,11 +42,11 @@ builder.Services.AddOllama(builder.Configuration);
 builder.Services.AddScraperClient(builder.Configuration);
 
 // -------------------- JWT --------------------
-
-var jwt = builder.Configuration.GetSection("Jwt");
+var configSection = builder.Configuration.GetSection("Jwt");
+var jwt = configSection.Get<JwtOptions>() ?? new JwtOptions();
 
 var key = new SymmetricSecurityKey(
-    Encoding.UTF8.GetBytes(jwt["Key"]!)
+    Encoding.UTF8.GetBytes(jwt.Key)
 );
 
 builder.Services
@@ -85,13 +89,12 @@ builder.Services
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
-            ValidIssuer = jwt["Issuer"],
             ValidateAudience = true,
-            ValidAudience = jwt["Audience"],
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = key,
             ValidateLifetime = true,
-            ClockSkew = TimeSpan.FromMinutes(1)
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwt.Issuer,
+            ValidAudience = jwt.Audience,
+            IssuerSigningKey = key
         };
     });
 
@@ -105,9 +108,9 @@ builder.Services.AddScoped<IRecruiterService, RecruiterService>();
 builder.Services.AddScoped<IResumeService, ResumeService>();
 builder.Services.AddScoped<IAdminUserService, AdminUserService>();
 builder.Services.AddScoped<IProfileService, ProfileService>();
-
+builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddAuthorization();
-
+builder.Services.Configure<JwtOptions>(configSection);
 // -------------------- CORS --------------------
 var origins = builder.Configuration
     .GetSection("Cors:AllowedOrigins")
@@ -127,12 +130,13 @@ builder.Services.AddCors(options =>
 // -------------------- OPENAPI --------------------
 
 builder.Services.AddOpenApi();
-
-builder.Services.AddSwaggerGen(options =>
+if (builder.Environment.IsDevelopment())
 {
-    options.SwaggerDoc("v1", new OpenApiInfo { Title = "Jobby API", Version = "v1" });
-});
-
+    builder.Services.AddSwaggerGen(options =>
+    {
+        options.SwaggerDoc("v1", new OpenApiInfo { Title = "Jobby API", Version = "v1" });
+    });
+}
 
 
 // -------------------- BUILD APP --------------------
