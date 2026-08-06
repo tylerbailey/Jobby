@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace Jobby.Server.Services;
 
-public class JobScrapeClient(HttpClient httpClient) : IJobScrapeService
+public class JobScrapeService(HttpClient httpClient) : IJobScrapeService
 {
     private readonly HttpClient _httpClient = httpClient;
 

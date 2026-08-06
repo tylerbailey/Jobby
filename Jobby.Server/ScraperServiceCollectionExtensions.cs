@@ -10,7 +10,7 @@ public static class ScraperServiceCollectionExtensions
     {
         services.Configure<ScraperOptions>(configuration.GetSection(ScraperOptions.SectionName));
 
-        services.AddHttpClient<IJobScrapeService, JobScrapeClient>((sp, client) =>
+        services.AddHttpClient<IJobScrapeService, JobScrapeService>((sp, client) =>
         {
             var options = sp.GetRequiredService<IOptions<ScraperOptions>>().Value;
             client.BaseAddress = new Uri(options.BaseUrl.TrimEnd('/') + "/");

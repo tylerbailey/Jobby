@@ -2,7 +2,7 @@
 
 namespace Jobby.Models.Dto
 {
-    public class JobStageModel
+    public class JobStageDto
     {
         [JsonPropertyName("id")]
         public int? Id { get; set; }
@@ -17,6 +17,6 @@ namespace Jobby.Models.Dto
         public string Color { get; set; } = string.Empty;
 
         [JsonPropertyName("items")]
-        public List<JobModel> Items { get; set; } = [];
+        public List<JobDto> Items { get; set; } = [];
     }
 }

@@ -8,7 +8,7 @@ namespace Jobby.Server.Services
     public class StageService(IDbContextFactory<AppDbContext> dbContextFactory) : ServiceBase(dbContextFactory), IStageService
     {
         /// <summary>Creates a new pipeline stage as the first stage and shifts existing stages down.</summary>
-        public async Task CreateStageAsync(JobStageModel appStage, string userId)
+        public async Task CreateStageAsync(JobStageDto appStage, string userId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
 
@@ -31,7 +31,7 @@ namespace Jobby.Server.Services
         }
 
         /// <summary>Updates the name and color of an existing pipeline stage.</summary>
-        public async Task UpdateStageAsync(JobStageModel appStage, string userId)
+        public async Task UpdateStageAsync(JobStageDto appStage, string userId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
             var stage = await db.JobStages.Where(s => s.Id == appStage.Id && s.UserId == userId).FirstOrDefaultAsync();
@@ -78,7 +78,7 @@ namespace Jobby.Server.Services
         }
 
         /// <summary>Retrieves the user's full pipeline of stages with their associated jobs and upcoming events.</summary>
-        public async Task<List<JobStageModel>> GetUserPipelineAsync(string userId)
+        public async Task<List<JobStageDto>> GetUserPipelineAsync(string userId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
             var stages = await db.JobStages
@@ -90,13 +90,13 @@ namespace Jobby.Server.Services
        .OrderBy(s => s.Order)
        .ToListAsync();
 
-            var result = stages.Select(s => new JobStageModel
+            var result = stages.Select(s => new JobStageDto
             {
                 Id = s.Id,
                 Name = s.Name,
                 Order = s.Order,
                 Color = s.Color,
-                Items = [.. (s.Jobs ?? []).Where(a => !a.Disabled && !a.IsArchived).Select(a => new JobModel
+                Items = [.. (s.Jobs ?? []).Where(a => !a.Disabled && !a.IsArchived).Select(a => new JobDto
                 {
                     Id = a.Id,
                     CompanyName = a.Company,
@@ -113,7 +113,7 @@ namespace Jobby.Server.Services
                     Status = a.Status,
                     IsArchived = a.IsArchived,
                     StageId = a.StageId,
-                    Events = [.. (a.JobEvents ?? []).Where(e => e.EventDate >= DateTime.UtcNow).Select(e => new JobEventModel
+                    Events = [.. (a.JobEvents ?? []).Where(e => e.EventDate >= DateTime.UtcNow).Select(e => new JobEventDto
                     {
                         Id = e.Id,
                         AppId = e.JobId,

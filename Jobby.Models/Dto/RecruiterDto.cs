@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace Jobby.Models.Dto
 {
-    public class RecruiterModel
+    public class RecruiterDto
     {
         [JsonPropertyName("id")]
         public int Id { get; set; }

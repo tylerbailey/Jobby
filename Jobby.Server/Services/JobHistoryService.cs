@@ -8,7 +8,7 @@ namespace Jobby.Server.Services;
 public class JobHistoryService(IDbContextFactory<AppDbContext> dbContextFactory) : ServiceBase(dbContextFactory), IJobHistoryService
 {
     /// <summary>Creates a new job history entry.</summary>
-    public async Task CreateHistoryAsync(JobHistoryModel jobHistory)
+    public async Task CreateHistoryAsync(JobHistoryDto jobHistory)
     {
         await using var db = await _dbContextFactory.CreateDbContextAsync();
         await db.JobHistories.AddAsync(new JobHistory
@@ -23,7 +23,7 @@ public class JobHistoryService(IDbContextFactory<AppDbContext> dbContextFactory)
     }
 
     /// <summary>Retrieves the active history entries for a job application owned by the given user.</summary>
-    public async Task<List<JobHistoryModel>> GetHistoryAsync(int appId, string userId)
+    public async Task<List<JobHistoryDto>> GetHistoryAsync(int appId, string userId)
     {
         await using var db = await _dbContextFactory.CreateDbContextAsync();
         var ownsApp = await db.Jobs.AnyAsync(a => a.Id == appId && a.UserId == userId && !a.Disabled);
@@ -33,7 +33,7 @@ public class JobHistoryService(IDbContextFactory<AppDbContext> dbContextFactory)
 
         return await db.JobHistories
             .Where(h => h.JobId == appId && !h.Disabled)
-            .Select(history => new JobHistoryModel
+            .Select(history => new JobHistoryDto
             {
                 AppId = history.JobId,
                 Color = history.Color,

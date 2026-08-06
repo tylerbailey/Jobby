@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace Jobby.Models.Dto
 {
-    public class JobModel
+    public class JobDto
     {
         [JsonPropertyName("id")]
         public int Id { get; set; }
@@ -56,9 +56,9 @@ namespace Jobby.Models.Dto
         public bool IsArchived { get; set; }
 
         [JsonPropertyName("events")]
-        public List<JobEventModel> Events { get; set; } = [];
+        public List<JobEventDto> Events { get; set; } = [];
 
         [JsonPropertyName("recruiter")]
-        public RecruiterModel Recruiter { get; set; } = new RecruiterModel();
+        public RecruiterDto Recruiter { get; set; } = new RecruiterDto();
     }
 }

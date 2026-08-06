@@ -15,7 +15,7 @@ namespace Jobby.Server.Controllers
 
         /// <summary>Creates a new pipeline stage for the current user.</summary>
         [HttpPost("new")]
-        public async Task<IActionResult> CreateStage(JobStageModel appStage)
+        public async Task<IActionResult> CreateStage(JobStageDto appStage)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
             await _stageService.CreateStageAsync(appStage, userId);
@@ -23,7 +23,7 @@ namespace Jobby.Server.Controllers
         }
         /// <summary>Updates an existing pipeline stage for the current user.</summary>
         [HttpPost("update")]
-        public async Task<IActionResult> UpdateStage(JobStageModel appStage)
+        public async Task<IActionResult> UpdateStage(JobStageDto appStage)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
             await _stageService.UpdateStageAsync(appStage, userId);

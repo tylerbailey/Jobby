@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace Jobby.Models.Dto
 {
-    public class JobEventModel
+    public class JobEventDto
     {
         [JsonPropertyName("id")]
         public int? Id { get; set; }
@@ -23,6 +23,6 @@ namespace Jobby.Models.Dto
         public DateTime EventDate { get; set; }
 
         [JsonPropertyName("application")]
-        public JobModel JobApplication { get; set; } = new JobModel();
+        public JobDto JobApplication { get; set; } = new JobDto();
     }
 }

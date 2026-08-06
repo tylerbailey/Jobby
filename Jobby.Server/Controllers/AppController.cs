@@ -24,7 +24,7 @@ namespace Jobby.Server.Controllers
 
         /// <summary>Creates a new job application for the current user.</summary>
         [HttpPost("new")]
-        public async Task<IActionResult> CreateApplication(JobModel application)
+        public async Task<IActionResult> CreateApplication(JobDto application)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
             await _appService.CreateNewAppAsync(application, userId);
@@ -33,7 +33,7 @@ namespace Jobby.Server.Controllers
 
         /// <summary>Updates an existing job application for the current user.</summary>
         [HttpPost("update")]
-        public async Task<ActionResult> UpdateApplication(JobModel application)
+        public async Task<ActionResult> UpdateApplication(JobDto application)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
             await _appService.UpdateAppAsync(application, userId);

@@ -1,4 +1,3 @@
-using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 using Jobby.Infrastructure.Data;
 using Jobby.Models.Entities;
 using Jobby.Server;
@@ -7,11 +6,9 @@ using Jobby.Server.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using System.Text;
-using static OllamaSharp.OllamaApiClient;
 
 var builder = WebApplication.CreateBuilder(args);
 

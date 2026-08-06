@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace Jobby.Models.Dto;
 
-public class UserAdminModel
+public class UserAdminDto
 {
     [JsonPropertyName("id")]
     public string Id { get; set; } = string.Empty;

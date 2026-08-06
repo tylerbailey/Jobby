@@ -10,7 +10,7 @@ namespace Jobby.Server.Services
     {
 
         /// <summary>Creates a new calendar event and, if linked to a job, records its creation in the job history.</summary>
-        public async Task CreateEventAsync(JobEventModel jobEvent, string userId)
+        public async Task CreateEventAsync(JobEventDto jobEvent, string userId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
             var entry = new CalendarEvent
@@ -39,10 +39,10 @@ namespace Jobby.Server.Services
         }
 
         /// <summary>Retrieves all active calendar events for the given job application.</summary>
-        public async Task<List<JobEventModel>> GetEventsAsync(int appId)
+        public async Task<List<JobEventDto>> GetEventsAsync(int appId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
-            List<JobEventModel> jobEvents = db.CalendarEvents.Where(j => j.JobId == appId && !j.Disabled).Select(j => new JobEventModel()
+            List<JobEventDto> jobEvents = db.CalendarEvents.Where(j => j.JobId == appId && !j.Disabled).Select(j => new JobEventDto()
             {
                 Id = j.Id,
               AppId = j.JobId,
@@ -55,10 +55,10 @@ namespace Jobby.Server.Services
         }
 
         /// <summary>Retrieves active calendar events for the given job application that occur in the future.</summary>
-        public async Task<List<JobEventModel>> GetUpcomingEventsAsync(int appId)
+        public async Task<List<JobEventDto>> GetUpcomingEventsAsync(int appId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
-            List<JobEventModel> jobEvents = [.. db.CalendarEvents.Where(j => j.JobId == appId && j.EventDate >= DateTime.UtcNow &&!j.Disabled).Select(j => new JobEventModel()
+            List<JobEventDto> jobEvents = [.. db.CalendarEvents.Where(j => j.JobId == appId && j.EventDate >= DateTime.UtcNow &&!j.Disabled).Select(j => new JobEventDto()
             {
                 Id = j.Id,
                 AppId = j.JobId,
@@ -71,17 +71,17 @@ namespace Jobby.Server.Services
         }
 
         /// <summary>Retrieves all active calendar events across all of the user's job applications, including the related job details.</summary>
-        public async Task<List<JobEventModel>> GetUserEventsAsync(string userId)
+        public async Task<List<JobEventDto>> GetUserEventsAsync(string userId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
-            var events = await db.Jobs.Where(j => j.UserId == userId && j.JobEvents != null && j.JobEvents.Count > 0 && !j.Disabled).SelectMany(j => j.JobEvents.Where(e => !e.Disabled)).Select(e => new JobEventModel()
+            var events = await db.Jobs.Where(j => j.UserId == userId && j.JobEvents != null && j.JobEvents.Count > 0 && !j.Disabled).SelectMany(j => j.JobEvents.Where(e => !e.Disabled)).Select(e => new JobEventDto()
             {
                 Id = e.Id,
                 AppId = e.JobId,
                 EventTitle = e.EventTitle,
                 EventDescription = e.EventDescription,
                 EventDate = DateTime.SpecifyKind(e.EventDate, DateTimeKind.Utc),
-                JobApplication = new JobModel()
+                JobApplication = new JobDto()
                 {
                     Id = e.Job!.Id,
                     CompanyName = e.Job.Company,

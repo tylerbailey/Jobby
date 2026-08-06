@@ -8,7 +8,7 @@ namespace Jobby.Server.Services;
 public class RecruiterService(IDbContextFactory<AppDbContext> dbContextFactory) : ServiceBase(dbContextFactory), IRecruiterService
 {
     /// <summary>Creates a new recruiter record for the given user.</summary>
-    public async Task CreateRecruiterAsync(RecruiterModel recruiterModel, string userId)
+    public async Task CreateRecruiterAsync(RecruiterDto recruiterModel, string userId)
     {
         await using var db = await _dbContextFactory.CreateDbContextAsync();
         var recruiter = new Recruiter
@@ -47,12 +47,12 @@ public class RecruiterService(IDbContextFactory<AppDbContext> dbContextFactory) 
     }
 
     /// <summary>Retrieves a single active recruiter and their linked application ids for the given user.</summary>
-    public async Task<RecruiterModel> GetRecruiterAsync(int recruiterId, string userId)
+    public async Task<RecruiterDto> GetRecruiterAsync(int recruiterId, string userId)
     {
         await using var db = await _dbContextFactory.CreateDbContextAsync();
         return await db.Recruiters
             .Where(r => r.Id == recruiterId && r.UserId == userId && !r.Disabled)
-            .Select(r => new RecruiterModel
+            .Select(r => new RecruiterDto
             {
                 Agency = r.Agency,
                 Name = r.Name,
@@ -63,11 +63,11 @@ public class RecruiterService(IDbContextFactory<AppDbContext> dbContextFactory) 
                 Notes = r.Notes,
                 ApplicationIds = r.Jobs.Select(a => a.Id).ToList(),
             })
-            .FirstOrDefaultAsync() ?? new RecruiterModel();
+            .FirstOrDefaultAsync() ?? new RecruiterDto();
     }
 
     /// <summary>Updates the fields of an existing recruiter belonging to the given user.</summary>
-    public async Task UpdateRecruiterAsync(RecruiterModel recruiterModel, string userId)
+    public async Task UpdateRecruiterAsync(RecruiterDto recruiterModel, string userId)
     {
         await using var db = await _dbContextFactory.CreateDbContextAsync();
         var recruiter = await db.Recruiters

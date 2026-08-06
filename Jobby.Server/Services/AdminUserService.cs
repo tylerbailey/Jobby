@@ -13,10 +13,10 @@ public class AdminUserService(
     private readonly RoleManager<IdentityRole> _roleManager = roleManager;
 
     /// <summary>Retrieves all users, ordered by email, mapped to admin view models.</summary>
-    public async Task<IList<UserAdminModel>> GetAllUsersAsync()
+    public async Task<IList<UserAdminDto>> GetAllUsersAsync()
     {
         var users = _userManager.Users.OrderBy(u => u.Email).ToList();
-        var models = new List<UserAdminModel>();
+        var models = new List<UserAdminDto>();
 
         foreach (var user in users)
             models.Add(await MapUserAsync(user));
@@ -25,7 +25,7 @@ public class AdminUserService(
     }
 
     /// <summary>Retrieves a single user mapped to an admin view model, or null if not found.</summary>
-    public async Task<UserAdminModel?> GetUserAsync(string userId)
+    public async Task<UserAdminDto?> GetUserAsync(string userId)
     {
         var user = await _userManager.FindByIdAsync(userId);
         return user is null ? null : await MapUserAsync(user);
@@ -172,11 +172,11 @@ public class AdminUserService(
     }
 
     /// <summary>Maps an application user and their roles to an admin view model.</summary>
-    private async Task<UserAdminModel> MapUserAsync(ApplicationUser user)
+    private async Task<UserAdminDto> MapUserAsync(ApplicationUser user)
     {
         var roles = await _userManager.GetRolesAsync(user);
 
-        return new UserAdminModel
+        return new UserAdminDto
         {
             Id = user.Id,
             Email = user.Email ?? string.Empty,

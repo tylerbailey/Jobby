@@ -15,7 +15,7 @@ namespace Jobby.Server.Controllers
 
         /// <summary>Creates a new calendar event for the current user.</summary>
         [HttpPost("new")]
-        public async Task<IActionResult> CreateEvent(JobEventModel jobEvent)
+        public async Task<IActionResult> CreateEvent(JobEventDto jobEvent)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
             await _eventService.CreateEventAsync(jobEvent, userId);

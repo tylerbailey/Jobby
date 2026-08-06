@@ -17,10 +17,10 @@ namespace Jobby.Server.Services
         private readonly IJobScrapeService _jobScrapeService = jobScrapeService;
 
         /// <summary>Retrieves a single non-archived job application for the given user.</summary>
-        public async Task<JobModel> GetAppAsync(string userId, int applicationId)
+        public async Task<JobDto> GetAppAsync(string userId, int applicationId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
-            var application = await db.Jobs.Where(a => a.UserId == userId && a.Id == applicationId && !a.Disabled && !a.IsArchived).Select(a => new JobModel
+            var application = await db.Jobs.Where(a => a.UserId == userId && a.Id == applicationId && !a.Disabled && !a.IsArchived).Select(a => new JobDto
             {
                 Id = a.Id,
                 CompanyName = a.Company,
@@ -37,16 +37,16 @@ namespace Jobby.Server.Services
                 Status = a.Status,
                 IsArchived = a.IsArchived,
                 StageId = a.StageId
-            }).FirstOrDefaultAsync() ?? new JobModel();
+            }).FirstOrDefaultAsync() ?? new JobDto();
             return application;
         }
 
         /// <summary>Retrieves all non-archived job applications for the given user.</summary>
-        public async Task<List<JobModel>> GetAppsAsync(string userId)
+        public async Task<List<JobDto>> GetAppsAsync(string userId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
             var applications = await db.Jobs.Where(j => j.UserId == userId && !j.Disabled && !j.IsArchived).Select(j =>
-                new JobModel()
+                new JobDto()
                 {
                     Id = j.Id,
                     CompanyName = j.Company,
@@ -70,7 +70,7 @@ namespace Jobby.Server.Services
         }
 
         /// <summary>Creates a new job application and records its creation in the job history.</summary>
-        public async Task CreateNewAppAsync(JobModel application, string userId)
+        public async Task CreateNewAppAsync(JobDto application, string userId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
             var startingStage = await db.JobStages.Where(s => !s.Disabled && s.UserId == userId).OrderBy(s => s.Order).FirstOrDefaultAsync() ?? new JobStage();
@@ -128,7 +128,7 @@ namespace Jobby.Server.Services
         }
 
         /// <summary>Updates an existing job application's fields and records the change in the job history.</summary>
-        public async Task UpdateAppAsync(JobModel application, string userId)
+        public async Task UpdateAppAsync(JobDto application, string userId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
             var jobApp = await db.Jobs.FirstOrDefaultAsync(a => a.Id == application.Id && a.UserId == userId);
@@ -187,10 +187,10 @@ namespace Jobby.Server.Services
         }
 
         /// <summary>Retrieves the list of available job location types.</summary>
-        public async Task<List<LocationTypeModel>> GetAppLocationsAsync()
+        public async Task<List<LocationTypeDto>> GetAppLocationsAsync()
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
-            var locations = await db.LocationTypes.Where(l => !l.Disabled).Select(l => new LocationTypeModel
+            var locations = await db.LocationTypes.Where(l => !l.Disabled).Select(l => new LocationTypeDto
             {
                 Id = l.Id,
                 Type = l.Type
@@ -199,7 +199,7 @@ namespace Jobby.Server.Services
         }
 
         /// <summary>Scrapes a job posting URL and uses the AI service to extract structured job posting data.</summary>
-        public async Task<JobPostingData> ScrapeJobPostingAsync(string url, CancellationToken cancellationToken = default)
+        public async Task<JobPostingDataDto> ScrapeJobPostingAsync(string url, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(url))
                 throw new ArgumentException("URL is required.", nameof(url));
@@ -211,7 +211,7 @@ namespace Jobby.Server.Services
             }
 
             var html = await _jobScrapeService.ScrapeHtmlAsync(uri.ToString(), cancellationToken);
-            var schema = JsonSchema.FromType<JobPostingData>();
+            var schema = JsonSchema.FromType<JobPostingDataDto>();
             var prompt = $"""
                 {ResumePrompts.JobPosting(html)}
 
@@ -224,7 +224,7 @@ namespace Jobby.Server.Services
                 "You extract structured job posting data. Return only valid JSON.",
                 cancellationToken);
 
-            var postingData = JsonSerializer.Deserialize<JobPostingData>(
+            var postingData = JsonSerializer.Deserialize<JobPostingDataDto>(
                 JsonHelpers.RemoveFence(response),
                 new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
@@ -311,11 +311,11 @@ namespace Jobby.Server.Services
         }
 
         /// <summary>Retrieves all archived job applications for the given user.</summary>
-        public async Task<List<JobModel>> GetArchivedAppsAsync(string userId)
+        public async Task<List<JobDto>> GetArchivedAppsAsync(string userId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
             var applications = await db.Jobs.Where(j => j.UserId == userId && !j.Disabled && j.IsArchived).Select(j =>
-                new JobModel()
+                new JobDto()
                 {
                     Id = j.Id,
                     CompanyName = j.Company,

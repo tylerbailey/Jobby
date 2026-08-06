@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace Jobby.Models.Dto
 {
-    public class JobPostingData
+    public class JobPostingDataDto
     {
         [JsonPropertyName("company")]
         public string Company { get; set; } = string.Empty;

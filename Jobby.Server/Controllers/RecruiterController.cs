@@ -15,7 +15,7 @@ public class RecruiterController(IRecruiterService recruiterService) : Controlle
 
     /// <summary>Creates a new recruiter for the current user.</summary>
     [HttpPost("new")]
-    public async Task<IActionResult> CreateRecruiter(RecruiterModel recruiter)
+    public async Task<IActionResult> CreateRecruiter(RecruiterDto recruiter)
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
         await _recruiterService.CreateRecruiterAsync(recruiter, userId);
@@ -42,7 +42,7 @@ public class RecruiterController(IRecruiterService recruiterService) : Controlle
 
     /// <summary>Updates an existing recruiter for the current user.</summary>
     [HttpPost("update")]
-    public async Task<IActionResult> UpdateRecruiter(RecruiterModel recruiter)
+    public async Task<IActionResult> UpdateRecruiter(RecruiterDto recruiter)
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
         await _recruiterService.UpdateRecruiterAsync(recruiter, userId);

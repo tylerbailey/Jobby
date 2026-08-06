@@ -16,7 +16,7 @@ namespace Jobby.Server.Services
         private readonly UserManager<ApplicationUser> _userManager = userManager;
 
         /// <summary>Computes daily counts of jobs added and applied to over the trailing 30-day window for the given user.</summary>
-        public async Task<ProfileStatsModel> GetMonthlyStatsAsync(string userId)
+        public async Task<ProfileStatsDto> GetMonthlyStatsAsync(string userId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
 
@@ -53,7 +53,7 @@ namespace Jobby.Server.Services
                 });
             }
 
-            return new ProfileStatsModel
+            return new ProfileStatsDto
             {
                 TotalAdded = totalAdded,
                 TotalApplied = totalApplied,

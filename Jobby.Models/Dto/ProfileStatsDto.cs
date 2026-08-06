@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace Jobby.Models.Dto
 {
-    public class ProfileStatsModel
+    public class ProfileStatsDto
     {
         [JsonPropertyName("totalAdded")]
         public int TotalAdded { get; set; }
