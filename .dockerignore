@@ -5,7 +5,6 @@
 **/.vs
 **/.idea
 **/dist
-jobby.client
 Jobby.Scraper
 Jobby.Email
 Jobby.Server.Tests
