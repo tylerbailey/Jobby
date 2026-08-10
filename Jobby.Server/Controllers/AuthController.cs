@@ -15,7 +15,6 @@ namespace Jobby.Server.Controllers;
 public class AuthController(UserManager<ApplicationUser> users, ITokenService tokenService, IOptions<JwtOptions> jwtOptions, IWebHostEnvironment env) : ControllerBase
 {
     private const string TokenCookieName = "token";
-    private static readonly TimeSpan TokenLifetime = TimeSpan.FromHours(1);
 
     private readonly UserManager<ApplicationUser> _users = users;
     private readonly ITokenService _tokenService = tokenService;
@@ -83,8 +82,8 @@ public class AuthController(UserManager<ApplicationUser> users, ITokenService to
             });
 
         var roles = await _users.GetRolesAsync(user);
-        var token =  _tokenService.GenerateToken(user, roles);
-        var expires = DateTime.UtcNow.AddMinutes(_jwtOptions.ExpiryInMinutes);
+        var token = _tokenService.GenerateToken(user, roles);
+        var expires = DateTimeOffset.UtcNow.AddMinutes(_jwtOptions.ExpiryInMinutes);
 
         Response.Cookies.Append(TokenCookieName, token, CreateTokenCookieOptions(expires));
 
@@ -93,7 +92,8 @@ public class AuthController(UserManager<ApplicationUser> users, ITokenService to
             id = user.Id,
             email = user.Email,
             displayName = user.DisplayName,
-            roles
+            roles,
+            expiresAt = expires
         });
     }
 
@@ -125,7 +125,8 @@ public class AuthController(UserManager<ApplicationUser> users, ITokenService to
             id = user.Id,
             email = user.Email,
             displayName = user.DisplayName,
-            roles
+            roles,
+            expiresAt = GetTokenExpiresAt(User)
         });
     }
 
@@ -139,7 +140,15 @@ public class AuthController(UserManager<ApplicationUser> users, ITokenService to
         Expires = expires
     };
 
-   
+    /// <summary>Reads the JWT exp claim as a UTC timestamp, if present.</summary>
+    private static DateTimeOffset? GetTokenExpiresAt(ClaimsPrincipal principal)
+    {
+        var expValue = principal.FindFirst("exp")?.Value;
+        if (expValue is null || !long.TryParse(expValue, out var seconds))
+            return null;
+
+        return DateTimeOffset.FromUnixTimeSeconds(seconds);
+    }
 }
 
 public record RegisterRequest(string Email, string Password, string? DisplayName);

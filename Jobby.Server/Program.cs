@@ -42,6 +42,13 @@ builder.Services.AddScraperClient(builder.Configuration);
 var configSection = builder.Configuration.GetSection("Jwt");
 var jwt = configSection.Get<JwtOptions>() ?? new JwtOptions();
 
+if (string.IsNullOrWhiteSpace(jwt.Key) || jwt.Key.Length < 32)
+    throw new InvalidOperationException("Jwt:Key must be configured and at least 32 characters.");
+if (string.IsNullOrWhiteSpace(jwt.Issuer) || string.IsNullOrWhiteSpace(jwt.Audience))
+    throw new InvalidOperationException("Jwt:Issuer and Jwt:Audience must be configured.");
+if (jwt.ExpiryInMinutes <= 0)
+    throw new InvalidOperationException("Jwt:ExpiryInMinutes must be greater than 0.");
+
 var key = new SymmetricSecurityKey(
     Encoding.UTF8.GetBytes(jwt.Key)
 );
@@ -120,7 +127,8 @@ builder.Services.AddCors(options =>
         policy.WithOrigins(origins)
               .AllowAnyHeader()
               .AllowAnyMethod()
-              .AllowCredentials();
+              .AllowCredentials()
+              .WithExposedHeaders("Token-Expired");
     });
 });
 
@@ -152,8 +160,8 @@ foreach (var roleName in Roles.All)
         await roleManager.CreateAsync(new IdentityRole(roleName));
 }
 
-app.UseStaticFiles();
 app.UseDefaultFiles();
+app.UseStaticFiles();
 app.MapStaticAssets();
 
 // OpenAPI dev only

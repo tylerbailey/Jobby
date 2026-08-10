@@ -129,3 +129,22 @@ export function getStoredUser<T>(): T | null {
         return null;
     }
 }
+
+const EXPIRY_SKEW_MS = 10_000;
+
+/** Milliseconds until session expiry, minus a small skew. Negative if already expired. */
+export function msUntilSessionExpiry(expiresAt: string, skewMs = EXPIRY_SKEW_MS): number {
+    const expiresMs = Date.parse(expiresAt);
+    if (Number.isNaN(expiresMs))
+        return -1;
+
+    return expiresMs - Date.now() - skewMs;
+}
+
+/** True when expiresAt is missing, invalid, or already past (with skew). */
+export function isSessionExpired(expiresAt: string | null | undefined): boolean {
+    if (!expiresAt)
+        return false;
+
+    return msUntilSessionExpiry(expiresAt) <= 0;
+}

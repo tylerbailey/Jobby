@@ -39,8 +39,8 @@ Jobby.Server.Tests/     xUnit tests
 ### Runtime topology
 
 - **Development:** Vite on `https://localhost:60922`, API on `https://localhost:7048` (SPA proxy). Client env `VITE_API_URL=/api`.
-- **Production:** API hosts the built SPA from `jobby.client/dist`.
-- **Auth:** ASP.NET Identity + JWT stored in an httpOnly `token` cookie. The client keeps a cached user profile in `localStorage` and sends cookies on every request.
+- **Production:** Docker/publish builds the Vite SPA into `wwwroot`; API serves it and falls back to `index.html` for client routes. Client env `VITE_API_URL=/api` (same origin).
+- **Auth:** ASP.NET Identity + JWT stored in an httpOnly `token` cookie. The client caches the user profile (including `expiresAt`) in `localStorage` and auto-clears the session when that time is reached or an API call returns 401.
 
 ## Features
 

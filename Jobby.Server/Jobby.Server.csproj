@@ -4,9 +4,11 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <SpaRoot>..\jobby.client</SpaRoot>
+    <SpaRoot>..\jobby.client\</SpaRoot>
+    <SpaDist>$(SpaRoot)dist\</SpaDist>
     <SpaProxyLaunchCommand>npm run dev</SpaProxyLaunchCommand>
     <SpaProxyServerUrl>https://localhost:60922</SpaProxyServerUrl>
+    <SkipSpaPublish Condition="'$(SkipSpaPublish)' == ''">false</SkipSpaPublish>
   </PropertyGroup>
 
   <ItemGroup>
@@ -43,5 +45,19 @@
     <ProjectReference Include="..\Jobby.Infrastructure\Jobby.Infrastructure.csproj" />
     <ProjectReference Include="..\Jobby.Models\Jobby.Models.csproj" />
   </ItemGroup>
+
+  <!-- Build the Vite SPA and include it under wwwroot when publishing (skipped in Docker). -->
+  <Target Name="PublishSpa" AfterTargets="ComputeFilesToPublish" Condition="'$(SkipSpaPublish)' != 'true'">
+    <Exec WorkingDirectory="$(SpaRoot)" Command="npm ci" />
+    <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build" EnvironmentVariables="VITE_API_URL=/api" />
+    <ItemGroup>
+      <_SpaDistFiles Include="$(SpaDist)**\*.*" />
+      <ResolvedFileToPublish Include="@(_SpaDistFiles)">
+        <RelativePath>wwwroot\%(_SpaDistFiles.RecursiveDir)%(_SpaDistFiles.Filename)%(_SpaDistFiles.Extension)</RelativePath>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      </ResolvedFileToPublish>
+    </ItemGroup>
+  </Target>
 
 </Project>

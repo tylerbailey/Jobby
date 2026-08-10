@@ -15,4 +15,5 @@ export type AuthResponse = {
     email: string;
     displayName?: string | null;
     roles: string[];
+    expiresAt: string;
 };

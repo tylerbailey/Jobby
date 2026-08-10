@@ -2,7 +2,9 @@ import { describe, expect, it, vi, afterEach } from "vitest";
 import {
     getAuthErrorMessage,
     hasFieldErrors,
+    isSessionExpired,
     isTokenExpired,
+    msUntilSessionExpiry,
     validateRegisterForm,
 } from "@/helpers/authHelpers";
 
@@ -57,5 +59,27 @@ describe("isTokenExpired", () => {
         const token = `header.${payload}.signature`;
 
         expect(isTokenExpired(token)).toBe(true);
+    });
+});
+
+describe("session expiry helpers", () => {
+    afterEach(() => {
+        vi.useRealTimers();
+    });
+
+    it("treats missing expiresAt as not expired (unknown)", () => {
+        expect(isSessionExpired(undefined)).toBe(false);
+        expect(isSessionExpired(null)).toBe(false);
+    });
+
+    it("detects an already-expired timestamp", () => {
+        expect(isSessionExpired(new Date(Date.now() - 60_000).toISOString())).toBe(true);
+    });
+
+    it("reports positive delay for a future expiry", () => {
+        vi.useFakeTimers();
+        vi.setSystemTime(new Date("2026-01-01T00:00:00.000Z"));
+        const delay = msUntilSessionExpiry("2026-01-01T01:00:00.000Z", 10_000);
+        expect(delay).toBe(3_590_000);
     });
 });
