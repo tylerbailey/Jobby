@@ -2,6 +2,9 @@
 
 Full-stack job application tracker: kanban pipeline, calendar, recruiter CRM, AI resume tools, and admin approval. Built as a multi-project .NET solution with a React SPA.
 
+# Live env
+https://jobby-l4z2.onrender.com/
+
 ## Architecture
 
 ```
