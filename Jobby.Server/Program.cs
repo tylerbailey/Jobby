@@ -11,6 +11,11 @@ using Microsoft.OpenApi;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+if (builder.Environment.IsProduction())
+{
+    builder.Configuration.Sources.Clear();
+    builder.Configuration.AddEnvironmentVariables();
+}
 
 // -------------------- SERVICES --------------------
 
