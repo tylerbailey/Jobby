@@ -8,6 +8,8 @@ import Dashboard from "@/components/dashboard/Dashboard";
 import Layout from "@/components/layout/layout";
 import { AdminRoute } from "@/AdminRoute";
 import { ProtectedRoute } from "@/ProtectedRoute";
+import { PublicRoute } from "@/PublicRoute";
+import { SessionExpiredNotice } from "@/components/auth/SessionExpiredNotice";
 import { AuthProvider } from "@/providers/authProvider";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ResumeRating from "./components/resume/ResumeRating";
@@ -18,10 +20,11 @@ export default function App() {
     return (
         <AuthProvider>
             <BrowserRouter>
+                <SessionExpiredNotice />
                 <Routes>
-                    <Route path="/" element={<LandingPage />} />
-                    <Route path="/login" element={<LoginPage />} />
-                    <Route path="/register" element={<RegisterPage />} />
+                    <Route path="/" element={<PublicRoute><LandingPage /></PublicRoute>} />
+                    <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
+                    <Route path="/register" element={<PublicRoute><RegisterPage /></PublicRoute>} />
                     <Route element={<ProtectedRoute />}>
                         <Route element={<Layout />}>
                             <Route path="/dashboard" element={<Dashboard />} />

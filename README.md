@@ -41,7 +41,7 @@ Jobby.Server.Tests/     xUnit tests
 
 ### Runtime topology
 
-- **Development:** Vite on `https://localhost:60922`, API on `https://localhost:7048` (SPA proxy). Client env `VITE_API_URL=/api`.
+- **Development:** Vite on `https://localhost:5173`, API on `https://localhost:7048` (SPA proxy). Client env `VITE_API_URL=/api`.
 - **Production:** API hosts the built SPA from `jobby.client/dist`.
 - **Auth:** ASP.NET Identity + JWT stored in an httpOnly `token` cookie. The client keeps a cached user profile in `localStorage` and sends cookies on every request.
 
@@ -98,7 +98,7 @@ cd Jobby.Server
 dotnet run --launch-profile https
 ```
 
-Open `https://localhost:60922`. Register, then approve the user as an admin (UI or database) before login works.
+Open `https://localhost:5173`. Register, then approve the user as an admin (UI or database) before login works.
 
 ### Tests
 

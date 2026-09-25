@@ -3,16 +3,17 @@ import type { Recruiter } from "@/types";
 import RecruiterCard from "./RecruiterCard";
 import CreateRecruiter from "./CreateRecruiter";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, Users } from "lucide-react";
 import { useState } from "react";
 
 export type RecruiterCardProps = {
     recruiters: Recruiter[];
+    isLoaded: boolean;
     onUpdate: () => void;
 }
 
 /** Renders the column listing all recruiter contact cards. */
-export default function RecruiterColumn({ recruiters, onUpdate }: RecruiterCardProps) {
+export default function RecruiterColumn({ recruiters, isLoaded, onUpdate }: RecruiterCardProps) {
     const [dialogOpen, setDialogOpen] = useState<boolean>(false);
 
     return (
@@ -27,10 +28,25 @@ export default function RecruiterColumn({ recruiters, onUpdate }: RecruiterCardP
                     </div>
                 </CardHeader>
                 <CardContent>
-                    {recruiters.map((recruiter) => (
-                        <RecruiterCard key={`recruiter${recruiter.id}` } onUpdate={onUpdate} recruiter={recruiter} />
-
-                    ))}
+                    {isLoaded && recruiters.length === 0 ? (
+                        <div className="flex flex-col items-center gap-3 px-2 py-10 text-center">
+                            <Users className="size-8 text-muted-foreground" />
+                            <div className="space-y-1">
+                                <p className="font-semibold">No recruiters</p>
+                                <p className="text-sm text-muted-foreground">
+                                    Add a recruiter to keep their contact details here.
+                                </p>
+                            </div>
+                            <Button variant="outline" onClick={() => setDialogOpen(true)}>
+                                <Plus />
+                                Add recruiter
+                            </Button>
+                        </div>
+                    ) : (
+                        recruiters.map((recruiter) => (
+                            <RecruiterCard key={`recruiter${recruiter.id}`} onUpdate={onUpdate} recruiter={recruiter} />
+                        ))
+                    )}
                 </CardContent>
             </Card>
             <CreateRecruiter onUpdate={onUpdate} dialogOpen={dialogOpen} setDialogOpen={setDialogOpen} />

@@ -12,6 +12,21 @@ namespace Jobby.Infrastructure.Data
         public DbSet<JobHistory> JobHistories { get; set; }
         public DbSet<CalendarEvent> CalendarEvents { get; set; }
         public DbSet<Recruiter> Recruiters { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+
+            builder.Entity<RefreshToken>(entity =>
+            {
+                entity.HasIndex(token => token.TokenHash).IsUnique();
+                entity.HasOne<ApplicationUser>()
+                    .WithMany()
+                    .HasForeignKey(token => token.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+        }
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {

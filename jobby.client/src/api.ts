@@ -1,29 +1,93 @@
-import { handleUnauthorized } from "@/helpers/authSession";
-import axios from "axios";
+import { handleSessionExpired, handleUnauthorized } from "@/helpers/authSession";
+import axios, { type AxiosRequestConfig, type InternalAxiosRequestConfig } from "axios";
 import { toast } from "sonner";
+
+type AuthRequestConfig = InternalAxiosRequestConfig & {
+    skipAuthRefresh?: boolean;
+    _retry?: boolean;
+};
+
+declare module "axios" {
+    interface AxiosRequestConfig {
+        skipAuthRefresh?: boolean;
+    }
+}
 
 export const api = axios.create({
     baseURL: import.meta.env.VITE_API_URL ?? "/api",
     withCredentials: true,
 });
 
+type RefreshResult = "ok" | "expired" | "failed";
+
+let refreshPromise: Promise<RefreshResult> | null = null;
+
+/** Exchanges a valid refresh token for a new access token. */
+function refreshAccessToken() {
+    if (!refreshPromise) {
+        refreshPromise = api
+            .post("/auth/refresh", null, { skipAuthRefresh: true } satisfies AxiosRequestConfig)
+            .then(() => "ok" as const)
+            .catch((refreshError: unknown) => {
+                if (axios.isAxiosError(refreshError) && refreshError.response?.status === 401)
+                    return "expired" as const;
+
+                return "failed" as const;
+            })
+            .finally(() => {
+                refreshPromise = null;
+            });
+    }
+
+    return refreshPromise;
+}
+
+/** True when this browser still expects an authenticated session. */
+function hasRememberedSession() {
+    return localStorage.getItem("user") !== null;
+}
+
 api.interceptors.response.use(
     response => response,
-    error => {
+    async error => {
         const status = error.response?.status;
-        const url = error.config?.url ?? "";
+        const config = error.config as AuthRequestConfig | undefined;
+        const url = config?.url ?? "";
         const isAuthAttempt =
             url.includes("/auth/login")
             || url.includes("/auth/register")
-            || url.includes("/auth/logout");
+            || url.includes("/auth/logout")
+            || url.includes("/auth/refresh");
         const skipToast =
             isAuthAttempt
             || url.includes("/app/scrape-posting")
             || url.includes("/profile/stats");
         const tokenExpiredHeader = error.response?.headers?.["token-expired"] === "true";
 
-        if (!isAuthAttempt && (status === 401 || tokenExpiredHeader)) {
-            handleUnauthorized();
+        if (status === 401 && config && !config.skipAuthRefresh && !isAuthAttempt) {
+            const rememberedSession = hasRememberedSession() || tokenExpiredHeader;
+
+            if (!config._retry) {
+                config._retry = true;
+                const refreshed = await refreshAccessToken();
+                if (refreshed === "ok")
+                    return api.request(config);
+
+                if (refreshed === "expired") {
+                    if (rememberedSession)
+                        handleSessionExpired();
+                    else
+                        handleUnauthorized();
+                }
+
+                return Promise.reject(error);
+            }
+
+            if (rememberedSession)
+                handleSessionExpired();
+            else
+                handleUnauthorized();
+
             return Promise.reject(error);
         }
 

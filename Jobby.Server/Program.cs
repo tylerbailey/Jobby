@@ -98,7 +98,8 @@ builder.Services
             ValidateIssuerSigningKey = true,
             ValidIssuer = jwt.Issuer,
             ValidAudience = jwt.Audience,
-            IssuerSigningKey = key
+            IssuerSigningKey = key,
+            ClockSkew = TimeSpan.FromSeconds(30)
         };
     });
 
@@ -113,6 +114,7 @@ builder.Services.AddScoped<IResumeService, ResumeService>();
 builder.Services.AddScoped<IAdminUserService, AdminUserService>();
 builder.Services.AddScoped<IProfileService, ProfileService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
 builder.Services.AddAuthorization();
 builder.Services.Configure<JwtOptions>(configSection);
 // -------------------- CORS --------------------

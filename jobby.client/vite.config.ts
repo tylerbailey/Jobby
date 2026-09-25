@@ -33,7 +33,7 @@ export default defineConfig({
     server: {
         strictPort: true,
         open: false,
-        port: parseInt(env.DEV_SERVER_PORT || '60922'),
+        port: parseInt(env.DEV_SERVER_PORT || '5173'),
         proxy: {
             '^/api': {
                 target,

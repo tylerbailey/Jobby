@@ -74,6 +74,11 @@ export function KanbanCard({ item, onUpdate, isMatch }: KanbanCardProps) {
             status: newStatus,
         });
         onUpdate();
+
+        if (newStatus === Status.Accepted)
+            toast.success("Congratulations! You landed this one.");
+        else if (newStatus === Status.Rejected)
+            toast("Keep your chin up. The right role is still out there.");
     }
 
     useEffect(() => {

@@ -26,6 +26,10 @@ namespace Jobby.Server.Controllers
         [HttpPost("new")]
         public async Task<IActionResult> CreateApplication(JobDto application)
         {
+            var validationError = ValidateNewApplication(application);
+            if (validationError is not null)
+                return BadRequest(new { message = validationError });
+
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
             await _appService.CreateNewAppAsync(application, userId);
             return Ok();
@@ -112,6 +116,45 @@ namespace Jobby.Server.Controllers
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
             var archives = await _appService.GetArchivedAppsAsync(userId);
             return Ok(archives);
+        }
+
+        /// <summary>Rejects a new application that is missing a required value or exceeds a column limit.</summary>
+        private static string? ValidateNewApplication(JobDto application)
+        {
+            if (string.IsNullOrWhiteSpace(application.CompanyName))
+                return "Company name is required.";
+
+            if (application.CompanyName.Length > 256)
+                return "Company name must be 256 characters or fewer.";
+
+            if (string.IsNullOrWhiteSpace(application.JobTitle))
+                return "Job title is required.";
+
+            if (application.JobTitle.Length > 256)
+                return "Job title must be 256 characters or fewer.";
+
+            if (application.LocationTypeId <= 0)
+                return "Location type is required.";
+
+            if ((application.Summary?.Length ?? 0) > 2046)
+                return "Summary must be 2046 characters or fewer.";
+
+            if ((application.JobPostingUrl?.Length ?? 0) > 1024)
+                return "URL must be 1024 characters or fewer.";
+
+            if ((application.Address?.Length ?? 0) > 512)
+                return "Address must be 512 characters or fewer.";
+
+            if ((application.ContactName?.Length ?? 0) > 256)
+                return "Contact must be 256 characters or fewer.";
+
+            if ((application.Notes?.Length ?? 0) > 2046)
+                return "Notes must be 2046 characters or fewer.";
+
+            if (application.Salary is < 0)
+                return "Salary must be a whole number up to 2,147,483,647.";
+
+            return null;
         }
     }
 }

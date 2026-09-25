@@ -12,13 +12,21 @@ namespace Jobby.Server.Controllers;
 [Authorize]
 [ApiController]
 [Route("api/auth")]
-public class AuthController(UserManager<ApplicationUser> users, ITokenService tokenService, IOptions<JwtOptions> jwtOptions, IWebHostEnvironment env) : ControllerBase
+public class AuthController(
+    UserManager<ApplicationUser> users,
+    ITokenService tokenService,
+    IRefreshTokenService refreshTokens,
+    IOptions<JwtOptions> jwtOptions,
+    IWebHostEnvironment env) : ControllerBase
 {
+    public const string SessionExpiredMessage = "Session has expired. Please log in.";
+
     private const string TokenCookieName = "token";
-    private static readonly TimeSpan TokenLifetime = TimeSpan.FromHours(1);
+    private const string RefreshCookieName = "refreshToken";
 
     private readonly UserManager<ApplicationUser> _users = users;
     private readonly ITokenService _tokenService = tokenService;
+    private readonly IRefreshTokenService _refreshTokens = refreshTokens;
     private readonly JwtOptions _jwtOptions = jwtOptions.Value;
     private readonly IWebHostEnvironment _env = env;
 
@@ -82,11 +90,11 @@ public class AuthController(UserManager<ApplicationUser> users, ITokenService to
                 message = "Your account is pending approval."
             });
 
-        var roles = await _users.GetRolesAsync(user);
-        var token =  _tokenService.GenerateToken(user, roles);
-        var expires = DateTime.UtcNow.AddMinutes(_jwtOptions.ExpiryInMinutes);
+        if (Request.Cookies.TryGetValue(RefreshCookieName, out var existingRefresh))
+            await _refreshTokens.RevokeAsync(existingRefresh);
 
-        Response.Cookies.Append(TokenCookieName, token, CreateTokenCookieOptions(expires));
+        var roles = await _users.GetRolesAsync(user);
+        await IssueAuthCookiesAsync(user, roles);
 
         return Ok(new
         {
@@ -97,12 +105,47 @@ public class AuthController(UserManager<ApplicationUser> users, ITokenService to
         });
     }
 
-    /// <summary>Logs the current user out by clearing the auth token cookie.</summary>
+    /// <summary>Issues a new access token when the refresh token is still valid.</summary>
+    [AllowAnonymous]
+    [HttpPost("refresh")]
+    public async Task<IActionResult> Refresh()
+    {
+        if (!Request.Cookies.TryGetValue(RefreshCookieName, out var refreshToken) || string.IsNullOrWhiteSpace(refreshToken))
+            return SessionExpired();
+
+        var rotation = await _refreshTokens.RotateAsync(refreshToken);
+        if (!rotation.Succeeded || rotation.UserId is null || rotation.Token is null || rotation.ExpiresAt is null)
+            return SessionExpired();
+
+        var user = await _users.FindByIdAsync(rotation.UserId);
+        if (user is null || !user.IsApproved)
+        {
+            await _refreshTokens.RevokeAsync(rotation.Token);
+            return SessionExpired();
+        }
+
+        var roles = await _users.GetRolesAsync(user);
+        var accessToken = _tokenService.GenerateToken(user, roles);
+        AppendAuthCookies(accessToken, rotation.Token, rotation.ExpiresAt.Value);
+
+        return Ok(new
+        {
+            id = user.Id,
+            email = user.Email,
+            displayName = user.DisplayName,
+            roles
+        });
+    }
+
+    /// <summary>Logs the current user out by revoking the refresh token and clearing auth cookies.</summary>
     [AllowAnonymous]
     [HttpPost("logout")]
-    public IActionResult Logout()
+    public async Task<IActionResult> Logout()
     {
-        Response.Cookies.Delete(TokenCookieName, CreateTokenCookieOptions(DateTimeOffset.UtcNow));
+        if (Request.Cookies.TryGetValue(RefreshCookieName, out var refreshToken))
+            await _refreshTokens.RevokeAsync(refreshToken);
+
+        ClearAuthCookies();
         return Ok();
     }
 
@@ -129,7 +172,38 @@ public class AuthController(UserManager<ApplicationUser> users, ITokenService to
         });
     }
 
-    /// <summary>Builds the cookie options used for the auth token cookie.</summary>
+    /// <summary>Creates an access token and refresh token, then stores both in cookies.</summary>
+    private async Task IssueAuthCookiesAsync(ApplicationUser user, IList<string> roles)
+    {
+        var refreshToken = await _refreshTokens.IssueAsync(user.Id);
+        var accessToken = _tokenService.GenerateToken(user, roles);
+        AppendAuthCookies(accessToken, refreshToken.Token, refreshToken.ExpiresAt);
+    }
+
+    /// <summary>Writes the access and refresh token cookies.</summary>
+    private void AppendAuthCookies(string accessToken, string refreshToken, DateTimeOffset refreshExpires)
+    {
+        var accessExpires = DateTimeOffset.UtcNow.AddMinutes(_jwtOptions.ExpiryInMinutes);
+        Response.Cookies.Append(TokenCookieName, accessToken, CreateTokenCookieOptions(accessExpires));
+        Response.Cookies.Append(RefreshCookieName, refreshToken, CreateTokenCookieOptions(refreshExpires));
+    }
+
+    /// <summary>Clears both auth cookies and returns the session-expired response.</summary>
+    private IActionResult SessionExpired()
+    {
+        ClearAuthCookies();
+        return Unauthorized(new { message = SessionExpiredMessage, code = "session_expired" });
+    }
+
+    /// <summary>Removes the access and refresh token cookies.</summary>
+    private void ClearAuthCookies()
+    {
+        var options = CreateTokenCookieOptions(DateTimeOffset.UnixEpoch);
+        Response.Cookies.Delete(TokenCookieName, options);
+        Response.Cookies.Delete(RefreshCookieName, options);
+    }
+
+    /// <summary>Builds the cookie options used for auth cookies.</summary>
     private CookieOptions CreateTokenCookieOptions(DateTimeOffset expires) => new()
     {
         HttpOnly = true,
@@ -138,8 +212,6 @@ public class AuthController(UserManager<ApplicationUser> users, ITokenService to
         Path = "/",
         Expires = expires
     };
-
-   
 }
 
 public record RegisterRequest(string Email, string Password, string? DisplayName);

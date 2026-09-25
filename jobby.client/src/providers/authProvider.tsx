@@ -1,6 +1,6 @@
 import { AuthContext } from "@/context/authContext";
 import { getStoredUser } from "@/helpers/authHelpers";
-import { AUTH_UNAUTHORIZED_EVENT } from "@/helpers/authSession";
+import { AUTH_UNAUTHORIZED_EVENT, clearSessionExpiredMessage, isSessionExpiryHandled, resetSessionExpiryHandling } from "@/helpers/authSession";
 import { getCurrentUser, loginUser, logoutUser, registerUser } from "@/services/authService";
 import type { AuthContextType, User } from "@/types";
 import axios from "axios";
@@ -39,6 +39,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
                 setUser(currentUser);
                 localStorage.setItem("user", JSON.stringify(currentUser));
+                clearSessionExpiredMessage();
+                resetSessionExpiryHandling();
             } catch (error) {
                 if (!cancelled && axios.isAxiosError(error) && error.response?.status === 401)
                     clearUser();
@@ -58,6 +60,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         /** Clears the local session when an unauthorized event is received. */
         function onUnauthorized() {
             clearUser();
+            if (isSessionExpiryHandled())
+                return;
+
             void logoutUser().catch(() => {});
         }
 
@@ -76,6 +81,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         };
         setUser(nextUser);
         localStorage.setItem("user", JSON.stringify(nextUser));
+        clearSessionExpiredMessage();
+        resetSessionExpiryHandling();
     }
 
     /** Registers a new user account. */

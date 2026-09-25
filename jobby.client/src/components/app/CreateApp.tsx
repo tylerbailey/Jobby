@@ -113,8 +113,11 @@ export default function CreateApp({ stage, onUpdate, sheetOpen, setSheetOpen }: 
             onUpdate();
             setSheetOpen(false);
         }
-        catch {
-            toast.error("An error occured creating the application.")
+        catch (err) {
+            const message = axios.isAxiosError(err)
+                ? err.response?.data?.message ?? "An error occured creating the application."
+                : "An error occured creating the application.";
+            toast.error(message);
         }
     }
 
@@ -133,25 +136,27 @@ export default function CreateApp({ stage, onUpdate, sheetOpen, setSheetOpen }: 
                         <Button
                             type="button"
                             variant="outline"
-                            className="h-auto items-start gap-3 px-4 py-4 text-left"
+                            className="h-auto items-center gap-3 whitespace-normal px-4 py-4 text-center"
                             onClick={() => setStep("scrape")}
                         >
-                            <Link2 className="mt-0.5 h-5 w-5 shrink-0" />
-                            <span>
+                            <Link2 className="h-5 w-5 shrink-0" />
+                            <span className="min-w-0 flex-1">
                                 <span className="block font-medium">Scrape from URL</span>
                                 <span className="block text-sm font-normal text-muted-foreground">
-                                    Paste a job posting link and auto-fill the details.
+                                    Paste a job posting link
+                                    <br />
+                                    and auto-fill the details.
                                 </span>
                             </span>
                         </Button>
                         <Button
                             type="button"
                             variant="outline"
-                            className="h-auto items-start gap-3 px-4 py-4 text-left"
+                            className="h-auto items-center gap-3 whitespace-normal px-4 py-4 text-center"
                             onClick={() => setStep("form")}
                         >
-                            <PenLine className="mt-0.5 h-5 w-5 shrink-0" />
-                            <span>
+                            <PenLine className="h-5 w-5 shrink-0" />
+                            <span className="min-w-0 flex-1">
                                 <span className="block font-medium">Enter details yourself</span>
                                 <span className="block text-sm font-normal text-muted-foreground">
                                     Fill in the application form manually.
@@ -201,6 +206,7 @@ export default function CreateApp({ stage, onUpdate, sheetOpen, setSheetOpen }: 
                 {step === "form" && (
                     <AppForm
                         embedded
+                        enforceFieldRules
                         title="Create Application"
                         item={item}
                         setItem={setItem}

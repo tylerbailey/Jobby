@@ -1,13 +1,14 @@
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Alert, AlertAction, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, } from "@/components/ui/card"
 import { Field, FieldDescription, FieldGroup, FieldLabel, } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { getAuthErrorMessage } from "@/helpers/authHelpers"
 import { cn } from "@/lib/utils"
-import { CircleAlert, CircleCheck } from "lucide-react"
+import { CircleAlert, CircleCheck, X } from "lucide-react"
 import { useState } from "react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
+import { clearSessionExpiredMessage, peekSessionExpiredMessage, SESSION_EXPIRED_MESSAGE } from "@/helpers/authSession"
 import { useAuth } from "@/context/authContext"
 
 /** Renders the login form and handles user authentication. */
@@ -17,7 +18,16 @@ export function LoginPage({
 }: React.ComponentProps<"div">) {
     const navigate = useNavigate();
     const location = useLocation();
-    const registered = (location.state as { registered?: boolean } | null)?.registered;
+    const locationState = location.state as { registered?: boolean; sessionExpired?: boolean } | null;
+    const registered = locationState?.registered;
+    const [sessionNoticeDismissed, setSessionNoticeDismissed] = useState(false);
+    const sessionExpired = !sessionNoticeDismissed && (locationState?.sessionExpired === true || peekSessionExpiredMessage() !== null);
+
+    /** Hides the expired-session notice so the login form can be used. */
+    function dismissSessionExpired() {
+        clearSessionExpiredMessage();
+        setSessionNoticeDismissed(true);
+    }
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [formError, setFormError] = useState<string | null>(null);
@@ -43,6 +53,7 @@ export function LoginPage({
         setIsSubmitting(true);
         try {
             await context.login(email.trim(), password);
+            clearSessionExpiredMessage();
             navigate("/dashboard");
         } catch (err) {
             setFormError(getAuthErrorMessage(err, "Login failed. Please try again."));
@@ -78,6 +89,18 @@ export function LoginPage({
                         <CardContent>
                             <form onSubmit={handleSubmit}>
                                 <FieldGroup>
+                                    {sessionExpired && (
+                                        <Alert>
+                                            <CircleAlert />
+                                            <AlertTitle>Session expired</AlertTitle>
+                                            <AlertDescription>{SESSION_EXPIRED_MESSAGE}</AlertDescription>
+                                            <AlertAction>
+                                                <Button type="button" variant="ghost" size="icon-xs" aria-label="Dismiss" onClick={dismissSessionExpired}>
+                                                    <X />
+                                                </Button>
+                                            </AlertAction>
+                                        </Alert>
+                                    )}
                                     {registered && (
                                         <Alert>
                                             <CircleCheck />
