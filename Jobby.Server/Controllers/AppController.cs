@@ -40,7 +40,10 @@ namespace Jobby.Server.Controllers
         public async Task<ActionResult> UpdateApplication(JobDto application)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
-            await _appService.UpdateAppAsync(application, userId);
+            var error = await _appService.UpdateAppAsync(application, userId);
+            if (error is not null)
+                return BadRequest(new { message = error });
+
             return Ok();
         }
 

@@ -44,7 +44,10 @@ namespace Jobby.Server.Controllers
         public async Task<IActionResult> DeleteStage(int stageId)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
-            await _stageService.DeleteStageAsync(stageId, userId);
+            var error = await _stageService.DeleteStageAsync(stageId, userId);
+            if (error is not null)
+                return BadRequest(new { message = error });
+
             return Ok();
         }
 

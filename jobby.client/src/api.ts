@@ -61,7 +61,8 @@ api.interceptors.response.use(
         const skipToast =
             isAuthAttempt
             || url.includes("/app/scrape-posting")
-            || url.includes("/profile/stats");
+            || url.includes("/profile/stats")
+            || url.includes("/stage/delete");
         const tokenExpiredHeader = error.response?.headers?.["token-expired"] === "true";
 
         if (status === 401 && config && !config.skipAuthRefresh && !isAuthAttempt) {

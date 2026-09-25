@@ -10,6 +10,7 @@ import type { Stage } from "@/types";
 import EditStage from "@/components/stage/EditStage";
 import { useDraggable, useDroppable } from "@dnd-kit/react";
 import { GripVertical, MoreVertical, Pencil, Plus, Trash2 } from "lucide-react";
+import axios from "axios";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -49,8 +50,11 @@ export function KanbanColumn({ stage, onUpdate, searchValue }: KanbanColumnProps
                 toast.warning("You must remove all applications from the stage before deleting.")
             }
         }
-        catch {
-            toast.error("An error occurred while deleting the stage")
+        catch (err) {
+            const message = axios.isAxiosError(err)
+                ? err.response?.data?.message ?? "An error occurred while deleting the stage."
+                : "An error occurred while deleting the stage.";
+            toast.error(message);
         }
     }
 

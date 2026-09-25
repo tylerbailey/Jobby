@@ -5,7 +5,7 @@ namespace Jobby.Server.Services;
 public interface IJobService
 {
     /// <summary>Archives or unarchives a job application and records the change in the job history.</summary>
-    Task ArchiveAppAsync(int appId, bool isArchived, string userId);
+    Task<string?> ArchiveAppAsync(int appId, bool isArchived, string userId);
     /// <summary>Creates a new job application and records its creation in the job history.</summary>
     Task CreateNewAppAsync(JobDto application, string userId);
     /// <summary>Soft-deletes a job application and records the deletion in the job history.</summary>
@@ -25,5 +25,5 @@ public interface IJobService
     /// <summary>Moves a job application to a different pipeline stage and records the move in the job history.</summary>
     Task MoveApplicationStageAsync(int applicationId, int stageId, string userId);
     /// <summary>Updates an existing job application's fields and records the change in the job history.</summary>
-    Task UpdateAppAsync(JobDto application, string userId);
+    Task<string?> UpdateAppAsync(JobDto application, string userId);
 }

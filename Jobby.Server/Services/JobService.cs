@@ -128,17 +128,21 @@ namespace Jobby.Server.Services
         }
 
         /// <summary>Updates an existing job application's fields and records the change in the job history.</summary>
-        public async Task UpdateAppAsync(JobDto application, string userId)
+        public async Task<string?> UpdateAppAsync(JobDto application, string userId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
             var jobApp = await db.Jobs.FirstOrDefaultAsync(a => a.Id == application.Id && a.UserId == userId);
             if (jobApp != null)
             {
+                var stageId = await ResolveStageIdAsync(db, userId, application.IsArchived, application.StageId ?? jobApp.StageId);
+                if (stageId is null)
+                    return "A pipeline stage needs to be created first.";
+
                 jobApp.Company = application.CompanyName;
                 jobApp.Title = application.JobTitle;
                 jobApp.Summary = application.Summary;
                 jobApp.JobPostingUrl = application.JobPostingUrl;
-                jobApp.StageId = application.StageId ?? jobApp.StageId;
+                jobApp.StageId = stageId.Value;
                 jobApp.Salary = application.Salary;
                 jobApp.LocationTypeId = application.LocationTypeId;
                 jobApp.Address = application.Address;
@@ -160,6 +164,8 @@ namespace Jobby.Server.Services
                 });
                 await db.SaveChangesAsync();
             }
+
+            return null;
         }
 
         /// <summary>Moves a job application to a different pipeline stage and records the move in the job history.</summary>
@@ -291,12 +297,18 @@ namespace Jobby.Server.Services
         }
 
         /// <summary>Archives or unarchives a job application and records the change in the job history.</summary>
-        public async Task ArchiveAppAsync(int appId, bool isArchived, string userId)
+        public async Task<string?> ArchiveAppAsync(int appId, bool isArchived, string userId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
             var jobApp = await db.Jobs.FirstOrDefaultAsync(a => a.Id == appId && a.UserId == userId);
             if (jobApp is null)
-                return;
+                return null;
+
+            var stageId = await ResolveStageIdAsync(db, userId, isArchived, jobApp.StageId);
+            if (stageId is null)
+                return "A pipeline stage needs to be created first.";
+
+            jobApp.StageId = stageId.Value;
 
             jobApp.IsArchived = isArchived;
             await db.JobHistories.AddAsync(new JobHistory
@@ -308,6 +320,33 @@ namespace Jobby.Server.Services
                 Created = DateTime.UtcNow,
             });
             await db.SaveChangesAsync();
+            return null;
+        }
+
+        /// <summary>Returns the id of the user's first pipeline stage.</summary>
+        private static async Task<int?> FirstStageIdAsync(AppDbContext db, string userId)
+        {
+            return await db.JobStages
+                .Where(stage => stage.UserId == userId && !stage.Disabled)
+                .OrderBy(stage => stage.Order)
+                .ThenBy(stage => stage.Id)
+                .Select(stage => (int?)stage.Id)
+                .FirstOrDefaultAsync();
+        }
+
+        /// <summary>Places an archived application on the first stage, and keeps an active one on a visible stage.</summary>
+        private static async Task<int?> ResolveStageIdAsync(AppDbContext db, string userId, bool isArchived, int currentStageId)
+        {
+            if (isArchived)
+                return await FirstStageIdAsync(db, userId);
+
+            var stageIsActive = await db.JobStages.AnyAsync(stage =>
+                stage.Id == currentStageId && stage.UserId == userId && !stage.Disabled);
+
+            if (stageIsActive)
+                return currentStageId;
+
+            return await FirstStageIdAsync(db, userId);
         }
 
         /// <summary>Retrieves all archived job applications for the given user.</summary>

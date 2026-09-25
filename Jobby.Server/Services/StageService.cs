@@ -16,17 +16,40 @@ namespace Jobby.Server.Services
                 .Where(s => s.UserId == userId && !s.Disabled)
                 .ToListAsync();
 
-            foreach (var stage in existingStages)
-                stage.Order++;
+            foreach (var existingStage in existingStages)
+                existingStage.Order++;
 
-            db.JobStages.Add(new JobStage
+            var stage = new JobStage
             {
                 UserId = userId,
                 Name = appStage.Name,
                 Order = 1,
                 Color = appStage.Color
-            });
+            };
+            db.JobStages.Add(stage);
+            await db.SaveChangesAsync();
 
+            var disabledStageIds = await db.JobStages
+                .Where(s => s.UserId == userId && s.Disabled)
+                .Select(s => s.Id)
+                .ToListAsync();
+
+            if (disabledStageIds.Count == 0)
+                return;
+
+            var parkedJobs = await db.Jobs
+                .Where(job => job.UserId == userId && disabledStageIds.Contains(job.StageId))
+                .ToListAsync();
+
+            foreach (var job in parkedJobs)
+                job.StageId = stage.Id;
+
+            await db.SaveChangesAsync();
+
+            var disabledStages = await db.JobStages
+                .Where(s => s.UserId == userId && s.Disabled)
+                .ToListAsync();
+            db.JobStages.RemoveRange(disabledStages);
             await db.SaveChangesAsync();
         }
 
@@ -65,16 +88,45 @@ namespace Jobby.Server.Services
             await db.SaveChangesAsync();
         }
 
-        /// <summary>Deletes a pipeline stage if it has no associated jobs.</summary>
-        public async Task DeleteStageAsync(int stageId, string userId)
+        /// <summary>Deletes a pipeline stage. Archived applications move to the first remaining stage, or stay put when this is the last stage.</summary>
+        public async Task<string?> DeleteStageAsync(int stageId, string userId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
-            var stage = await db.JobStages.Where(s => s.Id == stageId && s.UserId == userId).FirstOrDefaultAsync();
-            if (stage != null && (stage.Jobs == null || stage.Jobs.Count == 0))
+            var stage = await db.JobStages.FirstOrDefaultAsync(s => s.Id == stageId && s.UserId == userId);
+            if (stage is null)
+                return null;
+
+            var jobsOnStage = await db.Jobs
+                .Where(job => job.StageId == stageId && job.UserId == userId)
+                .ToListAsync();
+
+            if (jobsOnStage.Any(job => !job.Disabled && !job.IsArchived))
+                return "You must remove all applications from the stage before deleting.";
+
+            if (jobsOnStage.Count > 0)
             {
-                db.JobStages.Remove(stage);
+                var destination = await db.JobStages
+                    .Where(s => s.UserId == userId && !s.Disabled && s.Id != stageId)
+                    .OrderBy(s => s.Order)
+                    .ThenBy(s => s.Id)
+                    .FirstOrDefaultAsync();
+
+                if (destination is null)
+                {
+                    stage.Disabled = true;
+                    await db.SaveChangesAsync();
+                    return null;
+                }
+
+                foreach (var job in jobsOnStage)
+                    job.StageId = destination.Id;
+
                 await db.SaveChangesAsync();
             }
+
+            db.JobStages.Remove(stage);
+            await db.SaveChangesAsync();
+            return null;
         }
 
         /// <summary>Retrieves the user's full pipeline of stages with their associated jobs and upcoming events.</summary>
