@@ -55,6 +55,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                                     <Link to="/archive">Archives</Link>
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
+                            <SidebarMenuItem key="Tutorial">
+                                <SidebarMenuButton asChild isActive={location.pathname === "/tutorial"}>
+                                    <Link to="/tutorial">Tutorial</Link>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
                            
                         </SidebarMenu>
                     </SidebarGroupContent>
