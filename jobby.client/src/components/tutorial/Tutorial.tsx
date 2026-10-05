@@ -128,9 +128,9 @@ const sections: TutorialSection[] = [
             "Open the three-dot menu on the application card.",
             "Choose In Progress while you are still working the role.",
             "Choose Accepted when you get the offer. The card turns green.",
-            "Choose Rejected when the role is closed. The card turns red and counts in the Rejected total at the top of the dashboard.",
+            "Choose Rejected when the role is closed. The card turns red and counts in Rejected at the top of the dashboard.",
         ],
-        note: "Active on the dashboard is every application that is not rejected. Applied counts applications that have an apply date, in any status.",
+        note: "In progress counts applications still open. Applied counts any application with an apply date. Offers and Rejected are the outcomes. Upcoming is scheduled events, and Follow-up is an in-progress application sent at least 7 days ago with nothing scheduled.",
         action: { to: "/dashboard", label: "Update a status" },
     },
     {
